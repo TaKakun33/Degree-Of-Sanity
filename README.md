@@ -65,6 +65,72 @@ Kita menggunakan alur kerja *branching* untuk memastikan stabilitas *build* dan 
 
 *Catatan: Selalu komunikasikan di grup tim saat Anda akan menggabungkan (merge) fitur ke branch `dev` agar tidak terjadi tumpang tindih pengerjaan.*
 
+# 🔄 Aturan Push & Pull (Alur Kerja Git)
+
+Untuk menjaga sinkronisasi antara anggota tim (**Akmal, Ali, dan Azka**), ikuti protokol ini sebelum dan sesudah bekerja.
+
+---
+
+## 1. Sebelum Mulai Bekerja (Update Lokal)
+
+Jangan pernah mulai coding jika versi lokal Anda tertinggal. Selalu pastikan Anda mendapatkan update terbaru dari tim:
+
+```bash
+git checkout dev
+git pull origin dev
+git lfs pull
+```
+
+**Mengapa?** Agar Anda mengerjakan fitur di atas kodingan terbaru, bukan kodingan lama.
+
+---
+
+## 2. Saat Mengerjakan Fitur
+
+Selalu kerjakan fitur di branch terpisah. Jangan pernah melakukan perubahan langsung di branch `dev` atau `main`.
+
+```bash
+git checkout -b feature/nama-fitur
+# Lakukan pengerjaan di Unity/VS Code
+```
+
+---
+
+## 3. Mengirim Perubahan (Push)
+
+Setelah fitur selesai, tes di Unity, dan pastikan tidak ada error (Console bersih):
+
+### a. Add & Commit
+
+```bash
+git add .
+git commit -m "[FEAT] Nama fitur yang Anda kerjakan"
+```
+
+### b. Push ke GitHub
+
+```bash
+git push origin feature/nama-fitur
+```
+
+### c. Pull Request (PR)
+
+1. Buka GitHub (di browser).
+2. Klik tombol **"Compare & pull request"**.
+3. Berikan deskripsi singkat fitur yang ditambahkan.
+4. Tag anggota tim lain untuk melakukan review.
+5. Setelah di-approve, fitur akan di-merge ke branch `dev`.
+
+---
+
+## ⚠️ Larangan Keras (PENTING!)
+
+- 🚫 **DILARANG** melakukan `git push --force`. Ini bisa menghapus sejarah commit orang lain secara permanen!
+- 🚫 **DILARANG** melakukan `git push` tanpa melakukan `git pull` terlebih dahulu.
+- 🚫 **KOORDINASI SCENE**: Jika Anda harus menyentuh `MainScene.unity`, kabari tim di grup. Scene di Unity sangat rentan konflik dan sulit diperbaiki.
+
+---
+
 ## ⚠️ Aturan Kolaborasi Unity
 1. **Koordinasi Scene:** Beritahu tim di grup jika akan mengedit \`MainScene.unity\`.
 2. **Meta Files:** Jangan pernah mengabaikan file \`.meta\`.
@@ -72,6 +138,14 @@ Kita menggunakan alur kerja *branching* untuk memastikan stabilitas *build* dan 
    - \`Assets/Scripts/\`
    - \`Assets/Sprites/\`
    - \`Assets/Prefabs/\`
+
+---
+
+## 📝 Format Commit Message
+- \`[FEAT]\` - Fitur baru.
+- \`[ASSET]\` - Aset visual/audio.
+- \`[FIX]\` - Bug fix.
+- \`[DOCS]\` - Dokumentasi.
 
 ---
 *Yok Selesikan kita. Harus JADI!* 🍌
