@@ -1,40 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
-using System.Collections; 
+using TMPro;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     [Header("Parameter Status Kelangsungan Hidup")]
-    public int waktu = 30; // Sisa masa studi (hari)
-    public int uang = 500000; 
+    public int waktu = 30;
+    public int uang = 500000;
 
     [Range(0f, 100f)] public float progresSkripsi = 0f;
     [Range(0f, 100f)] public float lapar = 100f;
     [Range(0f, 100f)] public float sanity = 100f;
 
     [Header("Siklus Siang & Malam (Waktu Harian)")]
-    public float jamMulai = 6f; // Mulai jam 06.00 pagi
+    public float jamMulai = 6f;
     public float jamSaatIni = 6f;
-    public float batasTidur = 24f; // Batas standar jam 00.00 malam (24.0)
-    
+    public float batasTidur = 24f;
+
     [Tooltip("Kecepatan waktu berjalan. Misal: 1 = 1 jam in-game per detik realita")]
-    public float kecepatanWaktuNormal = 0.5f; 
-    private float kecepatanWaktuAktif; // Kecepatan yang bisa diubah-ubah (saat dipercepat)
+    public float kecepatanWaktuNormal = 0.5f;
+    private float kecepatanWaktuAktif;
     private bool waktuBerjalan = true;
 
     [Header("Referensi UI (Antarmuka Pemain)")]
     public TextMeshProUGUI textWaktu;
     public TextMeshProUGUI textUang;
-    public TextMeshProUGUI textJamHarian; // UI Baru untuk menampilkan Jam (06:00)
+    public TextMeshProUGUI textJamHarian;
     public Slider sliderProgresSkripsi;
     public Slider sliderLapar;
     public Slider sliderSanity;
 
     [Header("Transisi Layar (Tidur)")]
-    public Image layarGelap; 
+    public Image layarGelap;
 
     void Awake()
     {
@@ -63,12 +63,11 @@ public class GameManager : MonoBehaviour
     {
         if(textWaktu != null) textWaktu.text = "Sisa Waktu: " + waktu + " Hari";
         if(textUang != null) textUang.text = "Uang: Rp " + uang;
-        
+
         if(sliderProgresSkripsi != null) sliderProgresSkripsi.value = progresSkripsi;
         if(sliderLapar != null) sliderLapar.value = lapar;
         if(sliderSanity != null) sliderSanity.value = sanity;
 
-        // Memformat float (misal 6.5) menjadi teks jam (06:30)
         if(textJamHarian != null)
         {
             int jam = Mathf.FloorToInt(jamSaatIni) % 24;
@@ -81,33 +80,28 @@ public class GameManager : MonoBehaviour
     {
         if (!waktuBerjalan) return;
 
-        // Waktu bertambah terus menerus
         jamSaatIni += kecepatanWaktuAktif * Time.deltaTime;
 
-        // Cek jika waktu menyentuh batas akhir (Pingsan karena kelelahan)
         if (jamSaatIni >= batasTidur)
         {
             waktuBerjalan = false;
-            StartCoroutine(ProsesTidur(true)); // True berarti pingsan/terpaksa tidur
+            StartCoroutine(ProsesTidur(true));
         }
     }
 
-    // Fungsi untuk mempercepat waktu saat kerja part time / ngerjain skripsi
     public void PercepatWaktu(float multiplier)
     {
         kecepatanWaktuAktif = kecepatanWaktuNormal * multiplier;
     }
 
-    // Fungsi untuk mengembalikan laju waktu ke normal setelah beraktivitas
     public void KembalikanWaktuNormal()
     {
         kecepatanWaktuAktif = kecepatanWaktuNormal;
     }
 
-    // Fungsi saat minum item Kopi Espresso
     public void MinumEspresso()
     {
-        batasTidur = 26f; // Perpanjang batas tidur menjadi 02:00 dini hari (24 + 2)
+        batasTidur = 26f;
         Debug.Log("Espresso diminum! Batas waktu diperpanjang hingga pukul 02:00.");
     }
 
@@ -125,17 +119,15 @@ public class GameManager : MonoBehaviour
 
     public void GantiHari()
     {
-        waktu -= 1; 
-        lapar -= 30f; 
-        
-        // Reset waktu harian kembali ke pagi hari
+        waktu -= 1;
+        lapar -= 30f;
+
         jamSaatIni = jamMulai;
-        batasTidur = 24f; // Kembalikan batas tidur ke jam 00:00 (efek espresso hilang)
-        
+        batasTidur = 24f;
+
         Debug.Log("Hari berganti! Sisa waktu: " + waktu + " hari.");
     }
 
-    // Diubah sedikit untuk menerima parameter apakah tidur dipaksa atau dari klik kasur
     public IEnumerator ProsesTidur(bool pingsan = false)
     {
         waktuBerjalan = false;
@@ -143,15 +135,15 @@ public class GameManager : MonoBehaviour
         float alpha = 0;
         while (alpha < 1)
         {
-            alpha += Time.deltaTime * 1.5f; 
+            alpha += Time.deltaTime * 1.5f;
             if (layarGelap != null) layarGelap.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
 
-        if (pingsan) 
+        if (pingsan)
         {
             Debug.Log("Karakter pingsan karena begadang maksimal!");
-            sanity -= 15f; 
+            sanity -= 15f;
         }
 
         GantiHari();
@@ -165,15 +157,15 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        waktuBerjalan = true; /
+        waktuBerjalan = true;
     }
 
     private void AktifkanDistorsiVisual() { }
-    
+
     private void PenaltiLaparKritis()
     {
-        float baseSanityDrain = 2f; 
-        sanity -= (baseSanityDrain * 2) * Time.deltaTime; 
+        float baseSanityDrain = 2f;
+        sanity -= (baseSanityDrain * 2) * Time.deltaTime;
     }
 
     private void TriggerBadEnding(string alasan) { }
