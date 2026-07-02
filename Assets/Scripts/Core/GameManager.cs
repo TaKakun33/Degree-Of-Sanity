@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        waktuBerjalan = true; /
+        waktuBerjalan = true; 
     }
 
     private void AktifkanDistorsiVisual() { }
