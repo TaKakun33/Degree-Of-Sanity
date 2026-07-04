@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Parameter Status Kelangsungan Hidup")]
     public int waktu = 30;
-    public int uang = 500000;
+    public int uang = 5000000;
 
     [Range(0f, 100f)] public float progresSkripsi = 0f;
     [Range(0f, 100f)] public float lapar = 100f;
