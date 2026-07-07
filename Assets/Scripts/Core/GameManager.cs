@@ -36,6 +36,13 @@ public class GameManager : MonoBehaviour
     [Header("Transisi Layar (Tidur)")]
     public Image layarGelap;
 
+    [Header("Referensi UI & Objek (Tidur Paksa)")]
+    public GameObject panelToko;
+    public GameObject panelInventory;
+    public GameObject panelMenuKerja;
+    public GameObject playerObj; 
+    public Transform posisiDepanKasur; 
+
     void Awake()
     {
         if (Instance == null) {
@@ -49,69 +56,55 @@ public class GameManager : MonoBehaviour
     {
         kecepatanWaktuAktif = kecepatanWaktuNormal;
         UpdateUI();
-        if (layarGelap != null) layarGelap.color = new Color(0, 0, 0, 0);
     }
 
     void Update()
     {
-        UpdateUI();
-        CekKondisiKritis();
-        SistemWaktuHarian();
+        if (waktuBerjalan)
+        {
+            float deltaJam = kecepatanWaktuAktif * Time.deltaTime;
+            jamSaatIni += deltaJam;
+
+            if (jamSaatIni >= batasTidur)
+            {
+                StartCoroutine(ProsesTidur(true));
+            }
+            UpdateUI();
+        }
     }
 
     void UpdateUI()
     {
-        if(textWaktu != null) textWaktu.text = "Sisa Waktu: " + waktu + " Hari";
-        if(textUang != null) textUang.text = "Uang: Rp " + uang;
+        if (textWaktu != null) textWaktu.text = waktu + " Hari";
+        if (textUang != null) textUang.text = "Rp " + uang;
 
-        if(sliderProgresSkripsi != null) sliderProgresSkripsi.value = progresSkripsi;
-        if(sliderLapar != null) sliderLapar.value = lapar;
-        if(sliderSanity != null) sliderSanity.value = sanity;
-
-        if(textJamHarian != null)
+        if (textJamHarian != null)
         {
-            int jam = Mathf.FloorToInt(jamSaatIni) % 24;
-            int menit = Mathf.FloorToInt((jamSaatIni % 1) * 60);
+            int jam = Mathf.FloorToInt(jamSaatIni);
+            int menit = Mathf.FloorToInt((jamSaatIni - jam) * 60f);
+
+            jam = jam % 24; 
+
             textJamHarian.text = string.Format("{0:00}:{1:00}", jam, menit);
         }
+
+        if (sliderProgresSkripsi != null) sliderProgresSkripsi.value = progresSkripsi;
+        if (sliderLapar != null) sliderLapar.value = lapar;
+        if (sliderSanity != null) sliderSanity.value = sanity;
     }
 
-    void SistemWaktuHarian()
+    public void SelesaikanMinigameSkripsi(float tambahanProgres)
     {
-        if (!waktuBerjalan) return;
-
-        jamSaatIni += kecepatanWaktuAktif * Time.deltaTime;
-
-        if (jamSaatIni >= batasTidur)
-        {
-            waktuBerjalan = false;
-            StartCoroutine(ProsesTidur(true));
-        }
-    }
-
-    public void PercepatWaktu(float multiplier)
-    {
-        kecepatanWaktuAktif = kecepatanWaktuNormal * multiplier;
-    }
-
-    public void KembalikanWaktuNormal()
-    {
-        kecepatanWaktuAktif = kecepatanWaktuNormal;
-    }
-
-    public void MinumEspresso()
-    {
-        batasTidur = 26f;
-        Debug.Log("Espresso diminum! Batas waktu diperpanjang hingga pukul 02:00.");
-    }
-
-    void CekKondisiKritis()
-    {
-        sanity = Mathf.Clamp(sanity, 0f, 100f);
-        lapar = Mathf.Clamp(lapar, 0f, 100f);
+        progresSkripsi += tambahanProgres;
         progresSkripsi = Mathf.Clamp(progresSkripsi, 0f, 100f);
+        sanity -= 20f;
+        lapar -= 15f;
+        UpdateUI();
+    }
 
-        if (sanity < 50f && sanity > 0f) AktifkanDistorsiVisual();
+    private void CekKondisiGame()
+    {
+        if (sanity <= 30f && sanity > 0f) AktifkanDistorsiVisual();
         if (sanity <= 0f) TriggerBadEnding("Karakter mengalami depresi berat.");
         if (lapar <= 0f) PenaltiLaparKritis();
         if (waktu <= 0 && progresSkripsi < 100f) TriggerBadEnding("Waktu habis, terkena DO.");
@@ -131,6 +124,23 @@ public class GameManager : MonoBehaviour
     public IEnumerator ProsesTidur(bool pingsan = false)
     {
         waktuBerjalan = false;
+
+        // --- 1. TUTUP SEMUA PANEL UI SECARA PAKSA ---
+        if (panelToko != null) panelToko.SetActive(false);
+        if (panelInventory != null) panelInventory.SetActive(false);
+        if (panelMenuKerja != null) panelMenuKerja.SetActive(false);
+
+        // --- 2. BUKA KUNCI PLAYER DAN PINDAHKAN KE KASUR ---
+        if (playerObj != null)
+        {
+            PlayerController pc = playerObj.GetComponent<PlayerController>();
+            if (pc != null) pc.SetMenuStatus(false); 
+
+            if (posisiDepanKasur != null)
+            {
+                playerObj.transform.position = posisiDepanKasur.position; 
+            }
+        }
 
         float alpha = 0;
         while (alpha < 1)
@@ -157,16 +167,28 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        waktuBerjalan = true;
+        waktuBerjalan = true; 
     }
 
-    private void AktifkanDistorsiVisual() { }
+    private void AktifkanDistorsiVisual()
+    {
+        Debug.Log("Efek distorsi visual aktif (Sanity rendah).");
+    }
 
     private void PenaltiLaparKritis()
     {
-        float baseSanityDrain = 2f;
-        sanity -= (baseSanityDrain * 2) * Time.deltaTime;
+        Debug.Log("Pemain kelaparan. Efisiensi skripsi menurun dan sanity cepat turun.");
     }
 
-    private void TriggerBadEnding(string alasan) { }
+    private void TriggerBadEnding(string alasan)
+    {
+        Debug.Log("GAME OVER: " + alasan);
+        waktuBerjalan = false;
+    }
+
+    // Fungsi baru untuk menjeda atau melanjutkan waktu
+    public void SetJedaWaktu(bool jeda)
+    {
+        waktuBerjalan = !jeda; 
+    }
 }

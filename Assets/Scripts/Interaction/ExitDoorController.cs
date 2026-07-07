@@ -15,6 +15,9 @@ public class ExitDoorController : MonoBehaviour
             // Menggunakan metode terbaru agar tidak muncul warning
             PlayerController player = Object.FindFirstObjectByType<PlayerController>();
             if (player != null) player.SetMenuStatus(true);
+
+            // --- JEDA WAKTU HARIAN ---
+            if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(true);
         }
     }
 }
