@@ -1,15 +1,15 @@
 using UnityEngine;
-using TMPro; // Wajib untuk mengatur teks UI
+using TMPro; 
 
 public class ShopController : MonoBehaviour
 {
-    [Header("Harga Barang")]
+    [Header("Harga Barang (Rp)")]
     public int hargaKopi = 15000;
     public int hargaMie = 20000;
-    public int hargaBoneka = 250000;
+    public int hargaBoneka = 500000;
+    public int hargaBahan = 10000;
     public int hargaKeyboard = 1500000;
-    public int hargaBuku = 500000;
-    public int hargaBahan = 30000;
+    public int hargaBuku = 100000;
 
     [Header("Isi Keranjang (Cart)")]
     private int cartKopi = 0;
@@ -21,93 +21,91 @@ public class ShopController : MonoBehaviour
 
     private int totalHarga = 0;
 
-    [Header("Referensi UI")]
+    [Header("Referensi UI (Keranjang & Total)")]
     public TextMeshProUGUI textRincianKeranjang;
     public TextMeshProUGUI textTotalHarga;
 
-    // Dipanggil otomatis setiap kali Panel Toko dibuka
+    [Header("Referensi Teks Jumlah di Antara Tombol (+/-)")]
+    public TextMeshProUGUI txtJmlKopi;
+    public TextMeshProUGUI txtJmlMie;
+    public TextMeshProUGUI txtJmlBoneka;
+    public TextMeshProUGUI txtJmlBahan;
+    public TextMeshProUGUI txtJmlKeyboard;
+    public TextMeshProUGUI txtJmlBuku;
+
     void OnEnable()
     {
         KosongkanKeranjang();
     }
 
-    // --- 1. FUNGSI NAMBAH BARANG KE KERANJANG ---
+    // --- FUNGSI TAMBAH BARANG (+) ---
     public void TambahKopi() { cartKopi++; UpdateUIKeranjang(); }
     public void TambahMie() { cartMie++; UpdateUIKeranjang(); }
     public void TambahBoneka() { cartBoneka++; UpdateUIKeranjang(); }
     public void TambahBahan() { cartBahan++; UpdateUIKeranjang(); }
-    
-    // Barang permanen dibatasi maksimal 1 di keranjang
-    public void TambahKeyboard() 
-    { 
-        if (!InventoryManager.Instance.punyaKeyboard && !cartKeyboard) 
-        { cartKeyboard = true; UpdateUIKeranjang(); }
-    }
-    public void TambahBuku() 
-    { 
-        if (!InventoryManager.Instance.punyaBuku && !cartBuku) 
-        { cartBuku = true; UpdateUIKeranjang(); }
-    }
+    public void TambahKeyboard() { if (!InventoryManager.Instance.punyaKeyboard && !cartKeyboard) { cartKeyboard = true; UpdateUIKeranjang(); } }
+    public void TambahBuku() { if (!InventoryManager.Instance.punyaBuku && !cartBuku) { cartBuku = true; UpdateUIKeranjang(); } }
 
-    // --- 2. FUNGSI UPDATE TAMPILAN KERANJANG ---
+    // --- FUNGSI KURANGI BARANG (-) ---
+    public void KurangiKopi() { if (cartKopi > 0) { cartKopi--; UpdateUIKeranjang(); } }
+    public void KurangiMie() { if (cartMie > 0) { cartMie--; UpdateUIKeranjang(); } }
+    public void KurangiBoneka() { if (cartBoneka > 0) { cartBoneka--; UpdateUIKeranjang(); } }
+    public void KurangiBahan() { if (cartBahan > 0) { cartBahan--; UpdateUIKeranjang(); } }
+    public void KurangiKeyboard() { if (cartKeyboard) { cartKeyboard = false; UpdateUIKeranjang(); } }
+    public void KurangiBuku() { if (cartBuku) { cartBuku = false; UpdateUIKeranjang(); } }
+
+    // --- UPDATE TAMPILAN KESELURUHAN ---
     void UpdateUIKeranjang()
     {
-        // Hitung Total Harga
         totalHarga = (cartKopi * hargaKopi) + (cartMie * hargaMie) + 
                      (cartBoneka * hargaBoneka) + (cartBahan * hargaBahan) +
                      (cartKeyboard ? hargaKeyboard : 0) + (cartBuku ? hargaBuku : 0);
 
-        if (textTotalHarga != null) 
-            textTotalHarga.text = "Total: Rp " + totalHarga;
+        if (textTotalHarga != null) textTotalHarga.text = "Total: Rp " + totalHarga;
 
-        // Susun Teks Rincian Barang
+        // Update angka di tengah tombol +/-
+        if (txtJmlKopi != null) txtJmlKopi.text = cartKopi.ToString();
+        if (txtJmlMie != null) txtJmlMie.text = cartMie.ToString();
+        if (txtJmlBoneka != null) txtJmlBoneka.text = cartBoneka.ToString();
+        if (txtJmlBahan != null) txtJmlBahan.text = cartBahan.ToString();
+        if (txtJmlKeyboard != null) txtJmlKeyboard.text = cartKeyboard ? "1" : "0";
+        if (txtJmlBuku != null) txtJmlBuku.text = cartBuku ? "1" : "0";
+
+        // Update Rincian Teks
         string rincian = "";
-        if (cartKopi > 0) rincian += "- Kopi x" + cartKopi + " (Rp " + (cartKopi * hargaKopi) + ")\n";
-        if (cartMie > 0) rincian += "- Mie Ayam x" + cartMie + " (Rp " + (cartMie * hargaMie) + ")\n";
-        if (cartBoneka > 0) rincian += "- Boneka x" + cartBoneka + " (Rp " + (cartBoneka * hargaBoneka) + ")\n";
-        if (cartBahan > 0) rincian += "- Bahan x" + cartBahan + " (Rp " + (cartBahan * hargaBahan) + ")\n";
-        if (cartKeyboard) rincian += "- Keyboard (Rp " + hargaKeyboard + ")\n";
-        if (cartBuku) rincian += "- Buku (Rp " + hargaBuku + ")\n";
+        if (cartKopi > 0) rincian += "- Kopi x" + cartKopi + "\n";
+        if (cartMie > 0) rincian += "- Mie Ayam x" + cartMie + "\n";
+        if (cartBoneka > 0) rincian += "- Boneka x" + cartBoneka + "\n";
+        if (cartBahan > 0) rincian += "- Bahan x" + cartBahan + "\n";
+        if (cartKeyboard) rincian += "- Keyboard Ergonomis\n";
+        if (cartBuku) rincian += "- Buku Referensi\n";
 
-        if (rincian == "") rincian = "Keranjang masih kosong...";
-        
-        if (textRincianKeranjang != null) 
-            textRincianKeranjang.text = rincian;
+        if (rincian == "") rincian = "Keranjang kosong...";
+        if (textRincianKeranjang != null) textRincianKeranjang.text = rincian;
     }
 
-    // --- 3. FUNGSI CHECKOUT (BELI SEMUA) ---
+    // --- CHECKOUT ---
     public void CheckoutBelanjaan()
     {
-        if (totalHarga == 0) return; // Batal jika keranjang kosong
+        if (totalHarga == 0) return; 
 
-        // Pastikan GameManager ada dan uang cukup
         if (GameManager.Instance != null && GameManager.Instance.uang >= totalHarga)
         {
-            // Potong Uang
             GameManager.Instance.uang -= totalHarga;
-
-            // Masukkan Barang ke Inventory
             if (InventoryManager.Instance != null)
             {
                 InventoryManager.Instance.jumlahKopi += cartKopi;
                 InventoryManager.Instance.jumlahMieAyam += cartMie;
                 InventoryManager.Instance.jumlahBoneka += cartBoneka;
                 InventoryManager.Instance.jumlahBahanMakanan += cartBahan;
-                
                 if (cartKeyboard) InventoryManager.Instance.punyaKeyboard = true;
                 if (cartBuku) InventoryManager.Instance.punyaBuku = true;
             }
-
-            Debug.Log("Checkout Sukses! Uang dipotong Rp " + totalHarga);
-            KosongkanKeranjang(); // Bersihkan keranjang setelah berhasil beli
-        }
-        else
-        {
-            Debug.LogWarning("Uang tidak cukup!");
+            Debug.Log("Checkout Sukses!");
+            KosongkanKeranjang(); 
         }
     }
 
-    // --- 4. FUNGSI RESET KERANJANG ---
     public void KosongkanKeranjang()
     {
         cartKopi = cartMie = cartBoneka = cartBahan = 0;
@@ -116,11 +114,10 @@ public class ShopController : MonoBehaviour
         UpdateUIKeranjang();
     }
     
-    // --- 5. FUNGSI TUTUP PANEL ---
     public void TutupToko()
     {
         gameObject.SetActive(false);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(false); // Player bisa gerak lagi
+        if (player != null) player.SetMenuStatus(false);
     }
 }
