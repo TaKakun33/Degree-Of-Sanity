@@ -3,16 +3,23 @@ using UnityEngine;
 public class DoorController : MonoBehaviour
 {
     [Header("Tujuan Pintu")]
-    [Tooltip("Tarik objek/pintu di lantai 2 ke kolom ini di Inspector")]
+    [Tooltip("Tarik objek/pintu di lantai tujuan ke kolom ini")]
     public Transform destination;
+    
+    [Tooltip("Pintu ini akan memindahkan pemain ke lantai berapa?")]
+    public int lantaiTujuan = 2; 
 
-    // Fungsi ini akan dipanggil oleh Player saat sudah sampai di depan pintu
     public void UseDoor(GameObject player)
     {
         if (destination != null)
         {
-            // Memindahkan pemain secara instan ke posisi tujuan (Lantai 2)
-            player.transform.position = destination.position;
+            // PERBAIKAN: Memindahkan pemain ke koordinat X dan Y pintu tujuan secara utuh!
+            // Menggunakan Vector3 agar posisi depan-belakang (Z) dari layer karakter tidak rusak.
+            player.transform.position = new Vector3(destination.position.x, destination.position.y, player.transform.position.z);
+            
+            // Beri tahu sistem bahwa pemain sudah pindah lantai
+            PlayerController pc = player.GetComponent<PlayerController>();
+            if (pc != null) pc.lantaiSaatIni = lantaiTujuan;
         }
         else
         {

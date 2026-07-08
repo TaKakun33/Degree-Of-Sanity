@@ -3003,6 +3003,7 @@ GameObject:
   - component: {fileID: 302016798}
   - component: {fileID: 302016797}
   - component: {fileID: 302016800}
+  - component: {fileID: 302016801}
   m_Layer: 0
   m_Name: Bed
   m_TagString: Bed
@@ -3124,12 +3125,12 @@ Transform:
   m_GameObject: {fileID: 302016796}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -832.4771, y: -793.262, z: 0}
+  m_LocalPosition: {x: -5.580017, y: -0.27001953, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 338105787}
-  m_Father: {fileID: 865462698}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &302016800
 MonoBehaviour:
@@ -3143,6 +3144,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796d303805d078d2aa28797adcc0d3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BedController
+--- !u!114 &302016801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302016796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 2
 --- !u!1 &305822331
 GameObject:
   m_ObjectHideFlags: 0
@@ -4415,6 +4429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 5
+  lantaiSaatIni: 1
 --- !u!1 &386390091
 GameObject:
   m_ObjectHideFlags: 0
@@ -5406,6 +5421,98 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 440527324}
   m_CullTransparentMesh: 1
+--- !u!1 &446287291
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 446287294}
+  - component: {fileID: 446287293}
+  - component: {fileID: 446287292}
+  m_Layer: 0
+  m_Name: Area_Lantai1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &446287292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446287291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 1
+--- !u!61 &446287293
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446287291}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 1.8896384, y: -0.13908374}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 14.947392, y: 4.2953234}
+  m_EdgeRadius: 0
+--- !u!4 &446287294
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446287291}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.43361, y: -2.55737, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &447940854
 GameObject:
   m_ObjectHideFlags: 0
@@ -10360,6 +10467,7 @@ GameObject:
   - component: {fileID: 823502627}
   - component: {fileID: 823502626}
   - component: {fileID: 823502625}
+  - component: {fileID: 823502629}
   m_Layer: 0
   m_Name: Kompor
   m_TagString: Kompor
@@ -10500,6 +10608,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &823502629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823502624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 1
 --- !u!1 &825389740
 GameObject:
   m_ObjectHideFlags: 0
@@ -11303,8 +11424,7 @@ Transform:
   m_LocalPosition: {x: 826.8971, y: 792.992, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 302016799}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &865462699
@@ -15798,6 +15918,7 @@ GameObject:
   - component: {fileID: 1135979389}
   - component: {fileID: 1135979392}
   - component: {fileID: 1135979391}
+  - component: {fileID: 1135979393}
   m_Layer: 0
   m_Name: Door_Lantai1
   m_TagString: Door
@@ -15892,6 +16013,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
   destination: {fileID: 1327634133}
+  lantaiTujuan: 2
 --- !u!61 &1135979392
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15938,6 +16060,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5625, y: 1.25}
   m_EdgeRadius: 0
+--- !u!114 &1135979393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135979388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 1
 --- !u!1 &1140614342
 GameObject:
   m_ObjectHideFlags: 0
@@ -18112,6 +18247,7 @@ GameObject:
   - component: {fileID: 1327634132}
   - component: {fileID: 1327634131}
   - component: {fileID: 1327634134}
+  - component: {fileID: 1327634135}
   m_Layer: 0
   m_Name: Door_Lantai2
   m_TagString: Door
@@ -18252,6 +18388,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
   destination: {fileID: 1135979390}
+  lantaiTujuan: 1
+--- !u!114 &1327634135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1327634130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 2
 --- !u!1 &1331178598
 GameObject:
   m_ObjectHideFlags: 0
@@ -21534,6 +21684,98 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1510283377}
   m_CullTransparentMesh: 1
+--- !u!1 &1514806142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1514806145}
+  - component: {fileID: 1514806144}
+  - component: {fileID: 1514806143}
+  m_Layer: 0
+  m_Name: Area_Lantai2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1514806143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514806142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 2
+--- !u!61 &1514806144
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514806142}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 1.8896384, y: 0.07018793}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 14.947392, y: 4.713867}
+  m_EdgeRadius: 0
+--- !u!4 &1514806145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514806142}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.43361, y: 1.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1516312755
 GameObject:
   m_ObjectHideFlags: 0
@@ -26142,6 +26384,7 @@ GameObject:
   - component: {fileID: 1878991557}
   - component: {fileID: 1878991556}
   - component: {fileID: 1878991555}
+  - component: {fileID: 1878991559}
   m_Layer: 0
   m_Name: Door_Exit
   m_TagString: ExitDoor
@@ -26282,6 +26525,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1878991559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878991554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 1
 --- !u!1 &1879754392
 GameObject:
   m_ObjectHideFlags: 0
@@ -30291,6 +30547,7 @@ GameObject:
   - component: {fileID: 2079777292}
   - component: {fileID: 2079777294}
   - component: {fileID: 2079777295}
+  - component: {fileID: 2079777296}
   m_Layer: 0
   m_Name: Desk
   m_TagString: Desk
@@ -30431,6 +30688,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeskController
   namaSceneMinigame: SkripsiScene
+--- !u!114 &2079777296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079777291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c877785cb50dd1c8980902399d603a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LantaiInfo
+  nomorLantai: 2
 --- !u!1 &2084999952
 GameObject:
   m_ObjectHideFlags: 0
@@ -31704,13 +31974,16 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
+  - {fileID: 865462698}
   - {fileID: 1959056724}
   - {fileID: 384426247}
   - {fileID: 1135979390}
   - {fileID: 1327634133}
-  - {fileID: 1962560926}
-  - {fileID: 1361442845}
-  - {fileID: 865462698}
+  - {fileID: 302016799}
   - {fileID: 2079777293}
   - {fileID: 1878991558}
   - {fileID: 823502628}
+  - {fileID: 446287294}
+  - {fileID: 1514806145}
+  - {fileID: 1962560926}
+  - {fileID: 1361442845}

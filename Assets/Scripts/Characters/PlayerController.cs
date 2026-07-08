@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float speed = 5f;
+    public int lantaiSaatIni = 1; // 1 = Lantai Bawah, 2 = Lantai Atas
     
     private Vector2 targetPosition;
     private bool isMoving = false;
@@ -17,7 +18,12 @@ public class PlayerController : MonoBehaviour
     private BedController targetBed = null; 
     private DeskController targetDesk = null;
     private ExitDoorController targetExitDoor = null;
-    private KomporController targetKompor = null; // Tambahan untuk Kompor
+    private KomporController targetKompor = null;
+
+    // --- SISTEM MEMORI LANTAI (WAYPOINT) ---
+    private bool sedangTransit = false; 
+    private GameObject targetInteraksiAkhir = null; 
+    private float targetXAkhir = 0f; 
 
     void Start()
     {
@@ -25,38 +31,25 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         isMenuOpen = false;
         isMoving = false;
-        Debug.Log("Player diinisialisasi dalam kondisi normal.");
     }
 
     void Update()
     {
-        // Jika menu terbuka, jangan lakukan apa pun di Update
         if (isMenuOpen) return;
 
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
             HandleClick();
         }
 
-        if (isMoving)
-        {
-            MovePlayer();
-        }
+        if (isMoving) MovePlayer();
     }
 
-    // Panggil fungsi ini dari UI saat panel buka/tutup
     public void SetMenuStatus(bool status)
     {
         isMenuOpen = status;
-        if (isMenuOpen)
-        {
-            isMoving = false; // Hentikan gerakan saat ini
-        }
-        Debug.Log("Status Menu: " + (isMenuOpen ? "Terbuka (Kunci)" : "Tertutup (Normal)"));
+        if (isMenuOpen) isMoving = false; 
     }
 
     void HandleClick()
@@ -65,31 +58,123 @@ public class PlayerController : MonoBehaviour
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.nearClipPlane));
         Vector2 clickPos2D = new Vector2(worldPos.x, worldPos.y);
 
-        Debug.Log("Mouse diklik di posisi: " + clickPos2D);
+        // MENGGUNAKAN "RAYCAST ALL" AGAR SENSOR MOUSE TEMBUS PANDANG (Melewati Area_Lantai)
+        RaycastHit2D[] hits = Physics2D.RaycastAll(clickPos2D, Vector2.zero);
 
-        RaycastHit2D hit = Physics2D.Raycast(clickPos2D, Vector2.zero);
-
-        // Reset semua target sebelum memproses klik baru
+        // Bersihkan memori klik sebelumnya
         targetDoor = null; targetBed = null; targetDesk = null; targetExitDoor = null; targetKompor = null;
+        targetInteraksiAkhir = null;
+        sedangTransit = false;
 
-        if (hit.collider != null)
+        GameObject objekDiklik = null;
+        int lantaiTujuan = lantaiSaatIni;
+
+        // PRIORITAS 1: Cari tahu apakah di titik yang diklik terdapat Barang Interaktif (Tembus kotak transparan)
+        foreach (var hit in hits)
         {
-            if (hit.collider.CompareTag("Door")) targetDoor = hit.collider.GetComponent<DoorController>();
-            else if (hit.collider.CompareTag("Bed")) targetBed = hit.collider.GetComponent<BedController>();
-            else if (hit.collider.CompareTag("Desk")) targetDesk = hit.collider.GetComponent<DeskController>();
-            else if (hit.collider.CompareTag("ExitDoor")) targetExitDoor = hit.collider.GetComponent<ExitDoorController>();
-            else if (hit.collider.CompareTag("Kompor")) targetKompor = hit.collider.GetComponent<KomporController>(); // Cek klik ke Kompor
-            
-            targetPosition = (hit.collider.CompareTag("Door") || hit.collider.CompareTag("Bed") || 
-                             hit.collider.CompareTag("Desk") || hit.collider.CompareTag("ExitDoor") || 
-                             hit.collider.CompareTag("Kompor")) // Tambahkan tag Kompor di sini
-                             ? new Vector2(hit.collider.transform.position.x, transform.position.y) 
-                             : new Vector2(worldPos.x, transform.position.y);
+            if (hit.collider != null && CekApakahBarangInteraktif(hit.collider.gameObject))
+            {
+                objekDiklik = hit.collider.gameObject;
+                break; // Ketemu barangnya, langsung kunci target!
+            }
         }
-        else { targetPosition = new Vector2(worldPos.x, transform.position.y); }
+
+        // PRIORITAS 2: Jika terbukti tidak ada barang sama sekali, baru kita anggap itu klik Area Lantai biasa
+        if (objekDiklik == null)
+        {
+            foreach (var hit in hits)
+            {
+                if (hit.collider != null && hit.collider.GetComponent<LantaiInfo>() != null)
+                {
+                    objekDiklik = hit.collider.gameObject;
+                    break;
+                }
+            }
+        }
+
+        // Ambil data lantai dari objek yang akhirnya terpilih
+        if (objekDiklik != null)
+        {
+            LantaiInfo info = objekDiklik.GetComponent<LantaiInfo>();
+            if (info != null) lantaiTujuan = info.nomorLantai;
+        }
+        
+        // ==============================================================
+        // LOGIKA PERGERAKAN (TRANSIT & SATU LANTAI)
+        // ==============================================================
+
+        // JIKA BARANG ATAU LANTAI ADA DI LANTAI YANG BERBEDA
+        if (lantaiTujuan != lantaiSaatIni)
+        {
+            DoorController pintuPenghubung = CariPintuKeLantai(lantaiTujuan);
+            if (pintuPenghubung != null)
+            {
+                targetDoor = pintuPenghubung; 
+                targetPosition = new Vector2(pintuPenghubung.transform.position.x, transform.position.y);
+                
+                sedangTransit = true;
+                targetXAkhir = clickPos2D.x; // Ingat titik X akhir 
+                
+                if (objekDiklik != null && CekApakahBarangInteraktif(objekDiklik))
+                {
+                    // PENGAMAN: Jika yang diklik di atas adalah Pintu, jangan disetel sebagai target interaksi
+                    // agar karakter tidak otomatis masuk pintu lagi dan mantul kembali ke lantai bawah.
+                    if (objekDiklik.CompareTag("Door")) targetInteraksiAkhir = null; 
+                    else targetInteraksiAkhir = objekDiklik; 
+                }
+
+                isMoving = true;
+                FlipSprite();
+                return; // Berangkat ke pintu sekarang!
+            }
+        }
+
+        // JIKA SATU LANTAI (Atau tidak ada info lantai sama sekali)
+        if (objekDiklik != null && CekApakahBarangInteraktif(objekDiklik))
+        {
+            SetTargetInteraksi(objekDiklik);
+            targetPosition = new Vector2(objekDiklik.transform.position.x, transform.position.y);
+        }
+        else 
+        { 
+            targetPosition = new Vector2(clickPos2D.x, transform.position.y); 
+        }
 
         isMoving = true;
         FlipSprite();
+    }
+
+    // Fungsi deteksi objek dengan tag
+    bool CekApakahBarangInteraktif(GameObject obj)
+    {
+        return obj.CompareTag("Door") || obj.CompareTag("Bed") || 
+               obj.CompareTag("Desk") || obj.CompareTag("ExitDoor") || 
+               obj.CompareTag("Kompor");
+    }
+
+    // Fungsi pencari rute tangga
+    DoorController CariPintuKeLantai(int lantaiTujuan)
+    {
+        DoorController[] semuaPintu = Object.FindObjectsByType<DoorController>(FindObjectsSortMode.None);
+        foreach (var pintu in semuaPintu)
+        {
+            LantaiInfo infoPintu = pintu.GetComponent<LantaiInfo>();
+            if (infoPintu != null && infoPintu.nomorLantai == lantaiSaatIni && pintu.lantaiTujuan == lantaiTujuan)
+            {
+                return pintu;
+            }
+        }
+        return null;
+    }
+
+    // Fungsi untuk menyambungkan script objek ke memori player
+    void SetTargetInteraksi(GameObject obj)
+    {
+        if (obj.CompareTag("Door")) targetDoor = obj.GetComponent<DoorController>();
+        else if (obj.CompareTag("Bed")) targetBed = obj.GetComponent<BedController>();
+        else if (obj.CompareTag("Desk")) targetDesk = obj.GetComponent<DeskController>();
+        else if (obj.CompareTag("ExitDoor")) targetExitDoor = obj.GetComponent<ExitDoorController>();
+        else if (obj.CompareTag("Kompor")) targetKompor = obj.GetComponent<KomporController>();
     }
 
     void FlipSprite()
@@ -101,16 +186,43 @@ public class PlayerController : MonoBehaviour
     void MovePlayer()
     {
         transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        
         if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
         {
-            isMoving = false;
-            
-            // Eksekusi fungsi saat karakter sampai di depan objek
-            if (targetDoor != null) { targetDoor.UseDoor(gameObject); targetDoor = null; }
+            // JIKA SAMPAI DI DEPAN PINTU
+            if (targetDoor != null) 
+            { 
+                targetDoor.UseDoor(gameObject); 
+                targetDoor = null; 
+                
+                // Cek jika habis keluar pintu, apakah masih harus jalan ke kasur/kompor?
+                if (sedangTransit)
+                {
+                    sedangTransit = false; 
+                    
+                    if (targetInteraksiAkhir != null)
+                    {
+                        SetTargetInteraksi(targetInteraksiAkhir);
+                        targetPosition = new Vector2(targetInteraksiAkhir.transform.position.x, transform.position.y);
+                    }
+                    else
+                    {
+                        targetPosition = new Vector2(targetXAkhir, transform.position.y);
+                    }
+                    
+                    targetInteraksiAkhir = null; 
+                    FlipSprite(); 
+                    return; // Lanjut jalan!
+                }
+            }
+            // EKSEKUSI JIKA SAMPAI DI BARANG BUKAN PINTU
             else if (targetBed != null) { targetBed.Tidur(); targetBed = null; }
             else if (targetDesk != null) { targetDesk.MulaiSkripsi(); targetDesk = null; }
             else if (targetExitDoor != null) { targetExitDoor.BukaMenuKerja(); targetExitDoor = null; }
-            else if (targetKompor != null) { targetKompor.BukaMenuMasak(); targetKompor = null; } // Buka UI Masak!
+            else if (targetKompor != null) { targetKompor.BukaMenuMasak(); targetKompor = null; }
+
+            // Karakter sampai di tujuan akhir, berhenti jalan.
+            isMoving = false;
         }
     }
 }
