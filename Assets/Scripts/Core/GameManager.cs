@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     public GameObject panelToko;
     public GameObject panelInventory;
     public GameObject panelMenuKerja;
+    public GameObject panelMasak; // <-- INI TAMBAHAN UNTUK KOMPOR
     public GameObject playerObj; 
     public Transform posisiDepanKasur; 
 
@@ -82,9 +83,7 @@ public class GameManager : MonoBehaviour
         {
             int jam = Mathf.FloorToInt(jamSaatIni);
             int menit = Mathf.FloorToInt((jamSaatIni - jam) * 60f);
-
             jam = jam % 24; 
-
             textJamHarian.text = string.Format("{0:00}:{1:00}", jam, menit);
         }
 
@@ -114,10 +113,8 @@ public class GameManager : MonoBehaviour
     {
         waktu -= 1;
         lapar -= 30f;
-
         jamSaatIni = jamMulai;
         batasTidur = 24f;
-
         Debug.Log("Hari berganti! Sisa waktu: " + waktu + " hari.");
     }
 
@@ -125,12 +122,12 @@ public class GameManager : MonoBehaviour
     {
         waktuBerjalan = false;
 
-        // --- 1. TUTUP SEMUA PANEL UI SECARA PAKSA ---
+        // Tutup semua panel UI
         if (panelToko != null) panelToko.SetActive(false);
         if (panelInventory != null) panelInventory.SetActive(false);
         if (panelMenuKerja != null) panelMenuKerja.SetActive(false);
+        if (panelMasak != null) panelMasak.SetActive(false); // Tutup panel masak juga saat tidur paksa
 
-        // --- 2. BUKA KUNCI PLAYER DAN PINDAHKAN KE KASUR ---
         if (playerObj != null)
         {
             PlayerController pc = playerObj.GetComponent<PlayerController>();
@@ -157,7 +154,6 @@ public class GameManager : MonoBehaviour
         }
 
         GantiHari();
-
         yield return new WaitForSeconds(1.5f);
 
         while (alpha > 0)
@@ -177,7 +173,7 @@ public class GameManager : MonoBehaviour
 
     private void PenaltiLaparKritis()
     {
-        Debug.Log("Pemain kelaparan. Efisiensi skripsi menurun dan sanity cepat turun.");
+        Debug.Log("Pemain kelaparan.");
     }
 
     private void TriggerBadEnding(string alasan)
@@ -186,7 +182,6 @@ public class GameManager : MonoBehaviour
         waktuBerjalan = false;
     }
 
-    // Fungsi baru untuk menjeda atau melanjutkan waktu
     public void SetJedaWaktu(bool jeda)
     {
         waktuBerjalan = !jeda; 
@@ -194,32 +189,40 @@ public class GameManager : MonoBehaviour
 
     // --- FITUR PENCEGAH BUKA PANEL BERSAMAAN ---
     
-    // Fungsi untuk mengecek apakah ada panel apapun yang sedang terbuka
     public bool ApakahAdaPanelAktif()
     {
         bool tokoBuka = panelToko != null && panelToko.activeSelf;
         bool invBuka = panelInventory != null && panelInventory.activeSelf;
         bool kerjaBuka = panelMenuKerja != null && panelMenuKerja.activeSelf;
+        bool masakBuka = panelMasak != null && panelMasak.activeSelf; // Cek panel masak
 
-        return tokoBuka || invBuka || kerjaBuka;
+        return tokoBuka || invBuka || kerjaBuka || masakBuka;
     }
 
-    // Fungsi aman untuk membuka Toko
     public void BukaTokoAman()
     {
-        if (ApakahAdaPanelAktif()) return; // Tolak jika ada menu lain yang masih buka
+        if (ApakahAdaPanelAktif()) return; 
 
         if (panelToko != null) panelToko.SetActive(true);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(true);
     }
 
-    // Fungsi aman untuk membuka Inventory
     public void BukaInventoryAman()
     {
-        if (ApakahAdaPanelAktif()) return; // Tolak jika ada menu lain yang masih buka
+        if (ApakahAdaPanelAktif()) return; 
 
         if (panelInventory != null) panelInventory.SetActive(true);
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null) player.SetMenuStatus(true);
+    }
+
+    // --- FUNGSI AMAN UNTUK MEMBUKA KOMPOR/MASAK ---
+    public void BukaMasakAman()
+    {
+        if (ApakahAdaPanelAktif()) return; 
+
+        if (panelMasak != null) panelMasak.SetActive(true);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(true);
     }

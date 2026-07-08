@@ -12,10 +12,12 @@ public class PlayerController : MonoBehaviour
     private bool isMenuOpen = false; 
     private SpriteRenderer spriteRenderer;
 
+    // --- DAFTAR TARGET OBJEK ---
     private DoorController targetDoor = null;
     private BedController targetBed = null; 
     private DeskController targetDesk = null;
     private ExitDoorController targetExitDoor = null;
+    private KomporController targetKompor = null; // Tambahan untuk Kompor
 
     void Start()
     {
@@ -46,7 +48,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Panggil fungsi ini dari JobMenuController saat panel buka/tutup
+    // Panggil fungsi ini dari UI saat panel buka/tutup
     public void SetMenuStatus(bool status)
     {
         isMenuOpen = status;
@@ -67,7 +69,8 @@ public class PlayerController : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(clickPos2D, Vector2.zero);
 
-        targetDoor = null; targetBed = null; targetDesk = null; targetExitDoor = null;
+        // Reset semua target sebelum memproses klik baru
+        targetDoor = null; targetBed = null; targetDesk = null; targetExitDoor = null; targetKompor = null;
 
         if (hit.collider != null)
         {
@@ -75,9 +78,11 @@ public class PlayerController : MonoBehaviour
             else if (hit.collider.CompareTag("Bed")) targetBed = hit.collider.GetComponent<BedController>();
             else if (hit.collider.CompareTag("Desk")) targetDesk = hit.collider.GetComponent<DeskController>();
             else if (hit.collider.CompareTag("ExitDoor")) targetExitDoor = hit.collider.GetComponent<ExitDoorController>();
+            else if (hit.collider.CompareTag("Kompor")) targetKompor = hit.collider.GetComponent<KomporController>(); // Cek klik ke Kompor
             
             targetPosition = (hit.collider.CompareTag("Door") || hit.collider.CompareTag("Bed") || 
-                             hit.collider.CompareTag("Desk") || hit.collider.CompareTag("ExitDoor")) 
+                             hit.collider.CompareTag("Desk") || hit.collider.CompareTag("ExitDoor") || 
+                             hit.collider.CompareTag("Kompor")) // Tambahkan tag Kompor di sini
                              ? new Vector2(hit.collider.transform.position.x, transform.position.y) 
                              : new Vector2(worldPos.x, transform.position.y);
         }
@@ -99,10 +104,13 @@ public class PlayerController : MonoBehaviour
         if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
         {
             isMoving = false;
+            
+            // Eksekusi fungsi saat karakter sampai di depan objek
             if (targetDoor != null) { targetDoor.UseDoor(gameObject); targetDoor = null; }
             else if (targetBed != null) { targetBed.Tidur(); targetBed = null; }
             else if (targetDesk != null) { targetDesk.MulaiSkripsi(); targetDesk = null; }
             else if (targetExitDoor != null) { targetExitDoor.BukaMenuKerja(); targetExitDoor = null; }
+            else if (targetKompor != null) { targetKompor.BukaMenuMasak(); targetKompor = null; } // Buka UI Masak!
         }
     }
 }
