@@ -17,18 +17,21 @@ public class JobMenuController : MonoBehaviour
     {
         // Sebelum pindah scene, buka kunci pergerakan agar tidak bug saat kembali
         player.SetMenuStatus(false); 
+        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false); // Kembalikan waktu
         SceneManager.LoadScene(sceneKasir);
     }
 
     public void PilihOjekOnline()
     {
         player.SetMenuStatus(false);
+        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false);
         SceneManager.LoadScene(sceneOjol);
     }
 
     public void PilihHometutor()
     {
         player.SetMenuStatus(false);
+        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false);
         SceneManager.LoadScene(sceneTutor);
     }
 
@@ -45,5 +48,8 @@ public class JobMenuController : MonoBehaviour
         {
             Debug.LogError("Referensi player hilang di JobMenuController!");
         }
+
+        // --- KEMBALIKAN WAKTU HARIAN ---
+        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false);
     }
 }
