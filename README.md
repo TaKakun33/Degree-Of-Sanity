@@ -11,7 +11,6 @@ Daftar tugas yang perlu segera dikembangkan:
 - [ ] **Minigame Kerja Part Time** (Kasir, Ojek Online, dan Home Tutor)
 - [ ] **Sistem Distorsi Visual** (Efek visual saat Sanity < 50%)
 - [ ] **Sistem NPC adiknya** (cara beriteraksi dengan adik)
-- [ ] **Sistem Memasak di Dapur** (sistem untuk mengolah Bahan Makanan)
 - [ ] **Sistem Liburan** (Butuh di dikusikan)
 - [ ] **Kondisi Akhir Permainan** (Ending dari Game)
 - [ ] **Terkait Cerita** (prolog maupun epilog)
