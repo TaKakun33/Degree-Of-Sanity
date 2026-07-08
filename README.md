@@ -9,7 +9,6 @@ Daftar tugas yang perlu segera dikembangkan:
 - [ ] **Semua ASET dan MUSIC** (PERLU SECEPATNYA)
 - [ ] **Minigame Skripsi** (Sistem pengetikan presisi pada objek laptop)
 - [ ] **Minigame Kerja Part Time** (Kasir, Ojek Online, dan Home Tutor)
-- [ ] **Toko Item** (Antarmuka UI belanja barang/buff)
 - [ ] **Sistem Distorsi Visual** (Efek visual saat Sanity < 50%)
 - [ ] **Sistem NPC adiknya** (cara beriteraksi dengan adik)
 - [ ] **Sistem Memasak di Dapur** (sistem untuk mengolah Bahan Makanan)
@@ -66,10 +65,6 @@ Kita menggunakan alur kerja *branching* untuk memastikan stabilitas *build* dan 
 *Catatan: Selalu komunikasikan di grup tim saat Anda akan menggabungkan (merge) fitur ke branch `dev` agar tidak terjadi tumpang tindih pengerjaan.*
 
 # 🔄 Aturan Push & Pull (Alur Kerja Git)
-
-Untuk menjaga sinkronisasi antara anggota tim (**Akmal, Ali, dan Azka**), ikuti protokol ini sebelum dan sesudah bekerja.
-
----
 
 ## 1. Sebelum Mulai Bekerja (Update Lokal)
 
@@ -128,16 +123,6 @@ git push origin feature/nama-fitur
 - 🚫 **DILARANG** melakukan `git push --force`. Ini bisa menghapus sejarah commit orang lain secara permanen!
 - 🚫 **DILARANG** melakukan `git push` tanpa melakukan `git pull` terlebih dahulu.
 - 🚫 **KOORDINASI SCENE**: Jika Anda harus menyentuh `MainScene.unity`, kabari tim di grup. Scene di Unity sangat rentan konflik dan sulit diperbaiki.
-
----
-
-## ⚠️ Aturan Kolaborasi Unity
-1. **Koordinasi Scene:** Beritahu tim di grup jika akan mengedit \`MainScene.unity\`.
-2. **Meta Files:** Jangan pernah mengabaikan file \`.meta\`.
-3. **Struktur Folder:**
-   - \`Assets/Scripts/\`
-   - \`Assets/Sprites/\`
-   - \`Assets/Prefabs/\`
 
 ---
 
