@@ -191,4 +191,36 @@ public class GameManager : MonoBehaviour
     {
         waktuBerjalan = !jeda; 
     }
+
+    // --- FITUR PENCEGAH BUKA PANEL BERSAMAAN ---
+    
+    // Fungsi untuk mengecek apakah ada panel apapun yang sedang terbuka
+    public bool ApakahAdaPanelAktif()
+    {
+        bool tokoBuka = panelToko != null && panelToko.activeSelf;
+        bool invBuka = panelInventory != null && panelInventory.activeSelf;
+        bool kerjaBuka = panelMenuKerja != null && panelMenuKerja.activeSelf;
+
+        return tokoBuka || invBuka || kerjaBuka;
+    }
+
+    // Fungsi aman untuk membuka Toko
+    public void BukaTokoAman()
+    {
+        if (ApakahAdaPanelAktif()) return; // Tolak jika ada menu lain yang masih buka
+
+        if (panelToko != null) panelToko.SetActive(true);
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null) player.SetMenuStatus(true);
+    }
+
+    // Fungsi aman untuk membuka Inventory
+    public void BukaInventoryAman()
+    {
+        if (ApakahAdaPanelAktif()) return; // Tolak jika ada menu lain yang masih buka
+
+        if (panelInventory != null) panelInventory.SetActive(true);
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null) player.SetMenuStatus(true);
+    }
 }
