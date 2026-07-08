@@ -1,11 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine.UI;
+
+// Daftar jenis barang untuk mempermudah identifikasi
+public enum JenisItem { Kosong, Kopi, Mie, Boneka, Bahan, Keyboard, Buku }
 
 public class InventoryUIController : MonoBehaviour
 {
     [Header("Referensi UI Slot")]
-    public Transform wadahGrid; // Tarik objek WadahGrid yang memiliki Grid Layout Group
-    public List<InventorySlot> daftarSlot; // Masukkan semua kotak slot ke list ini
+    public Transform wadahGrid; 
+    public List<InventorySlot> daftarSlot; 
 
     [Header("Ikon Barang")]
     public Sprite ikonKopi;
@@ -15,106 +20,177 @@ public class InventoryUIController : MonoBehaviour
     public Sprite ikonKeyboard;
     public Sprite ikonBuku;
 
-    // Dipanggil otomatis saat Panel_Inventory aktif
+    [Header("Referensi UI Detail Item")]
+    public GameObject panelDetail; 
+    public TextMeshProUGUI textNamaItem;
+    public TextMeshProUGUI textDeskripsiItem;
+    public Button btnGunakan;
+    public Button btnJual;
+    public TextMeshProUGUI textHargaJual; 
+
+    // Memori untuk menyimpan data barang yang sedang diklik
+    private JenisItem itemTerpilih = JenisItem.Kosong;
+    private int hargaJualTerpilih = 0;
+
     void OnEnable()
     {
+        // Reset detail dan perbarui daftar barang saat inventory dibuka
+        TutupDetail(); 
         UpdateTampilanInventory();
     }
 
     public void UpdateTampilanInventory()
     {
-        // Pengaman: Pastikan InventoryManager sudah ada di Scene
-        if (InventoryManager.Instance == null)
-        {
-            Debug.LogError("InventoryManager tidak ditemukan! Pastikan script InventoryManager ada di GameManager.");
-            return;
-        }
+        if (InventoryManager.Instance == null) return;
 
-        // 1. Kosongkan semua slot terlebih dahulu
+        // Kosongkan semua slot agar barang tidak menumpuk ganda
         foreach (var slot in daftarSlot)
         {
-            if (slot != null)
-            {
-                try 
-                {
-                    slot.KosongkanSlot();
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogWarning("Ada komponen yang hilang di salah satu Slot! Error: " + e.Message);
-                }
-            }
+            if (slot != null) { try { slot.KosongkanSlot(); } catch (System.Exception) { continue; } }
         }
 
         int indexSlot = 0; 
 
-        // 2. Isi slot dengan barang yang dimiliki (InventoryManager)
+        // Masukkan barang yang dimiliki pemain ke dalam slot secara berurutan
         if (InventoryManager.Instance.jumlahKopi > 0 && indexSlot < daftarSlot.Count)
         {
-            daftarSlot[indexSlot].IsiSlot(ikonKopi, InventoryManager.Instance.jumlahKopi, GunakanKopi);
+            if (daftarSlot[indexSlot] != null) 
+                daftarSlot[indexSlot].IsiSlot(ikonKopi, InventoryManager.Instance.jumlahKopi, () => PilihItem(JenisItem.Kopi, "Kopi Espresso", "Menambah toleransi typo dan batas tidur +1 jam.", 7500, true));
             indexSlot++;
         }
         
         if (InventoryManager.Instance.jumlahMieAyam > 0 && indexSlot < daftarSlot.Count)
         {
-            daftarSlot[indexSlot].IsiSlot(ikonMie, InventoryManager.Instance.jumlahMieAyam, GunakanMieAyam);
+            if (daftarSlot[indexSlot] != null) 
+                daftarSlot[indexSlot].IsiSlot(ikonMie, InventoryManager.Instance.jumlahMieAyam, () => PilihItem(JenisItem.Mie, "Mie Ayam", "Memulihkan parameter Lapar secara instan hingga penuh.", 10000, true));
             indexSlot++;
         }
         
         if (InventoryManager.Instance.jumlahBoneka > 0 && indexSlot < daftarSlot.Count)
         {
-            daftarSlot[indexSlot].IsiSlot(ikonBoneka, InventoryManager.Instance.jumlahBoneka, null);
+            if (daftarSlot[indexSlot] != null) 
+                daftarSlot[indexSlot].IsiSlot(ikonBoneka, InventoryManager.Instance.jumlahBoneka, () => PilihItem(JenisItem.Boneka, "Mainan / Boneka", "Diberikan kepada Adik untuk memulihkan Sanity.", 25000, true));
             indexSlot++;
         }
 
         if (InventoryManager.Instance.jumlahBahanMakanan > 0 && indexSlot < daftarSlot.Count)
         {
-            daftarSlot[indexSlot].IsiSlot(ikonBahan, InventoryManager.Instance.jumlahBahanMakanan, null);
+            if (daftarSlot[indexSlot] != null) 
+                // Parameter false mematikan tombol gunakan khusus untuk bahan makanan
+                daftarSlot[indexSlot].IsiSlot(ikonBahan, InventoryManager.Instance.jumlahBahanMakanan, () => PilihItem(JenisItem.Bahan, "Bahan Makanan Mentah", "Bisa dimasak di dapur. (Hanya bisa dijual di sini)", 5000, false));
             indexSlot++;
         }
 
-        // Tampilkan Upgrade Permanen jika sudah terbeli
+        // Upgrade permanen disetel false karena hanya bisa dijual
         if (InventoryManager.Instance.punyaKeyboard && indexSlot < daftarSlot.Count)
         {
-            daftarSlot[indexSlot].IsiSlot(ikonKeyboard, 1, null);
+            if (daftarSlot[indexSlot] != null) 
+                daftarSlot[indexSlot].IsiSlot(ikonKeyboard, 1, () => PilihItem(JenisItem.Keyboard, "Keyboard Ergonomis", "Memperlambat laju teks pada minigame skripsi.", 75000, false));
             indexSlot++;
         }
 
         if (InventoryManager.Instance.punyaBuku && indexSlot < daftarSlot.Count)
         {
-            daftarSlot[indexSlot].IsiSlot(ikonBuku, 1, null);
+            if (daftarSlot[indexSlot] != null) 
+                daftarSlot[indexSlot].IsiSlot(ikonBuku, 1, () => PilihItem(JenisItem.Buku, "Buku Referensi", "Menambah Progres Skripsi dari setiap penyelesaian minigame.", 50000, false));
             indexSlot++;
         }
     }
 
-    // --- FUNGSI PENGGUNAAN BARANG ---
-    void GunakanKopi()
+    public void PilihItem(JenisItem jenis, string nama, string deskripsi, int hargaJual, bool bisaDigunakan)
     {
-        if (InventoryManager.Instance.jumlahKopi > 0)
-        {
-            InventoryManager.Instance.jumlahKopi--;
-            GameManager.Instance.batasTidur += 1f;
-            Debug.Log("Kopi diminum! Batas tidur +1 jam.");
-            UpdateTampilanInventory(); 
-        }
+        // Simpan data barang yang dipilih
+        itemTerpilih = jenis;
+        hargaJualTerpilih = hargaJual;
+
+        // Munculkan panel detail beserta teksnya
+        panelDetail.SetActive(true); 
+        if (textNamaItem != null) textNamaItem.text = nama;
+        if (textDeskripsiItem != null) textDeskripsiItem.text = deskripsi;
+        if (textHargaJual != null) textHargaJual.text = hargaJual.ToString();
+
+        // Atur kemunculan tombol Gunakan dan sambungkan perintahnya
+        btnGunakan.gameObject.SetActive(bisaDigunakan);
+        btnGunakan.onClick.RemoveAllListeners();
+        btnGunakan.onClick.AddListener(EksekusiGunakan);
+
+        btnJual.onClick.RemoveAllListeners();
+        btnJual.onClick.AddListener(EksekusiJual);
     }
 
-    void GunakanMieAyam()
+    public void EksekusiGunakan()
     {
-        if (InventoryManager.Instance.jumlahMieAyam > 0)
+        // Jalankan efek barang berdasarkan apa yang diklik
+        switch (itemTerpilih)
         {
-            InventoryManager.Instance.jumlahMieAyam--;
-            GameManager.Instance.lapar = 100f;
-            Debug.Log("Mie Ayam dimakan! Perut kenyang.");
-            UpdateTampilanInventory();
+            case JenisItem.Kopi:
+                InventoryManager.Instance.jumlahKopi--;
+                GameManager.Instance.batasTidur += 1f;
+                Debug.Log("Kopi diminum! Batas tidur +1 jam.");
+                break;
+            case JenisItem.Mie:
+                InventoryManager.Instance.jumlahMieAyam--;
+                GameManager.Instance.lapar = 100f;
+                Debug.Log("Mie Ayam dimakan! Perut kenyang.");
+                break;
+            case JenisItem.Boneka:
+                InventoryManager.Instance.jumlahBoneka--;
+                Debug.Log("Boneka diberikan ke adik!");
+                break;
         }
+        
+        CekSetelahInteraksi();
     }
 
-    // Fungsi ini dipanggil oleh tombol "X" atau area tutup
+    public void EksekusiJual()
+    {
+        // Tambah uang pemain dan kurangi jumlah barang di inventory
+        if (GameManager.Instance != null) GameManager.Instance.uang += hargaJualTerpilih;
+
+        switch (itemTerpilih)
+        {
+            case JenisItem.Kopi: InventoryManager.Instance.jumlahKopi--; break;
+            case JenisItem.Mie: InventoryManager.Instance.jumlahMieAyam--; break;
+            case JenisItem.Boneka: InventoryManager.Instance.jumlahBoneka--; break;
+            case JenisItem.Bahan: InventoryManager.Instance.jumlahBahanMakanan--; break;
+            case JenisItem.Keyboard: InventoryManager.Instance.punyaKeyboard = false; break;
+            case JenisItem.Buku: InventoryManager.Instance.punyaBuku = false; break;
+        }
+
+        Debug.Log("Barang dijual seharga " + hargaJualTerpilih);
+        CekSetelahInteraksi();
+    }
+
+    private void CekSetelahInteraksi()
+    {
+        // Periksa apakah barang sudah habis setelah dipakai atau dijual
+        bool habis = false;
+        switch (itemTerpilih)
+        {
+            case JenisItem.Kopi: if (InventoryManager.Instance.jumlahKopi <= 0) habis = true; break;
+            case JenisItem.Mie: if (InventoryManager.Instance.jumlahMieAyam <= 0) habis = true; break;
+            case JenisItem.Boneka: if (InventoryManager.Instance.jumlahBoneka <= 0) habis = true; break;
+            case JenisItem.Bahan: if (InventoryManager.Instance.jumlahBahanMakanan <= 0) habis = true; break;
+            case JenisItem.Keyboard: if (!InventoryManager.Instance.punyaKeyboard) habis = true; break;
+            case JenisItem.Buku: if (!InventoryManager.Instance.punyaBuku) habis = true; break;
+        }
+
+        // Tutup panel jika barang habis dan perbarui tampilan slot
+        if (habis) TutupDetail();
+        UpdateTampilanInventory();
+    }
+
+    private void TutupDetail()
+    {
+        // Sembunyikan panel detail ke kondisi semula
+        itemTerpilih = JenisItem.Kosong;
+        if (panelDetail != null) panelDetail.SetActive(false);
+    }
+
     public void TutupInventory()
     {
+        // Tutup UI inventory dan kembalikan kendali pemain
         gameObject.SetActive(false);
-        // Mengembalikan kendali pergerakan player
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(false);
     }
