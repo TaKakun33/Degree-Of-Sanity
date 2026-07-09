@@ -1,4 +1,14 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+
+// --- TAMBAHAN: Wrapper untuk menyimpan daftar nomor slot yang terpakai ---
+// (JsonUtility tidak bisa serialize List<int> secara langsung tanpa wrapper class)
+[System.Serializable]
+public class DaftarSlotSave
+{
+    public List<int> slots = new List<int>();
+}
 
 [System.Serializable]
 public class DataSimpanan
@@ -68,6 +78,7 @@ public class SaveManager : MonoBehaviour
 
         string jsonString = JsonUtility.ToJson(data);
         PlayerPrefs.SetString("SaveData_Slot_" + nomorSlot, jsonString);
+        DaftarkanSlot(nomorSlot); // --- TAMBAHAN: catat slot ini ke daftar slot terpakai ---
         UpdateSlotTerakhir(nomorSlot);
         PlayerPrefs.Save();
         Debug.Log("Game berhasil disimpan di Slot: " + nomorSlot);
@@ -118,19 +129,90 @@ public class SaveManager : MonoBehaviour
     }
 
     // --- FITUR DINAMIS ---
-    
+
+    private const string KEY_DAFTAR_SLOT = "DaftarSlotSaveList";
+
+    // --- TAMBAHAN: Muat daftar nomor slot yang pernah dipakai ---
+    private DaftarSlotSave MuatDaftarSlot()
+    {
+        if (PlayerPrefs.HasKey(KEY_DAFTAR_SLOT)) {
+            return JsonUtility.FromJson<DaftarSlotSave>(PlayerPrefs.GetString(KEY_DAFTAR_SLOT));
+        }
+        return new DaftarSlotSave();
+    }
+
+    // --- TAMBAHAN: Simpan daftar nomor slot ke PlayerPrefs ---
+    private void SimpanDaftarSlot(DaftarSlotSave daftar)
+    {
+        PlayerPrefs.SetString(KEY_DAFTAR_SLOT, JsonUtility.ToJson(daftar));
+    }
+
+    // --- TAMBAHAN: Daftarkan sebuah slot (kalau belum ada di daftar) ---
+    private void DaftarkanSlot(int slot)
+    {
+        if (slot == 0) return; // slot 0 khusus autosave, tidak perlu didaftarkan
+        DaftarSlotSave daftar = MuatDaftarSlot();
+        if (!daftar.slots.Contains(slot)) {
+            daftar.slots.Add(slot);
+            SimpanDaftarSlot(daftar);
+        }
+    }
+
+    // --- TAMBAHAN: Ambil daftar semua slot manual (1, 2, 3, ... tanpa batas) yang datanya masih ada ---
+    // Dipakai PauseMenuController untuk generate tombol Save/Load secara dinamis
+    public List<int> DapatkanDaftarSlotTersimpan()
+    {
+        DaftarSlotSave daftar = MuatDaftarSlot();
+        List<int> slotValid = daftar.slots.Where(s => CekSaveAda(s)).ToList();
+        slotValid.Sort();
+
+        // Bersihkan daftar dari slot basi (misal dihapus manual dari PlayerPrefs)
+        if (slotValid.Count != daftar.slots.Count) {
+            daftar.slots = slotValid;
+            SimpanDaftarSlot(daftar);
+        }
+        return slotValid;
+    }
+
     // Fungsi untuk mencari slot kosong otomatis (untuk tombol + New Save)
+    // Sekarang TANPA BATAS ATAS, tidak lagi dibatasi sampai 50
     public int GetNextAvailableSlot()
     {
-        for (int i = 1; i <= 50; i++) {
-            if (!PlayerPrefs.HasKey("SaveData_Slot_" + i)) return i;
-        }
-        return 1; // Default jika semua penuh
+        List<int> daftar = DapatkanDaftarSlotTersimpan();
+        int slot = 1;
+        while (daftar.Contains(slot)) slot++;
+        return slot;
     }
 
     public void UpdateSlotTerakhir(int slot) { PlayerPrefs.SetInt("SlotSaveTerakhir", slot); PlayerPrefs.Save(); }
     public int DapatkanSlotTerakhir() => PlayerPrefs.GetInt("SlotSaveTerakhir", -1);
     public bool CekSaveAda(int nomorSlot) => PlayerPrefs.HasKey("SaveData_Slot_" + nomorSlot);
+
+    // --- TAMBAHAN: Hapus data save di sebuah slot (dipakai tombol Delete di panel Load) ---
+    public void HapusSave(int nomorSlot)
+    {
+        string key = "SaveData_Slot_" + nomorSlot;
+        if (PlayerPrefs.HasKey(key)) {
+            PlayerPrefs.DeleteKey(key);
+        }
+
+        // Keluarkan slot ini dari daftar registry (slot 0/autosave tidak ada di registry)
+        if (nomorSlot != 0) {
+            DaftarSlotSave daftar = MuatDaftarSlot();
+            if (daftar.slots.Contains(nomorSlot)) {
+                daftar.slots.Remove(nomorSlot);
+                SimpanDaftarSlot(daftar);
+            }
+        }
+
+        // Kalau slot yg dihapus adalah penanda "slot terakhir dipakai", reset penanda itu
+        if (DapatkanSlotTerakhir() == nomorSlot) {
+            PlayerPrefs.DeleteKey("SlotSaveTerakhir");
+        }
+
+        PlayerPrefs.Save();
+        Debug.Log("Save di Slot " + nomorSlot + " berhasil dihapus.");
+    }
     
     public string DapatkanInfoSave(int nomorSlot)
     {
