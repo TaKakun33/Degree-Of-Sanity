@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     private float kecepatanWaktuAktif;
     private bool waktuBerjalan = true;
 
-    [Header("Referensi UI (Antarmuka Pemain)")]
+    [Header("Referensi UI")]
     public TextMeshProUGUI textWaktu;
     public TextMeshProUGUI textUang;
     public TextMeshProUGUI textJamHarian;
@@ -33,10 +33,10 @@ public class GameManager : MonoBehaviour
     public Slider sliderLapar;
     public Slider sliderSanity;
 
-    [Header("Transisi Layar (Tidur)")]
+    [Header("Transisi Layar")]
     public Image layarGelap;
 
-    [Header("Referensi UI & Objek (Tidur Paksa)")]
+    [Header("Referensi UI & Objek")]
     public GameObject panelToko;
     public GameObject panelInventory;
     public GameObject panelMenuKerja;
@@ -46,19 +46,17 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null) {
-            Instance = this;
-        } else {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     void Start()
     {
-        // --- MEMUAT DATA SAVE SAAT GAME BARU DIMULAI ---
+        // INTEGRASI SAVE/LOAD: Memuat data saat game pertama kali dimulai
+        // Memanggil MuatGame(slot) sesuai slot yang dipilih di menu
         if (SaveManager.Instance != null) 
         {
-            SaveManager.Instance.MuatGame();
+            SaveManager.Instance.MuatGame(SaveManager.slotUntukDiload);
         }
 
         kecepatanWaktuAktif = kecepatanWaktuNormal;
@@ -83,36 +81,18 @@ public class GameManager : MonoBehaviour
     void UpdateUI()
     {
         if (textWaktu != null) textWaktu.text = waktu + " Hari";
-        if (textUang != null) textUang.text = "Rp " + uang;
+        if (textUang != null) textUang.text = "Rp " + uang.ToString("N0");
 
         if (textJamHarian != null)
         {
             int jam = Mathf.FloorToInt(jamSaatIni);
             int menit = Mathf.FloorToInt((jamSaatIni - jam) * 60f);
-            jam = jam % 24; 
-            textJamHarian.text = string.Format("{0:00}:{1:00}", jam, menit);
+            textJamHarian.text = string.Format("{0:00}:{1:00}", jam % 24, menit);
         }
 
         if (sliderProgresSkripsi != null) sliderProgresSkripsi.value = progresSkripsi;
         if (sliderLapar != null) sliderLapar.value = lapar;
         if (sliderSanity != null) sliderSanity.value = sanity;
-    }
-
-    public void SelesaikanMinigameSkripsi(float tambahanProgres)
-    {
-        progresSkripsi += tambahanProgres;
-        progresSkripsi = Mathf.Clamp(progresSkripsi, 0f, 100f);
-        sanity -= 20f;
-        lapar -= 15f;
-        UpdateUI();
-    }
-
-    private void CekKondisiGame()
-    {
-        if (sanity <= 30f && sanity > 0f) AktifkanDistorsiVisual();
-        if (sanity <= 0f) TriggerBadEnding("Karakter mengalami depresi berat.");
-        if (lapar <= 0f) PenaltiLaparKritis();
-        if (waktu <= 0 && progresSkripsi < 100f) TriggerBadEnding("Waktu habis, terkena DO.");
     }
 
     public void GantiHari()
@@ -123,7 +103,7 @@ public class GameManager : MonoBehaviour
         batasTidur = 24f;
         Debug.Log("Hari berganti! Sisa waktu: " + waktu + " hari.");
 
-        // --- SISTEM AUTOSAVE (MENYIMPAN KE SLOT 0 SETIAP GANTI HARI) ---
+        // INTEGRASI AUTOSAVE: Menyimpan otomatis ke Slot 0 saat ganti hari
         if (SaveManager.Instance != null) 
         {
             SaveManager.Instance.SimpanGame(0);
@@ -134,7 +114,7 @@ public class GameManager : MonoBehaviour
     {
         waktuBerjalan = false;
 
-        // Tutup semua panel UI
+        // Tutup semua panel aktif
         if (panelToko != null) panelToko.SetActive(false);
         if (panelInventory != null) panelInventory.SetActive(false);
         if (panelMenuKerja != null) panelMenuKerja.SetActive(false);
@@ -144,11 +124,7 @@ public class GameManager : MonoBehaviour
         {
             PlayerController pc = playerObj.GetComponent<PlayerController>();
             if (pc != null) pc.SetMenuStatus(false); 
-
-            if (posisiDepanKasur != null)
-            {
-                playerObj.transform.position = posisiDepanKasur.position; 
-            }
+            if (posisiDepanKasur != null) playerObj.transform.position = posisiDepanKasur.position; 
         }
 
         float alpha = 0;
@@ -157,12 +133,6 @@ public class GameManager : MonoBehaviour
             alpha += Time.deltaTime * 1.5f;
             if (layarGelap != null) layarGelap.color = new Color(0, 0, 0, alpha);
             yield return null;
-        }
-
-        if (pingsan)
-        {
-            Debug.Log("Karakter pingsan karena begadang maksimal!");
-            sanity -= 15f;
         }
 
         GantiHari();
@@ -178,48 +148,18 @@ public class GameManager : MonoBehaviour
         waktuBerjalan = true; 
     }
 
-    private void AktifkanDistorsiVisual() { Debug.Log("Efek distorsi visual aktif (Sanity rendah)."); }
-    private void PenaltiLaparKritis() { Debug.Log("Pemain kelaparan."); }
-    private void TriggerBadEnding(string alasan)
-    {
-        Debug.Log("GAME OVER: " + alasan);
-        waktuBerjalan = false;
-    }
-
-    public void SetJedaWaktu(bool jeda) { waktuBerjalan = !jeda; }
-
     // --- FITUR PENCEGAH BUKA PANEL BERSAMAAN ---
     public bool ApakahAdaPanelAktif()
     {
-        bool tokoBuka = panelToko != null && panelToko.activeSelf;
-        bool invBuka = panelInventory != null && panelInventory.activeSelf;
-        bool kerjaBuka = panelMenuKerja != null && panelMenuKerja.activeSelf;
-        bool masakBuka = panelMasak != null && panelMasak.activeSelf; 
-
-        return tokoBuka || invBuka || kerjaBuka || masakBuka;
+        return (panelToko != null && panelToko.activeSelf) || 
+               (panelInventory != null && panelInventory.activeSelf) || 
+               (panelMenuKerja != null && panelMenuKerja.activeSelf) || 
+               (panelMasak != null && panelMasak.activeSelf);
     }
 
-    public void BukaTokoAman()
-    {
-        if (ApakahAdaPanelAktif()) return; 
-        if (panelToko != null) panelToko.SetActive(true);
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(true);
-    }
-
-    public void BukaInventoryAman()
-    {
-        if (ApakahAdaPanelAktif()) return; 
-        if (panelInventory != null) panelInventory.SetActive(true);
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(true);
-    }
-
-    public void BukaMasakAman()
-    {
-        if (ApakahAdaPanelAktif()) return; 
-        if (panelMasak != null) panelMasak.SetActive(true);
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(true);
-    }
+    public void BukaTokoAman() { if (!ApakahAdaPanelAktif() && panelToko != null) panelToko.SetActive(true); }
+    public void BukaInventoryAman() { if (!ApakahAdaPanelAktif() && panelInventory != null) panelInventory.SetActive(true); }
+    public void BukaMasakAman() { if (!ApakahAdaPanelAktif() && panelMasak != null) panelMasak.SetActive(true); }
+    
+    public void SetJedaWaktu(bool jeda) { waktuBerjalan = !jeda; }
 }

@@ -1,31 +1,28 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-// --- BLUEPRINT DATA YANG AKAN DISIMPAN ---
 [System.Serializable]
 public class DataSimpanan
 {
+    // Status GameManager
     public int waktu, uang;
     public float progresSkripsi, lapar, sanity, jamSaatIni;
 
+    // Inventory
     public int kopi, mie, boneka, bahan1, bahan2, bahan3, makananJadi;
     public bool keyboard, buku;
 
+    // Posisi Player
     public float playerX, playerY;
     public int lantai;
 }
 
-// --- SISTEM UTAMA SAVE/LOAD ---
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance;
-    
-    // -1 = Game Baru, 0 = Autosave, 1,2,3 = Save Manual
-    public static int slotUntukDiload = -1; 
+    public static int slotUntukDiload = -1; // -1 = Game Baru
 
     void Awake()
     {
-        // Membuat objek ini abadi (tidak hancur saat pindah scene)
         if (Instance == null) {
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -69,25 +66,24 @@ public class SaveManager : MonoBehaviour
             data.lantai = player.lantaiSaatIni;
         }
 
-        // Simpan dalam format Teks (JSON)
         string jsonString = JsonUtility.ToJson(data);
         PlayerPrefs.SetString("SaveData_Slot_" + nomorSlot, jsonString);
+        UpdateSlotTerakhir(nomorSlot);
         PlayerPrefs.Save();
-
         Debug.Log("Game berhasil disimpan di Slot: " + nomorSlot);
     }
 
-    public void MuatGame()
+    public void MuatGame(int nomorSlot)
     {
-        if (slotUntukDiload == -1) return; // New Game, jangan muat data lama
-
-        string key = "SaveData_Slot_" + slotUntukDiload;
+        if (nomorSlot == -1) return; // Jika -1, berarti New Game
+        
+        string key = "SaveData_Slot_" + nomorSlot;
         if (PlayerPrefs.HasKey(key))
         {
             string jsonString = PlayerPrefs.GetString(key);
             DataSimpanan data = JsonUtility.FromJson<DataSimpanan>(jsonString);
 
-            // Sebar data kembali ke GameManager
+            // 1. Restore GameManager
             if (GameManager.Instance != null) {
                 GameManager.Instance.waktu = data.waktu;
                 GameManager.Instance.uang = data.uang;
@@ -97,7 +93,7 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.jamSaatIni = data.jamSaatIni;
             }
 
-            // Sebar data kembali ke Inventory
+            // 2. Restore Inventory
             if (InventoryManager.Instance != null) {
                 InventoryManager.Instance.jumlahKopi = data.kopi;
                 InventoryManager.Instance.jumlahMieAyam = data.mie;
@@ -110,18 +106,39 @@ public class SaveManager : MonoBehaviour
                 InventoryManager.Instance.punyaBuku = data.buku;
             }
 
-            // Pindahkan Posisi Player ke tempat semula
+            // 3. Restore Posisi Player
             PlayerController player = Object.FindFirstObjectByType<PlayerController>();
             if (player != null) {
                 player.transform.position = new Vector3(data.playerX, data.playerY, player.transform.position.z);
                 player.lantaiSaatIni = data.lantai;
             }
 
-            Debug.Log("Game berhasil dimuat dari Slot: " + slotUntukDiload);
+            Debug.Log("Data berhasil dimuat dari Slot: " + nomorSlot);
         }
-        else
-        {
-            Debug.LogWarning("Data save tidak ditemukan di Slot " + slotUntukDiload + ", memulai sebagai game baru.");
+    }
+
+    // --- FITUR DINAMIS ---
+    
+    // Fungsi untuk mencari slot kosong otomatis (untuk tombol + New Save)
+    public int GetNextAvailableSlot()
+    {
+        for (int i = 1; i <= 50; i++) {
+            if (!PlayerPrefs.HasKey("SaveData_Slot_" + i)) return i;
         }
+        return 1; // Default jika semua penuh
+    }
+
+    public void UpdateSlotTerakhir(int slot) { PlayerPrefs.SetInt("SlotSaveTerakhir", slot); PlayerPrefs.Save(); }
+    public int DapatkanSlotTerakhir() => PlayerPrefs.GetInt("SlotSaveTerakhir", -1);
+    public bool CekSaveAda(int nomorSlot) => PlayerPrefs.HasKey("SaveData_Slot_" + nomorSlot);
+    
+    public string DapatkanInfoSave(int nomorSlot)
+    {
+        if (nomorSlot == 0) return PlayerPrefs.HasKey("SaveData_Slot_0") ? "AUTOSAVE" : "Autosave Kosong";
+        if (CekSaveAda(nomorSlot)) {
+            DataSimpanan d = JsonUtility.FromJson<DataSimpanan>(PlayerPrefs.GetString("SaveData_Slot_" + nomorSlot));
+            return "Slot " + nomorSlot + " | Hari " + d.waktu + " | Rp " + d.uang;
+        }
+        return "Slot " + nomorSlot + " (Empty)";
     }
 }

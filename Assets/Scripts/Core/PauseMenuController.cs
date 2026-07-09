@@ -1,95 +1,86 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
+using TMPro;
+using UnityEngine.UI;
 
 public class PauseMenuController : MonoBehaviour
 {
-    [Header("Referensi Panel Pause (Options)")]
-    public GameObject panelPauseUtama; 
-    public GameObject panelSettings;
-    public GameObject panelSaveAs;
-    public GameObject panelLoadGame;
+    [Header("Referensi Panel UI")]
+    public GameObject panelPause, panelSave, panelLoad, panelSettings;
+    
+    [Header("Sistem UI Dinamis")]
+    public GameObject prefabTombol; 
+    public Transform contentSave, contentLoad; 
 
-    [Header("Pengaturan Scene")]
-    [Tooltip("Ketik nama scene Main Menu Anda di sini (Pastikan huruf besar/kecil sama persis)")]
-    public string namaSceneMainMenu = "MainMenu"; // <-- Tambahan kolom baru
+    [Header("Pengaturan")]
+    public int maxSaveSlots = 10;
+    public string namaSceneMainMenu = "MainMenu";
 
-    private bool isPaused = false;
-
-    void Update()
-    {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            if (isPaused) LanjutkanGame();
-            else BukaMenuPause();
+    void Update() {
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) {
+            if (Time.timeScale == 0) LanjutkanGame(); else BukaPause();
         }
     }
 
-    public void BukaMenuPause()
-    {
-        // Cegah pause jika panel masak/toko sedang terbuka
-        if (GameManager.Instance != null && GameManager.Instance.ApakahAdaPanelAktif() && !isPaused) return;
+    // --- Navigasi ---
+    public void BukaPause() { Time.timeScale = 0; TutupSemuaPanel(); panelPause.SetActive(true); }
+    public void LanjutkanGame() { Time.timeScale = 1; TutupSemuaPanel(); }
+    public void BukaSettings() { TutupSemuaPanel(); panelSettings.SetActive(true); }
+    public void KembaliKePause() { TutupSemuaPanel(); panelPause.SetActive(true); }
 
-        isPaused = true;
-        Time.timeScale = 0f; // Bekukan waktu dunia game
-        TutupSemuaSubPanel();
-        panelPauseUtama.SetActive(true);
-
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(true); // Kunci gerak pemain
+    public void BukaSaveAs() {
+        TutupSemuaPanel(); panelSave.SetActive(true);
+        foreach (Transform child in contentSave) Destroy(child.gameObject);
+        
+        // 1. Tampilkan List Save yang ada
+        for(int i = 1; i <= maxSaveSlots; i++) {
+            if (SaveManager.Instance.CekSaveAda(i)) {
+                int slot = i;
+                GameObject btn = Instantiate(prefabTombol, contentSave);
+                btn.GetComponentInChildren<TextMeshProUGUI>().text = SaveManager.Instance.DapatkanInfoSave(slot);
+                btn.GetComponent<Button>().onClick.AddListener(() => {
+                    SaveManager.Instance.SimpanGame(slot);
+                    BukaSaveAs(); 
+                });
+            }
+        }
+        // 2. Tombol New Save
+        GameObject btnNew = Instantiate(prefabTombol, contentSave);
+        btnNew.GetComponentInChildren<TextMeshProUGUI>().text = "+ New Save";
+        btnNew.GetComponent<Button>().onClick.AddListener(() => {
+            int slotBaru = SaveManager.Instance.GetNextAvailableSlot();
+            SaveManager.Instance.SimpanGame(slotBaru);
+            BukaSaveAs();
+        });
     }
 
-    public void LanjutkanGame()
-    {
-        isPaused = false;
-        Time.timeScale = 1f; // Kembalikan jalannya waktu
-        TutupSemuaSubPanel();
-
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(false);
-    }
-
-    // --- NAVIGASI SUB-PANEL ---
-    public void BukaSettings() { TutupSemuaSubPanel(); panelSettings.SetActive(true); }
-    public void BukaSaveAs() { TutupSemuaSubPanel(); panelSaveAs.SetActive(true); }
-    public void BukaLoadGame() { TutupSemuaSubPanel(); panelLoadGame.SetActive(true); }
-    public void KembaliKePauseUtama() { TutupSemuaSubPanel(); panelPauseUtama.SetActive(true); }
-
-    private void TutupSemuaSubPanel()
-    {
-        if (panelPauseUtama) panelPauseUtama.SetActive(false);
-        if (panelSettings) panelSettings.SetActive(false);
-        if (panelSaveAs) panelSaveAs.SetActive(false);
-        if (panelLoadGame) panelLoadGame.SetActive(false);
-    }
-
-    // --- FUNGSI KLIK SLOT SAVE / LOAD ---
-    public void EksekusiSaveManual(int slot)
-    {
-        if (SaveManager.Instance != null) {
-            SaveManager.Instance.SimpanGame(slot);
+    public void BukaLoadGame() {
+        TutupSemuaPanel(); panelLoad.SetActive(true);
+        foreach (Transform child in contentLoad) Destroy(child.gameObject);
+        
+        if (SaveManager.Instance.CekSaveAda(0)) BuatTombolLoad(0, "[AUTOSAVE]");
+        for(int i = 1; i <= maxSaveSlots; i++) {
+            if (SaveManager.Instance.CekSaveAda(i)) BuatTombolLoad(i, SaveManager.Instance.DapatkanInfoSave(i));
         }
     }
 
-    public void EksekusiLoadManual(int slot)
-    {
-        if (SaveManager.Instance != null) {
+    void BuatTombolLoad(int slot, string teks) {
+        GameObject btn = Instantiate(prefabTombol, contentLoad);
+        btn.GetComponentInChildren<TextMeshProUGUI>().text = teks;
+        btn.GetComponent<Button>().onClick.AddListener(() => {
+            SaveManager.Instance.UpdateSlotTerakhir(slot);
             SaveManager.slotUntukDiload = slot;
-            Time.timeScale = 1f; // Cairkan waktu sebelum me-restart scene
+            Time.timeScale = 1;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
+        });
     }
 
-    // --- KELUAR GAME ---
-    public void KembaliKeMainMenu()
-    {
-        Time.timeScale = 1f; // Wajib mencairkan waktu
-        SceneManager.LoadScene(namaSceneMainMenu); // <-- Memanggil scene berdasarkan variabel Inspector
+    public void TutupSemuaPanel() {
+        panelPause.SetActive(false); panelSave.SetActive(false); 
+        panelLoad.SetActive(false); panelSettings.SetActive(false);
     }
 
-    public void KeluarKeDesktop()
-    {
-        Application.Quit();
-        Debug.Log("Quit Game ditekan.");
-    }
+    public void KembaliKeMainMenu() { Time.timeScale = 1; SceneManager.LoadScene(namaSceneMainMenu); }
+    public void KeluarKeDesktop() { Application.Quit(); }
 }
