@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     public GameObject panelToko;
     public GameObject panelInventory;
     public GameObject panelMenuKerja;
-    public GameObject panelMasak; // <-- INI TAMBAHAN UNTUK KOMPOR
+    public GameObject panelMasak; 
     public GameObject playerObj; 
     public Transform posisiDepanKasur; 
 
@@ -55,6 +55,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // --- MEMUAT DATA SAVE SAAT GAME BARU DIMULAI ---
+        if (SaveManager.Instance != null) 
+        {
+            SaveManager.Instance.MuatGame();
+        }
+
         kecepatanWaktuAktif = kecepatanWaktuNormal;
         UpdateUI();
     }
@@ -116,6 +122,12 @@ public class GameManager : MonoBehaviour
         jamSaatIni = jamMulai;
         batasTidur = 24f;
         Debug.Log("Hari berganti! Sisa waktu: " + waktu + " hari.");
+
+        // --- SISTEM AUTOSAVE (MENYIMPAN KE SLOT 0 SETIAP GANTI HARI) ---
+        if (SaveManager.Instance != null) 
+        {
+            SaveManager.Instance.SimpanGame(0);
+        }
     }
 
     public IEnumerator ProsesTidur(bool pingsan = false)
@@ -126,7 +138,7 @@ public class GameManager : MonoBehaviour
         if (panelToko != null) panelToko.SetActive(false);
         if (panelInventory != null) panelInventory.SetActive(false);
         if (panelMenuKerja != null) panelMenuKerja.SetActive(false);
-        if (panelMasak != null) panelMasak.SetActive(false); // Tutup panel masak juga saat tidur paksa
+        if (panelMasak != null) panelMasak.SetActive(false); 
 
         if (playerObj != null)
         {
@@ -166,35 +178,23 @@ public class GameManager : MonoBehaviour
         waktuBerjalan = true; 
     }
 
-    private void AktifkanDistorsiVisual()
-    {
-        Debug.Log("Efek distorsi visual aktif (Sanity rendah).");
-    }
-
-    private void PenaltiLaparKritis()
-    {
-        Debug.Log("Pemain kelaparan.");
-    }
-
+    private void AktifkanDistorsiVisual() { Debug.Log("Efek distorsi visual aktif (Sanity rendah)."); }
+    private void PenaltiLaparKritis() { Debug.Log("Pemain kelaparan."); }
     private void TriggerBadEnding(string alasan)
     {
         Debug.Log("GAME OVER: " + alasan);
         waktuBerjalan = false;
     }
 
-    public void SetJedaWaktu(bool jeda)
-    {
-        waktuBerjalan = !jeda; 
-    }
+    public void SetJedaWaktu(bool jeda) { waktuBerjalan = !jeda; }
 
     // --- FITUR PENCEGAH BUKA PANEL BERSAMAAN ---
-    
     public bool ApakahAdaPanelAktif()
     {
         bool tokoBuka = panelToko != null && panelToko.activeSelf;
         bool invBuka = panelInventory != null && panelInventory.activeSelf;
         bool kerjaBuka = panelMenuKerja != null && panelMenuKerja.activeSelf;
-        bool masakBuka = panelMasak != null && panelMasak.activeSelf; // Cek panel masak
+        bool masakBuka = panelMasak != null && panelMasak.activeSelf; 
 
         return tokoBuka || invBuka || kerjaBuka || masakBuka;
     }
@@ -202,7 +202,6 @@ public class GameManager : MonoBehaviour
     public void BukaTokoAman()
     {
         if (ApakahAdaPanelAktif()) return; 
-
         if (panelToko != null) panelToko.SetActive(true);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(true);
@@ -211,17 +210,14 @@ public class GameManager : MonoBehaviour
     public void BukaInventoryAman()
     {
         if (ApakahAdaPanelAktif()) return; 
-
         if (panelInventory != null) panelInventory.SetActive(true);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(true);
     }
 
-    // --- FUNGSI AMAN UNTUK MEMBUKA KOMPOR/MASAK ---
     public void BukaMasakAman()
     {
         if (ApakahAdaPanelAktif()) return; 
-
         if (panelMasak != null) panelMasak.SetActive(true);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(true);
