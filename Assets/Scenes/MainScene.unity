@@ -12954,6 +12954,11 @@ MonoBehaviour:
   posisiDepanKasur: {fileID: 338105787}
   penguranganLaparSaatTidur: 20
   penguranganSanitySaatTidur: 10
+  ambangSanityDistorsi: 50
+  ambangLaparKritis: 20
+  pengaliSanitySaatLaparKritis: 2
+  namaSceneBadEnding: BadEndingScene
+  namaSceneGoodEnding: GoodEndingScene
   tombolBukaToko: {fileID: 1921724287}
   tombolBukaInventory: {fileID: 986832646}
 --- !u!4 &865462698
@@ -20639,6 +20644,104 @@ RectTransform:
   m_AnchoredPosition: {x: 35.595295, y: 36.22004}
   m_SizeDelta: {x: -71.1906, y: -72.4395}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1284980511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1284980512}
+  - component: {fileID: 1284980515}
+  - component: {fileID: 1284980514}
+  - component: {fileID: 1284980513}
+  m_Layer: 5
+  m_Name: Panel_DistorsiSanity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1284980512
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284980511}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1962560926}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1284980513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284980511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6aadfe566fbef2c3b419d987ce65aca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SanityDistortionEffect
+  overlayDistorsi: {fileID: 1284980514}
+  kameraUtama: {fileID: 519420032}
+  audioBisikan: {fileID: 0}
+  klipBisikan: []
+  jedaMinBisikan: 8
+  jedaMaxBisikan: 20
+  warnaDistorsiPenuh: {r: 0.35, g: 0, b: 0.15, a: 0.55}
+  kekuatanShakeMaksimum: 0.08
+  kecepatanTransisi: 2
+  ambangIntensitasBisikan: 0.3
+--- !u!114 &1284980514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284980511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1284980515
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284980511}
+  m_CullTransparentMesh: 1
 --- !u!1 &1287044131
 GameObject:
   m_ObjectHideFlags: 0
@@ -32928,6 +33031,7 @@ RectTransform:
   - {fileID: 1416704835}
   - {fileID: 710404479}
   - {fileID: 304430094}
+  - {fileID: 1284980512}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
