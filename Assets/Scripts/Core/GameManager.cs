@@ -22,6 +22,20 @@ public class GameManager : MonoBehaviour
     public float kecepatanWaktuNormal = 0.5f;
     private bool waktuBerjalan = true;
 
+    [Header("Sistem Tick Waktu (Event-Driven)")]
+    [Tooltip("Interval real-time (detik) antar tick waktu; UI & event hanya diproses tiap tick ini, bukan tiap frame")]
+    public float intervalTick = 0.2f;
+    private float akumulatorTick = 0f;
+    private float akumulatorJamSejakTick = 0f;
+    private float pengaliKecepatanWaktu = 1f; // diubah minigame/sistem lain lewat SetPengaliKecepatanWaktu()
+    private bool prosesTidurAktif = false;
+    private bool kopiDigunakanHariIni = false; // Buff Kopi Espresso: mundurkan batas tidur ke 02.00
+
+    // --- EVENT: sistem lain subscribe di sini, GameManager TIDAK perlu tahu siapa yang dengar ---
+    public event System.Action<float> OnTickWaktu;      // param: jumlah jam yang berlalu sejak tick terakhir
+    public event System.Action<float> OnJamBerubah;     // param: jamSaatIni terbaru (buat UI)
+    public event System.Action OnBatasWaktuTercapai;    // dipicu SEBELUM ProsesTidur mulai (buat interupsi minigame)
+
     [Header("Referensi UI")]
     public TextMeshProUGUI textWaktu;
     public TextMeshProUGUI textUang;
@@ -82,12 +96,53 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (waktuBerjalan)
-        {
-            jamSaatIni += kecepatanWaktuNormal * Time.deltaTime;
-            if (jamSaatIni >= batasTidur) StartCoroutine(ProsesTidur(true));
+        if (!waktuBerjalan) return;
+
+        // Jam tetap nambah tiap frame biar gerakannya smooth, tapi TIDAK langsung broadcast event/UI tiap frame
+        float deltaJam = kecepatanWaktuNormal * pengaliKecepatanWaktu * Time.deltaTime;
+        jamSaatIni += deltaJam;
+        akumulatorJamSejakTick += deltaJam;
+
+        // --- TICK SYSTEM: event & UI cuma diproses tiap intervalTick, bukan tiap frame ---
+        akumulatorTick += Time.deltaTime;
+        if (akumulatorTick >= intervalTick) {
+            akumulatorTick = 0f;
+            OnTickWaktu?.Invoke(akumulatorJamSejakTick);
+            OnJamBerubah?.Invoke(jamSaatIni);
             UpdateUI();
+            akumulatorJamSejakTick = 0f;
         }
+
+        // --- Cek batas tidur efektif (mundur ke 02.00 kalau kopi dipakai) ---
+        if (jamSaatIni >= DapatkanBatasTidurEfektif() && !prosesTidurAktif) {
+            prosesTidurAktif = true;
+            OnBatasWaktuTercapai?.Invoke(); // beri kesempatan minigame aktif buat simpan progres & berhenti dulu
+            StartCoroutine(ProsesTidur(true));
+        }
+    }
+
+    // --- TAMBAHAN: batas tidur efektif hari ini, mundur ke 02.00 kalau buff Kopi Espresso dipakai ---
+    public float DapatkanBatasTidurEfektif()
+    {
+        return kopiDigunakanHariIni ? batasTidur + 2f : batasTidur;
+    }
+
+    // --- TAMBAHAN: dipanggil sistem Toko/Inventory saat item Kopi Espresso dipakai ---
+    public void GunakanBuffKopiEspresso()
+    {
+        kopiDigunakanHariIni = true;
+    }
+
+    // --- TAMBAHAN: titik terpusat untuk minigame/sistem lain mengubah laju waktu ---
+    // Contoh: minigame skripsi manggil SetPengaliKecepatanWaktu(6f) saat mulai, ResetPengaliKecepatanWaktu() saat selesai.
+    public void SetPengaliKecepatanWaktu(float pengali)
+    {
+        pengaliKecepatanWaktu = pengali;
+    }
+
+    public void ResetPengaliKecepatanWaktu()
+    {
+        pengaliKecepatanWaktu = 1f;
     }
 
     void UpdateUI()
@@ -271,6 +326,7 @@ public class GameManager : MonoBehaviour
     {
         waktu -= 1;
         jamSaatIni = jamMulai;
+        kopiDigunakanHariIni = false; // --- TAMBAHAN: buff Kopi Espresso cuma berlaku 1 hari ---
 
         // --- TAMBAHAN: lapar & sanity ikut berkurang tiap kali tidur/ganti hari (lewat fungsi terpusat) ---
         KurangiLapar(penguranganLaparSaatTidur);
@@ -305,6 +361,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         while (alpha > 0) { alpha -= Time.deltaTime * 1.5f; if (layarGelap) layarGelap.color = new Color(0, 0, 0, alpha); yield return null; }
         waktuBerjalan = true;
+        prosesTidurAktif = false; // --- TAMBAHAN: izinkan trigger tidur lagi di hari berikutnya ---
 
         // --- TAMBAHAN: tampilkan kembali tombol Toko & Inventory setelah bangun ---
         if (tombolBukaToko) tombolBukaToko.SetActive(true);

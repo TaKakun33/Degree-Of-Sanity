@@ -11,8 +11,11 @@ public class DeskController : MonoBehaviour
     public void MulaiSkripsi()
     {
         Debug.Log("Pindah ke scene minigame skripsi...");
+
+        // Cegah dobel-load kalau tombol/interaksi kepencet 2x sebelum scene selesai load
+        if (SceneManager.GetSceneByName(namaSceneMinigame).isLoaded) return;
         
         // Memuat scene baru berdasarkan nama yang diketik di Inspector
-        SceneManager.LoadScene(namaSceneMinigame);
+        SceneManager.LoadScene(namaSceneMinigame, LoadSceneMode.Additive);
     }
 }
