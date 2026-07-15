@@ -10,12 +10,15 @@ public class DeskController : MonoBehaviour
     // Fungsi ini dipanggil oleh PlayerController saat karakter sudah tiba di meja
     public void MulaiSkripsi()
     {
-        Debug.Log("Pindah ke scene minigame skripsi...");
-
         // Cegah dobel-load kalau tombol/interaksi kepencet 2x sebelum scene selesai load
         if (SceneManager.GetSceneByName(namaSceneMinigame).isLoaded) return;
-        
-        // Memuat scene baru berdasarkan nama yang diketik di Inspector
+ 
+        // --- TAMBAHAN: Skripsi cuma boleh dikerjakan 1x per hari ---
+        if (GameManager.Instance != null && !GameManager.Instance.BisaKerjakanSkripsiHariIni) {
+            Debug.Log("Skripsi sudah dikerjakan hari ini. Coba lagi besok.");
+            return;
+        }
+
         SceneManager.LoadScene(namaSceneMinigame, LoadSceneMode.Additive);
     }
 }

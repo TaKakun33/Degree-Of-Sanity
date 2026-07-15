@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     public event System.Action<float> OnTickWaktu;      // param: jumlah jam yang berlalu sejak tick terakhir
     public event System.Action<float> OnJamBerubah;     // param: jamSaatIni terbaru (buat UI)
     public event System.Action OnBatasWaktuTercapai;    // dipicu SEBELUM ProsesTidur mulai (buat interupsi minigame)
+    public event System.Action OnPermainanBerakhir;     // dipicu saat Bad/Good Ending muncul (buat interupsi minigame aktif)
 
     [Header("Referensi UI")]
     public TextMeshProUGUI textWaktu;
@@ -55,11 +56,11 @@ public class GameManager : MonoBehaviour
     public GameObject playerObj;
     public Transform posisiDepanKasur;
 
-    [Header("Pengurangan Status Saat Tidur")]
-    [Tooltip("Jumlah lapar yang berkurang tiap kali tidur/ganti hari")]
+    [Header("Status Saat Tidur/Ganti Hari")]
+    [Tooltip("Jumlah lapar yang berkurang tiap kali tidur/ganti hari (proposal 3.3.7: Lapar memburuk tiap hari berganti)")]
     public float penguranganLaparSaatTidur = 20f;
-    [Tooltip("Jumlah sanity yang berkurang tiap kali tidur/ganti hari")]
-    public float penguranganSanitySaatTidur = 10f;
+    [Tooltip("Jumlah sanity yang DIPULIHKAN tiap kali tidur (proposal 3.6.3: 'Tidur lebih awal' adalah cara memulihkan Sanity, bukan menguras)")]
+    public float pemulihanSanitySaatTidur = 15f;
 
     [Header("Ambang Batas Parameter (sesuai Proposal 3.3.7 & 3.6.3)")]
     [Tooltip("Sanity di bawah angka ini akan memicu efek Distorsi Visual (proposal: di bawah 50%)")]
@@ -76,10 +77,14 @@ public class GameManager : MonoBehaviour
     public GameObject panelGoodEnding;
     private bool endingSudahDipicu = false;
 
-    [Header("Tombol HUD (disembunyikan saat tidur)")]
-    [Tooltip("Tombol untuk buka Toko di HUD, akan otomatis disembunyikan selama proses tidur")]
+    [Header("Batasan Minigame Skripsi")]
+    [Tooltip("Skripsi cuma bisa dikerjakan 1x per hari; direset otomatis tiap ganti hari")]
+    private bool skripsiSudahDikerjakanHariIni = false;
+
+    [Header("Tombol HUD (disembunyikan saat tidur ATAU minigame aktif)")]
+    [Tooltip("Tombol untuk buka Toko di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
     public GameObject tombolBukaToko;
-    [Tooltip("Tombol untuk buka Inventory di HUD, akan otomatis disembunyikan selama proses tidur")]
+    [Tooltip("Tombol untuk buka Inventory di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
     public GameObject tombolBukaInventory;
 
     void Awake() 
@@ -165,6 +170,23 @@ public class GameManager : MonoBehaviour
     public bool SedangDistorsi => sanity < ambangSanityDistorsi;
     public bool SedangKelaparan => lapar < ambangLaparKritis;
 
+    // --- TAMBAHAN: Skripsi cuma boleh dikerjakan 1x per hari ---
+    public bool BisaKerjakanSkripsiHariIni => !skripsiSudahDikerjakanHariIni;
+
+    // --- TAMBAHAN: Dipanggil minigame skripsi begitu sesi DIMULAI (bukan saat selesai) ---
+    // supaya jatah harian tetap terpakai walau sesi berakhir cepat (force quit/gagal typo/keluar manual).
+    public void TandaiSkripsiSudahDikerjakan()
+    {
+        skripsiSudahDikerjakanHariIni = true;
+    }
+
+    // --- TAMBAHAN: Tombol Toko & Inventory di HUD - dipakai baik saat tidur maupun minigame aktif ---
+    public void SetTombolHUDAktif(bool aktif)
+    {
+        if (tombolBukaToko) tombolBukaToko.SetActive(aktif);
+        if (tombolBukaInventory) tombolBukaInventory.SetActive(aktif);
+    }
+
     // --- TAMBAHAN: Titik terpusat untuk mengubah Sanity ---
     // Semua minigame/aktivitas (skripsi, kerja part time, masak, dsb) sebaiknya lewat sini,
     // supaya penalti "lapar kritis -> sanity terkuras 2x lebih cepat" (proposal 3.6.3) otomatis berlaku.
@@ -193,6 +215,14 @@ public class GameManager : MonoBehaviour
     {
         lapar = Mathf.Clamp(lapar + jumlah, 0f, 100f);
         UpdateUI();
+    }
+
+    // --- TAMBAHAN: Dipanggil sistem Masak/Makan (Proposal 3.3.3) saat pemain makan sesuatu ---
+    // Memasak sendiri secara proposal memulihkan Lapar signifikan; makan bareng/masakan enak juga ikut menenangkan Sanity dikit.
+    public void Makan(float jumlahLaparDipulihkan, float jumlahSanityDipulihkan = 0f)
+    {
+        TambahLapar(jumlahLaparDipulihkan);
+        if (jumlahSanityDipulihkan > 0f) TambahSanity(jumlahSanityDipulihkan);
     }
 
     // --- TAMBAHAN: Titik terpusat untuk mengubah Uang ---
@@ -236,6 +266,7 @@ public class GameManager : MonoBehaviour
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
         Debug.Log("Bad Ending dipicu.");
+        OnPermainanBerakhir?.Invoke(); // --- TAMBAHAN: paksa tutup minigame aktif (skripsi, dsb) kalau ada ---
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelBadEnding) panelBadEnding.SetActive(true);
@@ -247,6 +278,7 @@ public class GameManager : MonoBehaviour
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
         Debug.Log("Good Ending dipicu.");
+        OnPermainanBerakhir?.Invoke(); // --- TAMBAHAN: paksa tutup minigame aktif (skripsi, dsb) kalau ada ---
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelGoodEnding) panelGoodEnding.SetActive(true);
@@ -327,10 +359,11 @@ public class GameManager : MonoBehaviour
         waktu -= 1;
         jamSaatIni = jamMulai;
         kopiDigunakanHariIni = false; // --- TAMBAHAN: buff Kopi Espresso cuma berlaku 1 hari ---
+        skripsiSudahDikerjakanHariIni = false; // --- TAMBAHAN: jatah skripsi harian direset tiap hari baru ---
 
-        // --- TAMBAHAN: lapar & sanity ikut berkurang tiap kali tidur/ganti hari (lewat fungsi terpusat) ---
+        // --- Lapar tetap memburuk tiap ganti hari, tapi Sanity DIPULIHKAN dari tidur (Proposal 3.6.3) ---
         KurangiLapar(penguranganLaparSaatTidur);
-        KurangiSanity(penguranganSanitySaatTidur);
+        TambahSanity(pemulihanSanitySaatTidur);
 
         // --- TAMBAHAN: Waktu (sisa masa studi) habis sebelum skripsi 100% -> Bad Ending (Proposal 3.3.7 & 3.6.4) ---
         if (waktu <= 0 && progresSkripsi < 100f) {
@@ -345,9 +378,8 @@ public class GameManager : MonoBehaviour
         waktuBerjalan = false;
         TutupSemuaPanelGame();
 
-        // --- TAMBAHAN: sembunyikan tombol Toko & Inventory di HUD selama proses tidur ---
-        if (tombolBukaToko) tombolBukaToko.SetActive(false);
-        if (tombolBukaInventory) tombolBukaInventory.SetActive(false);
+        // --- Sembunyikan tombol Toko & Inventory di HUD selama proses tidur ---
+        SetTombolHUDAktif(false);
 
         if (playerObj) {
             PlayerController pc = playerObj.GetComponent<PlayerController>();
@@ -363,8 +395,7 @@ public class GameManager : MonoBehaviour
         waktuBerjalan = true;
         prosesTidurAktif = false; // --- TAMBAHAN: izinkan trigger tidur lagi di hari berikutnya ---
 
-        // --- TAMBAHAN: tampilkan kembali tombol Toko & Inventory setelah bangun ---
-        if (tombolBukaToko) tombolBukaToko.SetActive(true);
-        if (tombolBukaInventory) tombolBukaInventory.SetActive(true);
+        // --- Tampilkan kembali tombol Toko & Inventory setelah bangun ---
+        SetTombolHUDAktif(true);
     }
 }

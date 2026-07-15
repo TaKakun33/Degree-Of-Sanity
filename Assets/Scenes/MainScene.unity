@@ -13369,7 +13369,7 @@ MonoBehaviour:
   jamMulai: 6
   jamSaatIni: 6
   batasTidur: 24
-  kecepatanWaktuNormal: 0.005
+  kecepatanWaktuNormal: 0.05
   intervalTick: 0.2
   textWaktu: {fileID: 1431078021}
   textUang: {fileID: 925432726}
@@ -13385,7 +13385,7 @@ MonoBehaviour:
   playerObj: {fileID: 384426243}
   posisiDepanKasur: {fileID: 338105787}
   penguranganLaparSaatTidur: 20
-  penguranganSanitySaatTidur: 10
+  pemulihanSanitySaatTidur: 15
   ambangSanityDistorsi: 50
   ambangLaparKritis: 20
   pengaliSanitySaatLaparKritis: 2

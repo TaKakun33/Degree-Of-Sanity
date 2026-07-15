@@ -1,44 +1,60 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Text;
 using TMPro;
 
-// --- Minigame Skripsi: berjalan di SCENE TERPISAH, di-load ADDITIVE di atas scene utama ---
-// GameManager TIDAK punya referensi apapun ke script ini. Semua komunikasi
-// terjadi lewat: (1) subscribe ke event publik GameManager, (2) manggil method publik GameManager.
+// --- Minigame Skripsi: gaya typing-test (kata berjalan terus, tanpa tekanan waktu) ---
+// Berjalan di SCENE TERPISAH, di-load ADDITIVE di atas scene utama.
+// GameManager TIDAK punya referensi apapun ke script ini (event-driven, lihat OnEnable/OnDisable).
 public class MinigameSkripsiManager : MonoBehaviour
 {
     [Header("Referensi UI Minigame")]
-    public TextMeshProUGUI textKalimatTarget;
+    public TextMeshProUGUI textKalimatTarget; // menampilkan beberapa kata berjalan + highlight karakter
     public TMP_InputField inputKetikan;
     public TextMeshProUGUI textJumlahTypo;
     public TextMeshProUGUI textProgresSesi;
 
-    [Header("Bank Kalimat (istilah akademis, diambil acak)")]
-    public string[] daftarKalimat = new string[] {
-        "Metodologi penelitian kualitatif",
-        "Analisis regresi linear berganda",
-        "Studi literatur sistematis",
-        "Uji validitas dan reliabilitas",
+    [Header("Bank Kata (dirangkai ULANG jadi ratusan/ribuan kata per sesi, gaya typing-test)")]
+    public string[] bankKata = new string[] {
+        "sekarang","yaitu","selama","kalau","tidak","sudah","baru","pula","paling","terhadap",
+        "di","mulai","malam","pusat","serta","sesuai","dengan","waktu","sedang","ketika",
+        "skripsi","progres","dosen","kampus","penelitian","data","metode","hasil","analisis","bab",
+        "revisi","sidang","deadline","semester","tugas","catatan","laptop","referensi","jurnal","kutipan",
+        "adik","rumah","uang","kerja","malam","pagi","lelah","semangat","fokus","istirahat",
+        "makan","tidur","mimpi","harapan","masa","depan","keluarga","teman","dukungan","usaha",
+        "belajar","paham","bingung","yakin","ragu","coba","lagi","hampir","selesai","lulus",
     };
+
+    [Header("Pengaturan Tampilan (gaya typing-test)")]
+    [Tooltip("Berapa kata ditampilkan sekaligus di layar (kata sekarang + kata-kata berikutnya)")]
+    public int jumlahKataTampil = 12;
+    [Tooltip("Total kata yang dirangkai untuk satu sesi (proposal: ~1000 kata acak)")]
+    public int jumlahKataSesi = 1000;
+    [Tooltip("Berapa kata yang perlu diketik benar untuk mendapat progres skripsi PENUH (progresMaksimalPerSesi)")]
+    public int jumlahKataUntukProgresPenuh = 150;
 
     [Header("Pengaturan Minigame")]
     [Tooltip("Waktu in-game berjalan berapa kali lebih cepat saat minigame ini aktif")]
     public float pengaliKecepatanWaktuSaatMinigame = 6f;
-    [Tooltip("Sanity berkurang segini tiap tick waktu selama minigame berjalan (otomatis x2 kalau lapar kritis)")]
-    public float sanityBerkurangPerTick = 0.5f;
+    [Tooltip("Sanity berkurang segini tiap tick waktu selama minigame berjalan (KECIL SENGAJA, biar gak over-drop; otomatis x2 kalau lapar kritis)")]
+    public float sanityBerkurangPerTick = 0.15f;
     [Tooltip("Batas toleransi kesalahan ketik sebelum sesi dianggap gagal")]
     public int maxTypo = 3;
-    [Tooltip("Progres Skripsi maksimum (%) yang bisa didapat dari satu sesi minigame berhasil")]
+    [Tooltip("Progres Skripsi maksimum (%) yang bisa didapat dari satu sesi minigame")]
     public float progresMaksimalPerSesi = 10f;
 
     [Header("Scene")]
     [Tooltip("Nama scene minigame ini sendiri, HARUS sama persis dengan nama file & yang didaftarkan di Build Settings")]
     public string namaSceneMinigame = "MinigameSkripsi";
 
-    private string kalimatSaatIni = "";
-    private int indexKarakterBenar = 0;
+    private List<string> urutanKataSesi;
+    private int indexKataSesi = 0;       // posisi kata yang sedang dikerjakan di urutanKataSesi
+    private string kataSaatIni = "";
+    private int indexKarakterBenar = 0;  // posisi karakter yang sudah benar diketik di kataSaatIni
+
     private int jumlahTypoSaatIni = 0;
-    private float progresSesiIni = 0f; // 0 - progresMaksimalPerSesi, diakumulasi selama sesi berjalan
+    private float progresSesiIni = 0f;
     private bool minigameAktif = false;
 
     // --- Subscribe saat object aktif, unsubscribe saat nonaktif (WAJIB, hindari memory leak/NullReference) ---
@@ -47,6 +63,7 @@ public class MinigameSkripsiManager : MonoBehaviour
         if (GameManager.Instance != null) {
             GameManager.Instance.OnTickWaktu += TanganiTickWaktu;
             GameManager.Instance.OnBatasWaktuTercapai += TanganiInterupsiPaksa;
+            GameManager.Instance.OnPermainanBerakhir += TanganiInterupsiPaksa; // Bad/Good Ending juga menutup minigame
         }
     }
 
@@ -55,6 +72,7 @@ public class MinigameSkripsiManager : MonoBehaviour
         if (GameManager.Instance != null) {
             GameManager.Instance.OnTickWaktu -= TanganiTickWaktu;
             GameManager.Instance.OnBatasWaktuTercapai -= TanganiInterupsiPaksa;
+            GameManager.Instance.OnPermainanBerakhir -= TanganiInterupsiPaksa;
         }
     }
 
@@ -72,58 +90,123 @@ public class MinigameSkripsiManager : MonoBehaviour
             return;
         }
 
+        // --- Skripsi cuma boleh dikerjakan 1x per hari (safety net; PemicuMinigameSkripsi juga sudah cek ini) ---
+        if (!GameManager.Instance.BisaKerjakanSkripsiHariIni) {
+            Debug.Log("Skripsi sudah dikerjakan hari ini - minigame ditutup lagi.");
+            SceneManager.UnloadSceneAsync(namaSceneMinigame);
+            return;
+        }
+        GameManager.Instance.TandaiSkripsiSudahDikerjakan();
+
         minigameAktif = true;
         jumlahTypoSaatIni = 0;
         progresSesiIni = 0f;
         UpdateTeksTypo();
         UpdateTeksProgres();
-        PasangKalimatBaru();
+
+        urutanKataSesi = BuatUrutanKataSesi(jumlahKataSesi);
+        indexKataSesi = 0;
+        kataSaatIni = urutanKataSesi[indexKataSesi];
+        indexKarakterBenar = 0;
+        TampilkanJendelaKata();
 
         if (inputKetikan) {
             inputKetikan.onValueChanged.AddListener(TanganiPerubahanInput);
-            inputKetikan.text = "";
+            inputKetikan.SetTextWithoutNotify("");
             inputKetikan.ActivateInputField();
         }
 
         KunciPemainDiSceneUtama(true);
+        GameManager.Instance.SetTombolHUDAktif(false); // --- TAMBAHAN: tombol Toko/Inventory hilang selama minigame ---
 
         // --- Percepat waktu in-game selama minigame berlangsung ---
         GameManager.Instance.SetPengaliKecepatanWaktu(pengaliKecepatanWaktuSaatMinigame);
     }
 
-    void PasangKalimatBaru()
+    // --- Rangkai urutan kata acak sepanjang "jumlah", kata berikutnya DIJAMIN beda dari kata sebelumnya ---
+    List<string> BuatUrutanKataSesi(int jumlah)
     {
-        if (daftarKalimat == null || daftarKalimat.Length == 0) return;
+        List<string> hasil = new List<string>(jumlah);
+        string kataSebelumnya = "";
 
-        kalimatSaatIni = daftarKalimat[Random.Range(0, daftarKalimat.Length)];
-        indexKarakterBenar = 0;
+        for (int i = 0; i < jumlah; i++) {
+            string kataBaru;
+            do {
+                kataBaru = bankKata[Random.Range(0, bankKata.Length)];
+            } while (kataBaru == kataSebelumnya && bankKata.Length > 1);
 
-        if (textKalimatTarget) textKalimatTarget.text = kalimatSaatIni;
-        if (inputKetikan) inputKetikan.SetTextWithoutNotify("");
+            hasil.Add(kataBaru);
+            kataSebelumnya = kataBaru;
+        }
+        return hasil;
+    }
+
+    // --- Render kata sekarang (dengan highlight posisi ketik) + beberapa kata berikutnya, gaya typing-test ---
+    void TampilkanJendelaKata()
+    {
+        if (!textKalimatTarget || urutanKataSesi == null) return;
+
+        StringBuilder sb = new StringBuilder();
+
+        // Kata yang sedang diketik: karakter benar jadi abu redup, posisi kursor di-highlight kuning
+        for (int i = 0; i < kataSaatIni.Length; i++) {
+            if (i < indexKarakterBenar) {
+                sb.Append("<color=#888780>").Append(kataSaatIni[i]).Append("</color>");
+            } else if (i == indexKarakterBenar) {
+                sb.Append("<mark=#F5D66E80>").Append(kataSaatIni[i]).Append("</mark>");
+            } else {
+                sb.Append(kataSaatIni[i]);
+            }
+        }
+
+        // Kata-kata berikutnya, warna normal (belum disentuh)
+        for (int i = 1; i < jumlahKataTampil && (indexKataSesi + i) < urutanKataSesi.Count; i++) {
+            sb.Append(" ").Append(urutanKataSesi[indexKataSesi + i]);
+        }
+
+        textKalimatTarget.text = sb.ToString();
     }
 
     // --- Dipanggil tiap kali isi TMP_InputField berubah (tiap 1 karakter diketik) ---
     void TanganiPerubahanInput(string teksBaru)
     {
-        if (!minigameAktif || string.IsNullOrEmpty(kalimatSaatIni)) return;
-        if (teksBaru.Length <= indexKarakterBenar) return; // penghapusan (backspace), abaikan
+        if (!minigameAktif || string.IsNullOrEmpty(kataSaatIni)) return;
+        if (teksBaru.Length <= indexKarakterBenar) return; // backspace, abaikan
 
         char karakterDiketik = teksBaru[teksBaru.Length - 1];
-        char karakterSeharusnya = kalimatSaatIni[indexKarakterBenar];
+        char karakterSeharusnya = kataSaatIni[indexKarakterBenar];
 
         if (karakterDiketik == karakterSeharusnya) {
             indexKarakterBenar++;
-            float progresPerKarakter = progresMaksimalPerSesi / kalimatSaatIni.Length;
-            TanganiKetikBenar(progresPerKarakter);
+            TampilkanJendelaKata();
 
-            if (indexKarakterBenar >= kalimatSaatIni.Length) {
-                PasangKalimatBaru(); // kalimat ini selesai, lanjut ke kalimat berikutnya
+            if (indexKarakterBenar >= kataSaatIni.Length) {
+                SelesaikanSatuKata();
             }
         } else {
             TanganiTypo();
             // Hapus karakter yang salah biar pemain gak numpuk ketikan di atas kesalahan
             if (inputKetikan) inputKetikan.SetTextWithoutNotify(teksBaru.Substring(0, teksBaru.Length - 1));
         }
+    }
+
+    // --- Satu kata selesai diketik benar: kasih progres, lanjut ke kata berikutnya di urutan ---
+    void SelesaikanSatuKata()
+    {
+        float progresPerKata = progresMaksimalPerSesi / Mathf.Max(1, jumlahKataUntukProgresPenuh);
+        TanganiKetikBenar(progresPerKata);
+
+        indexKataSesi++;
+        if (indexKataSesi >= urutanKataSesi.Count) {
+            // Kata di sesi ini habis (jarang kejadian) -> rangkai ulang biar bisa lanjut terus
+            urutanKataSesi = BuatUrutanKataSesi(jumlahKataSesi);
+            indexKataSesi = 0;
+        }
+
+        kataSaatIni = urutanKataSesi[indexKataSesi];
+        indexKarakterBenar = 0;
+        if (inputKetikan) inputKetikan.SetTextWithoutNotify("");
+        TampilkanJendelaKata();
     }
 
     // --- Setiap kali GameManager tick (bukan tiap frame), kurangi Sanity berbasis durasi bermain ---
@@ -163,15 +246,23 @@ public class MinigameSkripsiManager : MonoBehaviour
         if (textProgresSesi) textProgresSesi.text = "+" + progresSesiIni.ToString("F1") + "% Skripsi";
     }
 
-    // --- FORCE QUIT: dipanggil otomatis oleh GameManager LEWAT EVENT, SEBELUM ProsesTidur() mulai ---
-    void TanganiInterupsiPaksa()
+    // --- Dipanggil dari tombol "Selesai"/"Keluar" di UI - santai, gak perlu ngetik 1000 kata dulu ---
+    public void SelesaikanManual()
     {
         if (!minigameAktif) return;
-        Debug.Log("Waktu habis - minigame skripsi dihentikan paksa (Force Quit).");
         SelesaikanSesi();
     }
 
-    // --- Titik keluar tunggal buat sesi minigame: selesai normal, gagal typo, ATAU force quit ---
+    // --- INTERUPSI PAKSA: dipanggil GameManager LEWAT EVENT - baik karena waktu habis (force quit)
+    // MAUPUN karena Bad/Good Ending muncul - keduanya harus langsung menutup minigame ini.
+    void TanganiInterupsiPaksa()
+    {
+        if (!minigameAktif) return;
+        Debug.Log("Minigame skripsi dihentikan paksa (waktu habis atau ending terpicu).");
+        SelesaikanSesi();
+    }
+
+    // --- Titik keluar tunggal buat sesi minigame: selesai manual, gagal typo, ATAU force quit ---
     void SelesaikanSesi()
     {
         minigameAktif = false;
@@ -182,6 +273,7 @@ public class MinigameSkripsiManager : MonoBehaviour
         }
 
         KunciPemainDiSceneUtama(false);
+        if (GameManager.Instance != null) GameManager.Instance.SetTombolHUDAktif(true); // --- TAMBAHAN: kembalikan tombol HUD ---
         progresSesiIni = 0f;
 
         // --- Scene minigame ini di-unload, scene utama TIDAK ikut ke-unload (additive) ---
