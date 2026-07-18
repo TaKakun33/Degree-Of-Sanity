@@ -22,6 +22,21 @@ public class GameManager : MonoBehaviour
     public float kecepatanWaktuNormal = 0.5f;
     private bool waktuBerjalan = true;
 
+    [Header("Sistem Tick Waktu (Event-Driven)")]
+    [Tooltip("Interval real-time (detik) antar tick waktu; UI & event hanya diproses tiap tick ini, bukan tiap frame")]
+    public float intervalTick = 0.2f;
+    private float akumulatorTick = 0f;
+    private float akumulatorJamSejakTick = 0f;
+    private float pengaliKecepatanWaktu = 1f; // diubah minigame/sistem lain lewat SetPengaliKecepatanWaktu()
+    private bool prosesTidurAktif = false;
+    private bool kopiDigunakanHariIni = false; // Buff Kopi Espresso: mundurkan batas tidur ke 02.00
+
+    // --- EVENT: sistem lain subscribe di sini, GameManager TIDAK perlu tahu siapa yang dengar ---
+    public event System.Action<float> OnTickWaktu;      // param: jumlah jam yang berlalu sejak tick terakhir
+    public event System.Action<float> OnJamBerubah;     // param: jamSaatIni terbaru (buat UI)
+    public event System.Action OnBatasWaktuTercapai;    // dipicu SEBELUM ProsesTidur mulai (buat interupsi minigame)
+    public event System.Action OnPermainanBerakhir;     // dipicu saat Bad/Good Ending muncul (buat interupsi minigame aktif)
+
     [Header("Referensi UI")]
     public TextMeshProUGUI textWaktu;
     public TextMeshProUGUI textUang;
@@ -41,11 +56,11 @@ public class GameManager : MonoBehaviour
     public GameObject playerObj;
     public Transform posisiDepanKasur;
 
-    [Header("Pengurangan Status Saat Tidur")]
-    [Tooltip("Jumlah lapar yang berkurang tiap kali tidur/ganti hari")]
+    [Header("Status Saat Tidur/Ganti Hari")]
+    [Tooltip("Jumlah lapar yang berkurang tiap kali tidur/ganti hari (proposal 3.3.7: Lapar memburuk tiap hari berganti)")]
     public float penguranganLaparSaatTidur = 20f;
-    [Tooltip("Jumlah sanity yang berkurang tiap kali tidur/ganti hari")]
-    public float penguranganSanitySaatTidur = 10f;
+    [Tooltip("Jumlah sanity yang DIPULIHKAN tiap kali tidur (proposal 3.6.3: 'Tidur lebih awal' adalah cara memulihkan Sanity, bukan menguras)")]
+    public float pemulihanSanitySaatTidur = 15f;
 
     [Header("Ambang Batas Parameter (sesuai Proposal 3.3.7 & 3.6.3)")]
     [Tooltip("Sanity di bawah angka ini akan memicu efek Distorsi Visual (proposal: di bawah 50%)")]
@@ -62,10 +77,14 @@ public class GameManager : MonoBehaviour
     public GameObject panelGoodEnding;
     private bool endingSudahDipicu = false;
 
-    [Header("Tombol HUD (disembunyikan saat tidur)")]
-    [Tooltip("Tombol untuk buka Toko di HUD, akan otomatis disembunyikan selama proses tidur")]
+    [Header("Batasan Minigame Skripsi")]
+    [Tooltip("Skripsi cuma bisa dikerjakan 1x per hari; direset otomatis tiap ganti hari")]
+    private bool skripsiSudahDikerjakanHariIni = false;
+
+    [Header("Tombol HUD (disembunyikan saat tidur ATAU minigame aktif)")]
+    [Tooltip("Tombol untuk buka Toko di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
     public GameObject tombolBukaToko;
-    [Tooltip("Tombol untuk buka Inventory di HUD, akan otomatis disembunyikan selama proses tidur")]
+    [Tooltip("Tombol untuk buka Inventory di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
     public GameObject tombolBukaInventory;
 
     void Awake() 
@@ -82,12 +101,53 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (waktuBerjalan)
-        {
-            jamSaatIni += kecepatanWaktuNormal * Time.deltaTime;
-            if (jamSaatIni >= batasTidur) StartCoroutine(ProsesTidur(true));
+        if (!waktuBerjalan) return;
+
+        // Jam tetap nambah tiap frame biar gerakannya smooth, tapi TIDAK langsung broadcast event/UI tiap frame
+        float deltaJam = kecepatanWaktuNormal * pengaliKecepatanWaktu * Time.deltaTime;
+        jamSaatIni += deltaJam;
+        akumulatorJamSejakTick += deltaJam;
+
+        // --- TICK SYSTEM: event & UI cuma diproses tiap intervalTick, bukan tiap frame ---
+        akumulatorTick += Time.deltaTime;
+        if (akumulatorTick >= intervalTick) {
+            akumulatorTick = 0f;
+            OnTickWaktu?.Invoke(akumulatorJamSejakTick);
+            OnJamBerubah?.Invoke(jamSaatIni);
             UpdateUI();
+            akumulatorJamSejakTick = 0f;
         }
+
+        // --- Cek batas tidur efektif (mundur ke 02.00 kalau kopi dipakai) ---
+        if (jamSaatIni >= DapatkanBatasTidurEfektif() && !prosesTidurAktif) {
+            prosesTidurAktif = true;
+            OnBatasWaktuTercapai?.Invoke(); // beri kesempatan minigame aktif buat simpan progres & berhenti dulu
+            StartCoroutine(ProsesTidur(true));
+        }
+    }
+
+    // --- TAMBAHAN: batas tidur efektif hari ini, mundur ke 02.00 kalau buff Kopi Espresso dipakai ---
+    public float DapatkanBatasTidurEfektif()
+    {
+        return kopiDigunakanHariIni ? batasTidur + 2f : batasTidur;
+    }
+
+    // --- TAMBAHAN: dipanggil sistem Toko/Inventory saat item Kopi Espresso dipakai ---
+    public void GunakanBuffKopiEspresso()
+    {
+        kopiDigunakanHariIni = true;
+    }
+
+    // --- TAMBAHAN: titik terpusat untuk minigame/sistem lain mengubah laju waktu ---
+    // Contoh: minigame skripsi manggil SetPengaliKecepatanWaktu(6f) saat mulai, ResetPengaliKecepatanWaktu() saat selesai.
+    public void SetPengaliKecepatanWaktu(float pengali)
+    {
+        pengaliKecepatanWaktu = pengali;
+    }
+
+    public void ResetPengaliKecepatanWaktu()
+    {
+        pengaliKecepatanWaktu = 1f;
     }
 
     void UpdateUI()
@@ -109,6 +169,23 @@ public class GameManager : MonoBehaviour
     // --- TAMBAHAN: Status kondisi (dipakai UI lain, sistem distorsi, atau minigame) ---
     public bool SedangDistorsi => sanity < ambangSanityDistorsi;
     public bool SedangKelaparan => lapar < ambangLaparKritis;
+
+    // --- TAMBAHAN: Skripsi cuma boleh dikerjakan 1x per hari ---
+    public bool BisaKerjakanSkripsiHariIni => !skripsiSudahDikerjakanHariIni;
+
+    // --- TAMBAHAN: Dipanggil minigame skripsi begitu sesi DIMULAI (bukan saat selesai) ---
+    // supaya jatah harian tetap terpakai walau sesi berakhir cepat (force quit/gagal typo/keluar manual).
+    public void TandaiSkripsiSudahDikerjakan()
+    {
+        skripsiSudahDikerjakanHariIni = true;
+    }
+
+    // --- TAMBAHAN: Tombol Toko & Inventory di HUD - dipakai baik saat tidur maupun minigame aktif ---
+    public void SetTombolHUDAktif(bool aktif)
+    {
+        if (tombolBukaToko) tombolBukaToko.SetActive(aktif);
+        if (tombolBukaInventory) tombolBukaInventory.SetActive(aktif);
+    }
 
     // --- TAMBAHAN: Titik terpusat untuk mengubah Sanity ---
     // Semua minigame/aktivitas (skripsi, kerja part time, masak, dsb) sebaiknya lewat sini,
@@ -138,6 +215,14 @@ public class GameManager : MonoBehaviour
     {
         lapar = Mathf.Clamp(lapar + jumlah, 0f, 100f);
         UpdateUI();
+    }
+
+    // --- TAMBAHAN: Dipanggil sistem Masak/Makan (Proposal 3.3.3) saat pemain makan sesuatu ---
+    // Memasak sendiri secara proposal memulihkan Lapar signifikan; makan bareng/masakan enak juga ikut menenangkan Sanity dikit.
+    public void Makan(float jumlahLaparDipulihkan, float jumlahSanityDipulihkan = 0f)
+    {
+        TambahLapar(jumlahLaparDipulihkan);
+        if (jumlahSanityDipulihkan > 0f) TambahSanity(jumlahSanityDipulihkan);
     }
 
     // --- TAMBAHAN: Titik terpusat untuk mengubah Uang ---
@@ -181,6 +266,7 @@ public class GameManager : MonoBehaviour
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
         Debug.Log("Bad Ending dipicu.");
+        OnPermainanBerakhir?.Invoke(); // --- TAMBAHAN: paksa tutup minigame aktif (skripsi, dsb) kalau ada ---
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelBadEnding) panelBadEnding.SetActive(true);
@@ -192,6 +278,7 @@ public class GameManager : MonoBehaviour
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
         Debug.Log("Good Ending dipicu.");
+        OnPermainanBerakhir?.Invoke(); // --- TAMBAHAN: paksa tutup minigame aktif (skripsi, dsb) kalau ada ---
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelGoodEnding) panelGoodEnding.SetActive(true);
@@ -271,10 +358,12 @@ public class GameManager : MonoBehaviour
     {
         waktu -= 1;
         jamSaatIni = jamMulai;
+        kopiDigunakanHariIni = false; // --- TAMBAHAN: buff Kopi Espresso cuma berlaku 1 hari ---
+        skripsiSudahDikerjakanHariIni = false; // --- TAMBAHAN: jatah skripsi harian direset tiap hari baru ---
 
-        // --- TAMBAHAN: lapar & sanity ikut berkurang tiap kali tidur/ganti hari (lewat fungsi terpusat) ---
+        // --- Lapar tetap memburuk tiap ganti hari, tapi Sanity DIPULIHKAN dari tidur (Proposal 3.6.3) ---
         KurangiLapar(penguranganLaparSaatTidur);
-        KurangiSanity(penguranganSanitySaatTidur);
+        TambahSanity(pemulihanSanitySaatTidur);
 
         // --- TAMBAHAN: Waktu (sisa masa studi) habis sebelum skripsi 100% -> Bad Ending (Proposal 3.3.7 & 3.6.4) ---
         if (waktu <= 0 && progresSkripsi < 100f) {
@@ -289,9 +378,8 @@ public class GameManager : MonoBehaviour
         waktuBerjalan = false;
         TutupSemuaPanelGame();
 
-        // --- TAMBAHAN: sembunyikan tombol Toko & Inventory di HUD selama proses tidur ---
-        if (tombolBukaToko) tombolBukaToko.SetActive(false);
-        if (tombolBukaInventory) tombolBukaInventory.SetActive(false);
+        // --- Sembunyikan tombol Toko & Inventory di HUD selama proses tidur ---
+        SetTombolHUDAktif(false);
 
         if (playerObj) {
             PlayerController pc = playerObj.GetComponent<PlayerController>();
@@ -305,9 +393,9 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         while (alpha > 0) { alpha -= Time.deltaTime * 1.5f; if (layarGelap) layarGelap.color = new Color(0, 0, 0, alpha); yield return null; }
         waktuBerjalan = true;
+        prosesTidurAktif = false; // --- TAMBAHAN: izinkan trigger tidur lagi di hari berikutnya ---
 
-        // --- TAMBAHAN: tampilkan kembali tombol Toko & Inventory setelah bangun ---
-        if (tombolBukaToko) tombolBukaToko.SetActive(true);
-        if (tombolBukaInventory) tombolBukaInventory.SetActive(true);
+        // --- Tampilkan kembali tombol Toko & Inventory setelah bangun ---
+        SetTombolHUDAktif(true);
     }
 }
