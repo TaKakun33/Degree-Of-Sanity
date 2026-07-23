@@ -15,9 +15,9 @@ public class DaerahKantong : MonoBehaviour, IDropHandler
         barang.sudahDibungkus = true;
         barang.berhasilDijatuhkanValid = true;
 
-        objekDijatuhkan.transform.SetParent(transform);
-        objekDijatuhkan.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-
         if (KasirManager.Instance != null) KasirManager.Instance.ItemDimasukkanKantong(barang);
+
+        // --- Barang LANGSUNG HILANG begitu masuk kantong, gak nyangkut kelihatan di layar lagi ---
+        Destroy(objekDijatuhkan);
     }
 }
