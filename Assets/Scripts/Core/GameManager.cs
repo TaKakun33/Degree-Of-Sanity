@@ -96,7 +96,24 @@ public class GameManager : MonoBehaviour
     void Start() 
     { 
         if (SaveManager.Instance != null) SaveManager.Instance.MuatGame(SaveManager.slotUntukDiload);
+        TerapkanHasilKerjaPartTimeJikaAda(); // --- TAMBAHAN: terapkan hasil kerja Kasir/Ojek/Tutor kalau ada ---
         UpdateUI();
+    }
+
+    // --- TAMBAHAN: dipanggil sekali tiap GameManager baru dibuat, cek titipan dari HasilKerjaPartTime ---
+    void TerapkanHasilKerjaPartTimeJikaAda()
+    {
+        if (!HasilKerjaPartTime.adaHasilPending) return;
+
+        TambahUang(HasilKerjaPartTime.uangDidapat);
+        KurangiLapar(HasilKerjaPartTime.laparBerkurang);
+        KurangiSanity(HasilKerjaPartTime.sanityBerkurang); // otomatis kena pengali lapar-kritis kalau relevan
+        jamSaatIni += HasilKerjaPartTime.jamYangDilewati;  // skip waktu; kalau lewat batas tidur, Update() otomatis proses tidur
+
+        Debug.Log("Hasil kerja part time diterapkan: +Rp " + HasilKerjaPartTime.uangDidapat +
+                   ", lewat " + HasilKerjaPartTime.jamYangDilewati + " jam.");
+
+        HasilKerjaPartTime.Bersihkan();
     }
 
     void Update()
