@@ -4299,6 +4299,7 @@ MonoBehaviour:
   minItemPerPelanggan: 2
   maxItemPerPelanggan: 5
   titikSpawnConveyor: {fileID: 481621829}
+  wadahConveyor: {fileID: 3821532}
   prefabItemBelanjaan: {fileID: 30358290261676251, guid: 1bf049c823b9ce668bf8c2bcb75e75b3, type: 3}
   kecepatanConveyor: 60
   xBatasKiriConveyor: -400

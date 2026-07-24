@@ -251,7 +251,9 @@ public class GameManager : MonoBehaviour
 
     public void TambahUang(int jumlah)
     {
-        uang += jumlah;
+        // --- Mathf.Max di sini penting: jumlah BISA negatif (misal gaji shift Kasir yang minus
+        // karena kebanyakan penalti), tapi total uang pemain tetap gak boleh sampai di bawah 0 ---
+        uang = Mathf.Max(0, uang + jumlah);
         UpdateUI();
     }
 

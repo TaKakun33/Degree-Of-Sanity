@@ -45,6 +45,8 @@ public class KasirManager : MonoBehaviour
     [Header("Referensi Conveyor Belt")]
     [Tooltip("Titik di ujung kanan belt, tempat barang baru muncul")]
     public RectTransform titikSpawnConveyor;
+    [Tooltip("WAJIB diisi manual: wadah/parent untuk barang yang di-spawn. Harus Canvas langsung atau child KOSONG di bawah Canvas - JANGAN Panel_Pembayaran/Panel_Uang.")]
+    public Transform wadahConveyor;
     public GameObject prefabItemBelanjaan;
     public float kecepatanConveyor = 60f;
     [Tooltip("Posisi X lokal di ujung kiri belt; barang yang lewat sini balik muncul dari kanan lagi")]
@@ -104,9 +106,15 @@ public class KasirManager : MonoBehaviour
 
     void Start()
     {
-        // --- Panel Pembayaran TETAP kelihatan dari awal, biar teksnya bisa nunjukin progres real-time
-        // pas lagi scan barang. Yang disembunyikan cuma Panel Uang (tombol pecahan), biar gak kepencet
-        // gak sengaja selagi masih di tahap scan/kantong. ---
+        // --- TAMBAHAN: validasi wiring, biar ketauan LANGSUNG di Console kalau salah drag lagi ---
+        if (wadahConveyor == null) {
+            Debug.LogError("[KasirManager] Wadah Conveyor belum diisi! Barang gak akan ke-spawn dengan benar.");
+        } else if (panelPembayaran != null && wadahConveyor == panelPembayaran.transform) {
+            Debug.LogError("[KasirManager] Wadah Conveyor ke-set sama dengan Panel Pembayaran! Ganti ke Canvas/wadah lain.");
+        } else if (panelUang != null && wadahConveyor == panelUang.transform) {
+            Debug.LogError("[KasirManager] Wadah Conveyor ke-set sama dengan Panel Uang! Ganti ke Canvas/wadah lain.");
+        }
+
         if (panelUang) panelUang.SetActive(false);
         MulaiShift();
     }
@@ -147,7 +155,7 @@ public class KasirManager : MonoBehaviour
             ItemBelanjaan dataItem = katalogItem[Random.Range(0, katalogItem.Length)];
             totalHargaPelangganIni += dataItem.harga;
 
-            GameObject objekBaru = Instantiate(prefabItemBelanjaan, titikSpawnConveyor.parent);
+            GameObject objekBaru = Instantiate(prefabItemBelanjaan, wadahConveyor);
             RectTransform rect = objekBaru.GetComponent<RectTransform>();
             rect.anchoredPosition = titikSpawnConveyor.anchoredPosition + new Vector2(i * 60f, 0f);
 
@@ -286,14 +294,18 @@ public class KasirManager : MonoBehaviour
 
     void SelesaikanShift()
     {
-        int gajiBersih = Mathf.Max(0, gajiTerkumpul - penaltiTotal);
+        // --- Gaji shift BOLEH MINUS kalau penalti kesalahan lebih besar dari komisi yang didapat -
+        // ini akan MOTONG uang yang sudah ada di MainScene (bukan cuma "gaji jadi Rp 0" doang) ---
+        int gajiBersih = gajiTerkumpul - penaltiTotal;
         HasilKerjaPartTime.SimpanHasil(gajiBersih, laparBerkurangPerShift, sanityBerkurangPerShift, jamDilewatiShift);
         SceneManager.LoadScene(namaSceneUtama, LoadSceneMode.Single);
     }
 
     void UpdateTeksGaji()
     {
-        if (textGajiTerkumpul) textGajiTerkumpul.text = "Gaji shift ini: Rp " + Mathf.Max(0, gajiTerkumpul - penaltiTotal).ToString("N0");
+        int gajiBersih = gajiTerkumpul - penaltiTotal;
+        string tandaMinus = gajiBersih < 0 ? "-" : "";
+        if (textGajiTerkumpul) textGajiTerkumpul.text = "Gaji shift ini: " + tandaMinus + "Rp " + Mathf.Abs(gajiBersih).ToString("N0");
     }
 
     void UpdateTeksPelanggan()
