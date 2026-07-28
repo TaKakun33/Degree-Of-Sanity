@@ -40,4 +40,12 @@ public class AnswerSheetUI : MonoBehaviour
         }
         spawnedRows.Clear();
     }
+
+    // --- TAMBAHAN: dipanggil GradingGameManager begitu game selesai, biar tombol Next gak bisa
+    // diklik lagi. Sengaja CUMA matiin tombolnya (bukan seluruh GameObject Paper), biar aman
+    // gak peduli ScorePanel itu child dari Paper atau bukan di Hierarchy kamu. ---
+    public void DisableInteraction()
+    {
+        if (nextButton != null) nextButton.interactable = false;
+    }
 }

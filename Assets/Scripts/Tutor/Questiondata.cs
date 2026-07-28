@@ -1,18 +1,15 @@
 using System;
 
-// Tambahkan subjek baru di sini nanti, misal: IPA, BahasaIndonesia, dll.
-// QuestionGenerator perlu ditambah case baru sesuai subjek yang ditambahkan.
-public enum SubjectType
-{
-    Matematika
-}
-
+// --- Data satu soal di kertas jawaban ---
+// correctAnswer & studentAnswer berupa STRING (bukan int seperti versi lama), supaya bisa
+// menampung jawaban Bahasa Inggris/IPU yang bukan angka, bukan cuma Matematika.
 [Serializable]
 public class QuestionData
 {
-    public string questionText;      // contoh: "12 + 7 = ..."
-    public int correctAnswer;        // jawaban yang benar secara matematis
-    public int studentAnswer;        // jawaban yang tertulis di kertas siswa
+    public SubjectType subject;
+    public string questionText;      // contoh: "12 + 7 = ..." atau "Ibu kota Indonesia adalah"
+    public string correctAnswer;     // jawaban yang benar
+    public string studentAnswer;     // jawaban yang tertulis di kertas siswa
     public bool isStudentAnswerActuallyCorrect; // ground truth, dipakai untuk validasi skor
 
     // Default TRUE: soal yang tidak dicoret pemain otomatis dianggap BENAR.

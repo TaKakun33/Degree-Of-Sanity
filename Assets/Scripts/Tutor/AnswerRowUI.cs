@@ -21,7 +21,7 @@ public class AnswerRowUI : MonoBehaviour
 
         numberText.text = $"{index + 1}.";
         questionText.text = data.questionText;
-        studentAnswerText.text = data.studentAnswer.ToString();
+        studentAnswerText.text = data.studentAnswer;
 
         rowButton.onClick.RemoveAllListeners();
         rowButton.onClick.AddListener(OnRowClicked);
