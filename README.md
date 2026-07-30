@@ -7,8 +7,6 @@ Still Under development
 Daftar tugas yang perlu segera dikembangkan:
 
 - [ ] **Semua ASET dan MUSIC** (PERLU SECEPATNYA)
-- [ ] **Minigame Skripsi** (Sistem pengetikan presisi pada objek laptop)
-- [ ] **Minigame Kerja Part Time** (Kasir, Ojek Online, dan Home Tutor)
 - [ ] **Sistem NPC adiknya** (cara beriteraksi dengan adik)
 - [ ] **Sistem Liburan** (Butuh di dikusikan)
 - [ ] **Terkait Cerita** (prolog maupun epilog)
