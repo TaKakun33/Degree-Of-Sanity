@@ -41,27 +41,40 @@ public class CameraController : MonoBehaviour
 
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
 
-        // zoom ke arah kursir
+        // zoom ke arah kursor
         float scroll = Mouse.current.scroll.ReadValue().y;
         if (scroll != 0)
         {
+            // --- FIX: hitung offset kursor dari TENGAH LAYAR pakai koordinat viewport (0-1),
+            // BUKAN cam.ScreenToWorldPoint(). ScreenToWorldPoint bergantung ke transform.position
+            // AKTUAL kamera, yang lagi "ngejar" targetPosition lewat Lerp terpisah di LateUpdate().
+            // Dua smoothing (SmoothDamp buat zoom, Lerp buat posisi) yang gak sinkron itu yang
+            // bikin gambar bergetar tiap kali di-recompute ulang tiap frame - sekarang cuma
+            // dihitung SEKALI per input scroll, pakai nilai target (bukan nilai yang lagi lerping). ---
+            Vector2 viewportPos = cam.ScreenToViewportPoint(mouseScreenPos);
+            Vector2 offsetDariTengah = new Vector2(viewportPos.x - 0.5f, viewportPos.y - 0.5f);
+
+            float zoomSebelum = targetZoom;
             targetZoom -= Mathf.Sign(scroll) * zoomStep;
             targetZoom = Mathf.Clamp(targetZoom, minZoom, maxZoom);
+            float zoomSesudah = targetZoom;
+
+            // Ukuran dunia yang kelihatan di layar berubah proporsional sama orthographicSize
+            float tinggiSebelum = zoomSebelum * 2f;
+            float tinggiSesudah = zoomSesudah * 2f;
+            float lebarSebelum = tinggiSebelum * cam.aspect;
+            float lebarSesudah = tinggiSesudah * cam.aspect;
+
+            Vector2 posisiDuniaSebelum = new Vector2(offsetDariTengah.x * lebarSebelum, offsetDariTengah.y * tinggiSebelum);
+            Vector2 posisiDuniaSesudah = new Vector2(offsetDariTengah.x * lebarSesudah, offsetDariTengah.y * tinggiSesudah);
+
+            // Geser targetPosition sebesar selisihnya, biar titik yang ada di bawah kursor tetap di tempat yang sama
+            targetPosition.x += posisiDuniaSebelum.x - posisiDuniaSesudah.x;
+            targetPosition.y += posisiDuniaSebelum.y - posisiDuniaSesudah.y;
         }
 
-        // Simpan posisi dunia kursor SEBELUM ukuran kamera diubah
-        Vector3 mouseWorldPosBefore = cam.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, -transform.position.z));
-        
-        // Terapkan efek zoom secara mulus ke kamera
+        // Terapkan efek zoom secara mulus ke kamera (setelah kompensasi posisi dihitung di atas)
         cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, targetZoom, ref zoomVelocity, zoomSmoothTime);
-        
-        // Simpan posisi dunia kursor SETELAH ukuran kamera diubah
-        Vector3 mouseWorldPosAfter = cam.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, -transform.position.z));
-        
-        // Geser target posisi kamera untuk mengimbangi perbedaan jarak, 
-        // sehingga kursor tetap berada di titik yang sama di dunia game.
-        targetPosition += (mouseWorldPosBefore - mouseWorldPosAfter);
-
 
         // Geser kitika klik kanan
         if (Mouse.current.rightButton.isPressed)
@@ -79,9 +92,12 @@ public class CameraController : MonoBehaviour
 
     void ClampCamera()
     {
-        // Menghitung batas ukuran layar berdasarkan zoom
-        float camHeight = cam.orthographicSize;
-        float camWidth = cam.orthographicSize * cam.aspect;
+        // --- FIX: pakai targetZoom (nilai TUJUAN akhir, stabil), bukan cam.orthographicSize
+        // (nilai AKTUAL yang lagi berubah tiap frame selama transisi SmoothDamp). Kalau pakai
+        // orthographicSize, batas peta ikut goyang tiap frame selama proses zoom berlangsung,
+        // dan targetPosition bisa ke-clamp bolak-balik di situ - itu sumber getaran kedua. ---
+        float camHeight = targetZoom;
+        float camWidth = targetZoom * cam.aspect;
 
         float minX = minBounds.x + camWidth;
         float maxX = maxBounds.x - camWidth;

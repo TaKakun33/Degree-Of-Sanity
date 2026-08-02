@@ -48,6 +48,23 @@ public class MinigameSkripsiManager : MonoBehaviour
     [Tooltip("Nama scene minigame ini sendiri, HARUS sama persis dengan nama file & yang didaftarkan di Build Settings")]
     public string namaSceneMinigame = "MinigameSkripsi";
 
+    [Header("Upgrade Permanen: Keyboard Ergonomis (Item Toko 4)")]
+    [Tooltip("Kalau pemain punya Keyboard Ergonomis, Max Typo ditambah segini (lebih toleran, 'lebih mudah mengetik dengan presisi')")]
+    public int bonusMaxTypoKeyboard = 2;
+    [Range(0f, 1f)]
+    [Tooltip("Kalau pemain punya Keyboard Ergonomis, drain Sanity per tick dikali segini (lebih ringan/santai)")]
+    public float pengaliSanityKeyboard = 0.5f;
+
+    [Header("Upgrade Permanen: Buku Referensi (Item Toko 5)")]
+    [Tooltip("Kalau pemain punya Buku Referensi, plafon Progres Skripsi per sesi dikali segini")]
+    public float pengaliProgresBuku = 1.5f;
+
+    // --- Nilai EFEKTIF yang dipakai selama sesi berjalan, dihitung sekali di MulaiMinigame()
+    // berdasarkan upgrade permanen yang dipunyai pemain (InventoryManager) ---
+    private int maxTypoEfektif;
+    private float sanityBerkurangPerTickEfektif;
+    private float progresMaksimalPerSesiEfektif;
+
     private List<string> urutanKataSesi;
     private int indexKataSesi = 0;       // posisi kata yang sedang dikerjakan di urutanKataSesi
     private string kataSaatIni = "";
@@ -97,6 +114,21 @@ public class MinigameSkripsiManager : MonoBehaviour
             return;
         }
         GameManager.Instance.TandaiSkripsiSudahDikerjakan();
+
+        // --- TAMBAHAN: terapkan upgrade permanen (Keyboard Ergonomis & Buku Referensi) kalau dipunyai pemain ---
+        maxTypoEfektif = maxTypo;
+        sanityBerkurangPerTickEfektif = sanityBerkurangPerTick;
+        progresMaksimalPerSesiEfektif = progresMaksimalPerSesi;
+
+        if (InventoryManager.Instance != null) {
+            if (InventoryManager.Instance.punyaKeyboard) {
+                maxTypoEfektif += bonusMaxTypoKeyboard;
+                sanityBerkurangPerTickEfektif *= pengaliSanityKeyboard;
+            }
+            if (InventoryManager.Instance.punyaBuku) {
+                progresMaksimalPerSesiEfektif *= pengaliProgresBuku;
+            }
+        }
 
         minigameAktif = true;
         jumlahTypoSaatIni = 0;
@@ -193,7 +225,7 @@ public class MinigameSkripsiManager : MonoBehaviour
     // --- Satu kata selesai diketik benar: kasih progres, lanjut ke kata berikutnya di urutan ---
     void SelesaikanSatuKata()
     {
-        float progresPerKata = progresMaksimalPerSesi / Mathf.Max(1, jumlahKataUntukProgresPenuh);
+        float progresPerKata = progresMaksimalPerSesiEfektif / Mathf.Max(1, jumlahKataUntukProgresPenuh);
         TanganiKetikBenar(progresPerKata);
 
         indexKataSesi++;
@@ -214,13 +246,13 @@ public class MinigameSkripsiManager : MonoBehaviour
     void TanganiTickWaktu(float deltaJam)
     {
         if (!minigameAktif) return;
-        GameManager.Instance.KurangiSanity(sanityBerkurangPerTick);
+        GameManager.Instance.KurangiSanity(sanityBerkurangPerTickEfektif);
     }
 
     public void TanganiKetikBenar(float tambahProgres)
     {
         if (!minigameAktif) return;
-        progresSesiIni = Mathf.Clamp(progresSesiIni + tambahProgres, 0f, progresMaksimalPerSesi);
+        progresSesiIni = Mathf.Clamp(progresSesiIni + tambahProgres, 0f, progresMaksimalPerSesiEfektif);
         UpdateTeksProgres();
     }
 
@@ -231,14 +263,14 @@ public class MinigameSkripsiManager : MonoBehaviour
         jumlahTypoSaatIni++;
         UpdateTeksTypo();
 
-        if (jumlahTypoSaatIni >= maxTypo) {
+        if (jumlahTypoSaatIni >= maxTypoEfektif) {
             SelesaikanSesi(); // gagal karena typo melebihi batas toleransi
         }
     }
 
     void UpdateTeksTypo()
     {
-        if (textJumlahTypo) textJumlahTypo.text = jumlahTypoSaatIni + " / " + maxTypo + " Typo";
+        if (textJumlahTypo) textJumlahTypo.text = jumlahTypoSaatIni + " / " + maxTypoEfektif + " Typo";
     }
 
     void UpdateTeksProgres()

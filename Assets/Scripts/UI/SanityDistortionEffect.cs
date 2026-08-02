@@ -33,12 +33,11 @@ public class SanityDistortionEffect : MonoBehaviour
 
     // 0 = normal (tidak ada distorsi), 1 = distorsi penuh
     private float intensitasSaatIni = 0f;
-    private Vector3 posisiAsliKamera;
+    private Vector3 offsetShakeSebelumnya = Vector3.zero; // TAMBAHAN: gantiin posisiAsliKamera yang beku
     private float timerBisikan;
 
     void Start()
     {
-        if (kameraUtama) posisiAsliKamera = kameraUtama.localPosition;
         AturTimerBisikanBaru();
 
         if (overlayDistorsi) {
@@ -48,14 +47,15 @@ public class SanityDistortionEffect : MonoBehaviour
         }
     }
 
-    void Update()
+    void LateUpdate()
     {
+        // --- FIX: pindah ke LateUpdate() (bukan Update()), biar prosesnya sefase sama CameraController
+        // yang juga jalan di LateUpdate() - ngurangin kemungkinan tabrakan urutan eksekusi antar script. ---
         if (GameManager.Instance == null) return;
 
         float sanity = GameManager.Instance.sanity;
         float ambang = GameManager.Instance.ambangSanityDistorsi;
 
-        // Target intensitas: 0 saat Sanity >= ambang, naik linear menuju 1 saat Sanity mendekati 0
         float targetIntensitas = 0f;
         if (sanity < ambang) {
             targetIntensitas = Mathf.InverseLerp(ambang, 0f, sanity);
@@ -79,18 +79,25 @@ public class SanityDistortionEffect : MonoBehaviour
     {
         if (!kameraUtama) return;
 
+        // --- FIX: hapus dulu offset shake dari FRAME SEBELUMNYA, biar gak numpuk dan gak
+        // pernah "menimpa total" posisi yang udah diatur CameraController - ini cuma nambah/
+        // ngurangin delta kecil, bukan reset ke titik statis. ---
+        kameraUtama.localPosition -= offsetShakeSebelumnya;
+
         if (intensitasSaatIni <= 0.01f) {
-            kameraUtama.localPosition = posisiAsliKamera;
+            offsetShakeSebelumnya = Vector3.zero;
             return;
         }
 
         float kekuatan = kekuatanShakeMaksimum * intensitasSaatIni;
-        Vector3 offset = new Vector3(
+        Vector3 offsetBaru = new Vector3(
             (Mathf.PerlinNoise(Time.time * 5f, 0f) - 0.5f) * kekuatan,
             (Mathf.PerlinNoise(0f, Time.time * 5f) - 0.5f) * kekuatan,
             0f
         );
-        kameraUtama.localPosition = posisiAsliKamera + offset;
+
+        kameraUtama.localPosition += offsetBaru;
+        offsetShakeSebelumnya = offsetBaru;
     }
 
     void TerapkanBisikan()
