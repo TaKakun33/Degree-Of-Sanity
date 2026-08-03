@@ -24,6 +24,12 @@ public class DataSimpanan
     // Posisi Player
     public float playerX, playerY;
     public int lantai;
+
+    // --- TAMBAHAN: batasan harian - WAJIB disimpan, soalnya KasirScene/OjolScene/TutorScene
+    // di-load Single (GameManager beneran hancur & dibuat ulang), jadi tanpa ini flag-nya
+    // bakal reset ke false lagi tiap kali GameManager baru dibuat, walau harusnya masih hari yang sama ---
+    public bool skripsiSudahDikerjakanHariIni;
+    public bool kerjaPartTimeSudahDilakukanHariIni;
 }
 
 public class SaveManager : MonoBehaviour
@@ -53,6 +59,8 @@ public class SaveManager : MonoBehaviour
             data.lapar = GameManager.Instance.lapar;
             data.sanity = GameManager.Instance.sanity;
             data.jamSaatIni = GameManager.Instance.jamSaatIni;
+            data.skripsiSudahDikerjakanHariIni = GameManager.Instance.SkripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
+            data.kerjaPartTimeSudahDilakukanHariIni = GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
         }
 
         // 2. Kumpulkan Data Inventory
@@ -102,6 +110,8 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.lapar = data.lapar;
                 GameManager.Instance.sanity = data.sanity;
                 GameManager.Instance.jamSaatIni = data.jamSaatIni;
+                GameManager.Instance.SkripsiSudahDikerjakanHariIni = data.skripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni = data.kerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
             }
 
             // 2. Restore Inventory
@@ -222,5 +232,38 @@ public class SaveManager : MonoBehaviour
             return "Slot " + nomorSlot + " | Hari " + d.waktu + " | Rp " + d.uang;
         }
         return "Slot " + nomorSlot + " (Empty)";
+    }
+
+    // --- TAMBAHAN: hapus SEMUA save yang ada, TERMASUK autosave (slot 0) ---
+    public void HapusSemuaSave()
+    {
+        // Hapus autosave
+        if (PlayerPrefs.HasKey("SaveData_Slot_0")) {
+            PlayerPrefs.DeleteKey("SaveData_Slot_0");
+        }
+
+        // Hapus semua slot manual yang terdaftar di registry
+        DaftarSlotSave daftar = MuatDaftarSlot();
+        foreach (int slot in daftar.slots) {
+            string key = "SaveData_Slot_" + slot;
+            if (PlayerPrefs.HasKey(key)) PlayerPrefs.DeleteKey(key);
+        }
+
+        // Kosongkan registry-nya sendiri
+        daftar.slots.Clear();
+        SimpanDaftarSlot(daftar);
+
+        // Reset penanda "slot terakhir dipakai"
+        PlayerPrefs.DeleteKey("SlotSaveTerakhir");
+
+        PlayerPrefs.Save();
+        Debug.Log("Semua save (termasuk autosave) berhasil dihapus.");
+    }
+
+    // --- TAMBAHAN: cek apakah ADA save apapun - dipakai buat nentuin tombol "Continue" aktif/nonaktif ---
+    public bool ApakahAdaSaveApapun()
+    {
+        if (CekSaveAda(0)) return true; // autosave
+        return DapatkanDaftarSlotTersimpan().Count > 0;
     }
 }

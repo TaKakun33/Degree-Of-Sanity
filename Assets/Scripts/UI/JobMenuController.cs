@@ -17,10 +17,13 @@ public class JobMenuController : MonoBehaviour
     {
         // Sebelum pindah scene, buka kunci pergerakan agar tidak bug saat kembali
         player.SetMenuStatus(false); 
-        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false); // Kembalikan waktu
+        if (GameManager.Instance != null) {
+            GameManager.Instance.SetJedaWaktu(false); // Kembalikan waktu
+            GameManager.Instance.TandaiKerjaPartTimeSudahDilakukan(); // Tandai jatah harian terpakai
+        }
 
-        // --- PENTING (sama kayak PemicuKerjaKasir): KasirScene dimuat SINGLE, GameManager di sini
-        // bakal HANCUR. Autosave dulu ke slot 0, supaya balik nanti GameManager reload state SAAT INI. ---
+        // --- PENTING: KasirScene dimuat SINGLE, GameManager di sini bakal HANCUR.
+        // Autosave dulu ke slot 0, supaya balik nanti GameManager reload state SAAT INI. ---
         if (SaveManager.Instance != null) {
             SaveManager.Instance.SimpanGame(0);
             SaveManager.slotUntukDiload = 0;
@@ -32,10 +35,11 @@ public class JobMenuController : MonoBehaviour
     public void PilihOjekOnline()
     {
         player.SetMenuStatus(false);
-        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false);
+        if (GameManager.Instance != null) {
+            GameManager.Instance.SetJedaWaktu(false);
+            GameManager.Instance.TandaiKerjaPartTimeSudahDilakukan();
+        }
 
-        // --- PENTING (sama kayak PemicuKerjaKasir): OjolScene dimuat SINGLE, GameManager di sini
-        // bakal HANCUR. Autosave dulu ke slot 0, supaya balik nanti GameManager reload state SAAT INI. ---
         if (SaveManager.Instance != null) {
             SaveManager.Instance.SimpanGame(0);
             SaveManager.slotUntukDiload = 0;
@@ -47,10 +51,11 @@ public class JobMenuController : MonoBehaviour
     public void PilihHometutor()
     {
         player.SetMenuStatus(false);
-        if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false);
+        if (GameManager.Instance != null) {
+            GameManager.Instance.SetJedaWaktu(false);
+            GameManager.Instance.TandaiKerjaPartTimeSudahDilakukan();
+        }
 
-        // --- PENTING (sama kayak PemicuKerjaKasir): TutorScene dimuat SINGLE, GameManager di sini
-        // bakal HANCUR. Autosave dulu ke slot 0, supaya balik nanti GameManager reload state SAAT INI. ---
         if (SaveManager.Instance != null) {
             SaveManager.Instance.SimpanGame(0);
             SaveManager.slotUntukDiload = 0;
@@ -66,7 +71,6 @@ public class JobMenuController : MonoBehaviour
         if (player != null)
         {
             player.SetMenuStatus(false);
-            Debug.Log("Menu ditutup, status player dikembalikan ke: " + false);
         }
         else
         {

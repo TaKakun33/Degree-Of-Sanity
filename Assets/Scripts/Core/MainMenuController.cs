@@ -11,6 +11,10 @@ public class MainMenuController : MonoBehaviour
     public GameObject panelLoadGame;
     public GameObject panelPengaturan;
 
+    [Header("Tombol Continue")]
+    [Tooltip("Tombol 'Continue' di menu utama - otomatis dinonaktifkan kalau belum ada save sama sekali")]
+    public Button tombolLanjutkan;
+
     [Header("Pengaturan Nama Scene")]
     public string namaSceneGame = "SampleScene"; 
 
@@ -106,6 +110,22 @@ public class MainMenuController : MonoBehaviour
         panelLoadGame.SetActive(false);
         panelPengaturan.SetActive(false);
         ResetModeHapus(); // --- TAMBAHAN: pastikan lain kali dibuka, mulai dari mode Load biasa ---
+        UpdateTombolLanjutkan(); // --- TAMBAHAN: refresh status tombol Continue tiap balik ke menu utama ---
+    }
+
+    // --- TAMBAHAN: nonaktifkan tombol Continue kalau belum ada save sama sekali (pertama kali main) ---
+    void UpdateTombolLanjutkan()
+    {
+        if (tombolLanjutkan == null) return;
+        tombolLanjutkan.interactable = SaveManager.Instance != null && SaveManager.Instance.ApakahAdaSaveApapun();
+    }
+
+    // --- TAMBAHAN: hapus SEMUA save (termasuk autosave) - hubungkan tombol "Reset" di panel Load Game ke sini ---
+    public void ResetSemuaSave()
+    {
+        if (SaveManager.Instance != null) SaveManager.Instance.HapusSemuaSave();
+        RefreshDaftarLoad();
+        UpdateTombolLanjutkan();
     }
 
     // --- FUNGSI LAINNYA ---

@@ -118,6 +118,13 @@ public class PauseMenuController : MonoBehaviour
         }
     }
 
+    // --- TAMBAHAN: hapus SEMUA save (termasuk autosave) - hubungkan tombol "Reset" di panelLoad ke sini ---
+    public void ResetSemuaSave()
+    {
+        if (SaveManager.Instance != null) SaveManager.Instance.HapusSemuaSave();
+        BukaLoadGame(); // refresh isi scroll view (bakal kosong total setelah direset)
+    }
+
     // --- Membuat satu tombol slot di scroll view Load. ---
     // Isi & aksinya berubah tergantung mode: Load (default) atau Hapus (kalau modeHapusAktif aktif)
     void BuatTombolSlot(int slot, string teks) {

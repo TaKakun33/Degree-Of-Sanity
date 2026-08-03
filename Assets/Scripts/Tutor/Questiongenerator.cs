@@ -94,7 +94,7 @@ public static class QuestionGenerator
         ("Mata uang Jepang adalah", "Yen"),
         ("Gunung tertinggi di dunia adalah", "Everest"),
         ("Organ tubuh yang memompa darah adalah", "Jantung"),
-        ("Satuan ukur suhu yang umum di Indonesia adalah", "Celcius"),
+        ("Satuan suhu yang umum di Indonesia adalah", "Celcius"),
         ("Lambang negara Indonesia adalah", "Garuda Pancasila"),
         ("Planet yang dijuluki 'Planet Merah' adalah", "Mars"),
     };

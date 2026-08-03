@@ -44,6 +44,14 @@ public class GameManager : MonoBehaviour
     public Slider sliderProgresSkripsi;
     public Slider sliderLapar;
     public Slider sliderSanity;
+    [Tooltip("TAMBAHAN: teks Monolog Akhir Hari (opsional). Kalau field 'Monolog Akhir Hari Berikutnya' di bawah diisi sebelum tidur, teks ini bakal nampilinnya sesaat, lalu otomatis dikosongkan lagi.")]
+    public TextMeshProUGUI textMonologAkhirHari;
+
+    [Tooltip("Isi manual (atau lewat sistem cerita nanti) SEBELUM pemain tidur, buat nampilin 1 baris Monolog Akhir Hari. Kosongkan string ini kalau gak mau nampilin apa-apa.")]
+    public string monologAkhirHariBerikutnya = "";
+
+    [Tooltip("Batas progres skripsi maksimal SAAT INI - default 100 (bebas penuh). Sistem cerita nanti bisa nurunin ini sementara buat nge-cap progres sampai event tertentu terjadi (Naskah Alur: 'progres terkunci sampai event berjalan').")]
+    public float batasProgresMaksimalSaatIni = 100f;
 
     [Header("Transisi Layar")]
     public Image layarGelap;
@@ -75,11 +83,36 @@ public class GameManager : MonoBehaviour
     public GameObject panelBadEnding;
     [Tooltip("Panel yang otomatis muncul saat Progres Skripsi mencapai 100%")]
     public GameObject panelGoodEnding;
+    [Tooltip("TAMBAHAN: Panel True Ending - dipakai kalau nanti nambah sistem cerita/Anna, biarkan kosong (None) kalau belum ada")]
+    public GameObject panelTrueEnding;
+    [Tooltip("TAMBAHAN: Panel Bad Ending versi 'tertunda' (misal dari pilihan cerita tertentu) - biarkan kosong kalau belum ada")]
+    public GameObject panelBadEndingTertunda;
     private bool endingSudahDipicu = false;
+
+    [Header("Syarat Ending Tambahan (opsional, siap dipakai nanti kalau ada sistem cerita/Anna)")]
+    [Tooltip("Hari ke berapa ending final dievaluasi kalau progres masih di bawah 100% (0 = fitur ini nonaktif, pakai sistem 'waktu habis' lama aja)")]
+    public int hariEpilog = 0;
+    public float sanityMinimalTrueEnding = 40f;
+    public float sanityMinimalHappyEnding = 20f;
+    [Tooltip("Placeholder tracking interaksi 'Ngobrol sama Anna' - panggil TambahInteraksiAnna() dari sistem Anna nanti")]
+    public int totalInteraksiAnna = 0;
+    public int minimalInteraksiAnnaTrueEnding = 15;
+    [Tooltip("Isi manual dari sistem cerita nanti: 'A', 'B', atau 'C' (Main Event 6 'Pilihan Dilematis'). Kosongkan (' ') kalau belum dipakai.")]
+    public char pilihanEvent6 = ' ';
 
     [Header("Batasan Minigame Skripsi")]
     [Tooltip("Skripsi cuma bisa dikerjakan 1x per hari; direset otomatis tiap ganti hari")]
     private bool skripsiSudahDikerjakanHariIni = false;
+
+    [Header("Batasan Kerja Part Time")]
+    [Tooltip("Kerja part time (Kasir/Ojol/Tutor) cuma bisa 1x per hari; direset otomatis tiap ganti hari")]
+    private bool kerjaPartTimeSudahDilakukanHariIni = false;
+
+    [Header("Sistem Hari & Cerita (siap dipakai nanti kalau nambah CeritaManager - gak wajib diisi sekarang)")]
+    [Tooltip("Hari ke berapa dari awal permainan, NAIK terus - beda dari 'waktu' yang turun (sisa masa studi)")]
+    public int hariKe = 1;
+    [Tooltip("Dipicu tiap kali hari berganti - sistem cerita/Anna nanti tinggal subscribe ke event ini")]
+    public event System.Action OnHariBerganti;
 
     [Header("Tombol HUD (disembunyikan saat tidur ATAU minigame aktif)")]
     [Tooltip("Tombol untuk buka Toko di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
@@ -197,6 +230,29 @@ public class GameManager : MonoBehaviour
         skripsiSudahDikerjakanHariIni = true;
     }
 
+    // --- TAMBAHAN: dipakai SaveManager buat nyimpen/muat balik flag ini - PENTING karena KasirScene/
+    // OjolScene/TutorScene di-load SINGLE, jadi GameManager beneran hancur & dibuat ulang. Tanpa ini,
+    // flag "sudah dikerjakan hari ini" bakal balik ke false lagi tiap kali GameManager baru dibuat. ---
+    public bool SkripsiSudahDikerjakanHariIni {
+        get => skripsiSudahDikerjakanHariIni;
+        set => skripsiSudahDikerjakanHariIni = value;
+    }
+
+    // --- TAMBAHAN: sama pola persis kayak Skripsi, tapi buat kerja part time (Kasir/Ojol/Tutor) ---
+    public bool BisaKerjaPartTimeHariIni => !kerjaPartTimeSudahDilakukanHariIni;
+
+    public void TandaiKerjaPartTimeSudahDilakukan()
+    {
+        kerjaPartTimeSudahDilakukanHariIni = true;
+    }
+
+    // --- TAMBAHAN: sama alasannya kayak di atas - SaveManager perlu ini biar flag-nya gak reset
+    // sendiri tiap kali balik dari KasirScene/OjolScene/TutorScene (Single load) ---
+    public bool KerjaPartTimeSudahDilakukanHariIni {
+        get => kerjaPartTimeSudahDilakukanHariIni;
+        set => kerjaPartTimeSudahDilakukanHariIni = value;
+    }
+
     // --- TAMBAHAN: Tombol Toko & Inventory di HUD - dipakai baik saat tidur maupun minigame aktif ---
     public void SetTombolHUDAktif(bool aktif)
     {
@@ -257,12 +313,20 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
-    // --- TAMBAHAN: Titik terpusat untuk menambah Progres Skripsi, sekaligus cek Good Ending ---
+    // --- TAMBAHAN: Titik terpusat untuk menambah Progres Skripsi ---
+    // TIDAK LAGI langsung memicu Good Ending di sini - dicek terpisah lewat CekEvaluasiEndingFinal()
+    // (dipanggil dari GantiHari()), biar konsisten kalau nanti dipakai bareng sistem cerita.
     public void TambahProgresSkripsi(float jumlah)
     {
-        progresSkripsi = Mathf.Clamp(progresSkripsi + jumlah, 0f, 100f);
+        progresSkripsi = Mathf.Clamp(progresSkripsi + jumlah, 0f, batasProgresMaksimalSaatIni);
         UpdateUI();
-        CekKondisiKelulusan();
+        CekEvaluasiEndingFinal();
+    }
+
+    // --- TAMBAHAN: Dipanggil sistem "Ngobrol sama Anna" nanti (placeholder, gak wajib dipakai sekarang) ---
+    public void TambahInteraksiAnna()
+    {
+        totalInteraksiAnna++;
     }
 
     // --- TAMBAHAN: Cek kondisi Bad Ending (Proposal 3.6.4): Sanity 0% ---
@@ -272,11 +336,49 @@ public class GameManager : MonoBehaviour
         if (sanity <= 0f) TampilkanBadEnding();
     }
 
-    // --- TAMBAHAN: Cek kondisi Good/Happy Ending (Proposal 3.6.4): Progres Skripsi 100% ---
-    void CekKondisiKelulusan()
+    // --- TAMBAHAN: Evaluasi ending final. Kalau "Hari Epilog" belum diisi (masih 0), sistem ini
+    // otomatis nonaktif - progres 100% cukup buat langsung munculin Happy Ending kayak sebelumnya
+    // (biar tetap jalan normal walau kamu belum punya sistem cerita/hari). Begitu "Hari Epilog"
+    // diisi manual di Inspector (misal 61), baru ending final ditunda sampai hari itu tercapai. ---
+    void CekEvaluasiEndingFinal()
     {
         if (endingSudahDipicu) return;
-        if (progresSkripsi >= 100f) TampilkanGoodEnding();
+
+        bool modeCeritaAktif = hariEpilog > 0;
+
+        if (!modeCeritaAktif) {
+            // --- Mode lama (tanpa sistem cerita): progres 100% langsung Happy Ending ---
+            if (progresSkripsi >= 100f) TampilkanGoodEnding();
+            return;
+        }
+
+        // --- Mode cerita aktif: tunda evaluasi sampai Hari Epilog tercapai ---
+        if (hariKe < hariEpilog) return;
+
+        bool syaratTrueEnding = progresSkripsi >= 100f
+            && sanity >= sanityMinimalTrueEnding
+            && pilihanEvent6 == 'C'
+            && totalInteraksiAnna >= minimalInteraksiAnnaTrueEnding;
+
+        if (syaratTrueEnding) { TampilkanTrueEnding(); return; }
+
+        bool syaratHappyEnding = progresSkripsi >= 100f && sanity > sanityMinimalHappyEnding;
+        if (syaratHappyEnding) { TampilkanGoodEnding(); return; }
+
+        TampilkanBadEnding();
+    }
+
+    // --- TAMBAHAN: dipanggil manual (misal tombol pilihan cerita nanti) buat Bad Ending versi "tertunda" ---
+    public void PicuBadEndingTertunda()
+    {
+        pilihanEvent6 = 'B';
+        if (endingSudahDipicu) return;
+        endingSudahDipicu = true;
+        Debug.Log("Bad Ending 'Tertunda' dipicu.");
+        OnPermainanBerakhir?.Invoke();
+        Time.timeScale = 0;
+        TutupSemuaPanelGame();
+        if (panelBadEndingTertunda) panelBadEndingTertunda.SetActive(true);
     }
 
     // --- TAMBAHAN: Tampilkan panel Bad Ending & hentikan permainan ---
@@ -301,6 +403,18 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelGoodEnding) panelGoodEnding.SetActive(true);
+    }
+
+    // --- TAMBAHAN: Tampilkan panel True Ending & hentikan permainan (siap dipakai kalau ada sistem cerita) ---
+    void TampilkanTrueEnding()
+    {
+        if (endingSudahDipicu) return;
+        endingSudahDipicu = true;
+        Debug.Log("True Ending dipicu.");
+        OnPermainanBerakhir?.Invoke();
+        Time.timeScale = 0;
+        TutupSemuaPanelGame();
+        if (panelTrueEnding) panelTrueEnding.SetActive(true);
     }
 
     // --- TAMBAHAN: Restart permainan dari awal (dipanggil tombol "Restart" di panel Bad/Good Ending) ---
@@ -376,13 +490,21 @@ public class GameManager : MonoBehaviour
     public void GantiHari()
     {
         waktu -= 1;
+        hariKe += 1; // --- TAMBAHAN: penanda hari-ke, naik terus (beda dari 'waktu' yang turun) ---
         jamSaatIni = jamMulai;
         kopiDigunakanHariIni = false; // --- TAMBAHAN: buff Kopi Espresso cuma berlaku 1 hari ---
         skripsiSudahDikerjakanHariIni = false; // --- TAMBAHAN: jatah skripsi harian direset tiap hari baru ---
+        kerjaPartTimeSudahDilakukanHariIni = false; // --- TAMBAHAN: jatah kerja part time direset tiap hari baru ---
 
         // --- Lapar tetap memburuk tiap ganti hari, tapi Sanity DIPULIHKAN dari tidur (Proposal 3.6.3) ---
         KurangiLapar(penguranganLaparSaatTidur);
         TambahSanity(pemulihanSanitySaatTidur);
+
+        // --- TAMBAHAN: kasih tau sistem lain (nanti CeritaManager/AnnaNPC/CicilanManager) hari udah berganti ---
+        OnHariBerganti?.Invoke();
+
+        // --- TAMBAHAN: evaluasi ending final (mode cerita, kalau Hari Epilog udah diisi) ---
+        CekEvaluasiEndingFinal();
 
         // --- TAMBAHAN: Waktu (sisa masa studi) habis sebelum skripsi 100% -> Bad Ending (Proposal 3.3.7 & 3.6.4) ---
         if (waktu <= 0 && progresSkripsi < 100f) {
@@ -409,7 +531,18 @@ public class GameManager : MonoBehaviour
         float alpha = 0;
         while (alpha < 1) { alpha += Time.deltaTime * 1.5f; if (layarGelap) layarGelap.color = new Color(0, 0, 0, alpha); yield return null; }
         GantiHari();
+
+        // --- TAMBAHAN: tampilkan Monolog Akhir Hari kalau ada yang dititipkan (opsional, siap dipakai sistem cerita nanti) ---
+        if (!string.IsNullOrEmpty(monologAkhirHariBerikutnya) && textMonologAkhirHari != null) {
+            textMonologAkhirHari.text = monologAkhirHariBerikutnya;
+            textMonologAkhirHari.gameObject.SetActive(true);
+        }
+
         yield return new WaitForSeconds(1.5f);
+
+        if (textMonologAkhirHari != null) textMonologAkhirHari.gameObject.SetActive(false);
+        monologAkhirHariBerikutnya = ""; // reset, cuma tampil sekali per titipan
+
         while (alpha > 0) { alpha -= Time.deltaTime * 1.5f; if (layarGelap) layarGelap.color = new Color(0, 0, 0, alpha); yield return null; }
         waktuBerjalan = true;
         prosesTidurAktif = false; // --- TAMBAHAN: izinkan trigger tidur lagi di hari berikutnya ---
