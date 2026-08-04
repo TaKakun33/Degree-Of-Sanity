@@ -153,8 +153,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 27.697998, y: 3.149414}
-  m_SizeDelta: {x: -174.6035, y: -338.8907}
+  m_AnchoredPosition: {x: 4.6290283, y: 8.383}
+  m_SizeDelta: {x: -220.7416, y: -465.247}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &13488614
 MonoBehaviour:
@@ -185,8 +185,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -292,7 +292,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -79.51141, y: -238}
+  m_AnchoredPosition: {x: -84.243, y: -176}
   m_SizeDelta: {x: 948.1813, y: 62.0026}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &35657092
@@ -546,6 +546,9 @@ MonoBehaviour:
   maxTypo: 3
   progresMaksimalPerSesi: 10
   namaSceneMinigame: SkripsiScene
+  bonusMaxTypoKeyboard: 2
+  pengaliSanityKeyboard: 0.5
+  pengaliProgresBuku: 1.5
 --- !u!4 &73851211
 Transform:
   m_ObjectHideFlags: 0
@@ -890,8 +893,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 497.82544, y: 251.29358}
-  m_SizeDelta: {x: -1088.5681, y: -609.50476}
+  m_AnchoredPosition: {x: 439.32, y: 289.02}
+  m_SizeDelta: {x: -1047.2167, y: -777.46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &760865373
 CanvasRenderer:
@@ -930,8 +933,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1081,7 +1084,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 524.0811, y: -238}
+  m_AnchoredPosition: {x: 499.4, y: -176}
   m_SizeDelta: {x: 179.3, y: 62.002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1332127482
@@ -1225,8 +1228,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1250,7 +1253,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1312,8 +1315,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -489.17462, y: 251.29358}
-  m_SizeDelta: {x: -1088.5681, y: -609.50476}
+  m_AnchoredPosition: {x: -404.79, y: 297}
+  m_SizeDelta: {x: -1039.5726, y: -793.4238}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1672571397
 GameObject:
@@ -1491,8 +1494,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -173}
-  m_SizeDelta: {x: -573.3325, y: -419.7615}
+  m_AnchoredPosition: {x: 0, y: -78.55258}
+  m_SizeDelta: {x: -573.3325, y: -230.8667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1779869517
 MonoBehaviour:
@@ -1507,15 +1510,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -7010692883307749904, guid: bfea75ea696925e8ca3e4e28d6a56a22, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
