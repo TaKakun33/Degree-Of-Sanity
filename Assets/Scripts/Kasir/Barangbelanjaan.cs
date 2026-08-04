@@ -32,6 +32,9 @@ public class BarangBelanjaan : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasIndukUtama = GetComponentInParent<Canvas>();
     }
 
+    // --- TAMBAHAN: dipakai KasirManager buat ngecek posisi barang ini sebagai penghalang buat barang di belakangnya ---
+    public float PosisiXSaatIni => rectTransform.anchoredPosition.x;
+
     // --- Dipanggil KasirManager begitu barang ini di-spawn ---
     public void Setup(string nama, int hargaItem, float kecepatan, float batasKiri, float mulaiUlang)
     {
@@ -48,12 +51,20 @@ public class BarangBelanjaan : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // Berhenti bergerak begitu sudah dipindai (nunggu ditarik ke kantong), lagi diseret, atau sudah dibungkus
         if (sudahDibungkus || sedangDiseret || sudahDipindai) return;
 
+        // --- TAMBAHAN: batas kiri EFEKTIF - ujung track kalau dia paling depan, atau posisi barang
+        // lain yang masih ada di depannya (biar antre, gak numpuk/tembus). Ganti dari sistem recycle lama. ---
+        float batasKiriEfektif = xBatasKiri;
+        if (KasirManager.Instance != null) {
+            batasKiriEfektif = KasirManager.Instance.DapatkanBatasKiriUntukItem(this);
+        }
+
         Vector2 posisi = rectTransform.anchoredPosition;
-        posisi.x -= kecepatanGerak * Time.deltaTime;
+        float posisiBaruX = posisi.x - kecepatanGerak * Time.deltaTime;
 
-        // Gak ada tekanan waktu: kalau kelewat ujung belt, muncul lagi dari awal (recycle), bukan hilang/penalti
-        if (posisi.x < xBatasKiri) posisi.x = xMulaiUlang;
+        // Berhenti pas nyampe batas (ujung track ATAU nempel barang di depannya), jangan lewatin
+        if (posisiBaruX < batasKiriEfektif) posisiBaruX = batasKiriEfektif;
 
+        posisi.x = posisiBaruX;
         rectTransform.anchoredPosition = posisi;
     }
 

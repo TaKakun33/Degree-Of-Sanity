@@ -49,10 +49,14 @@ public class KasirManager : MonoBehaviour
     public Transform wadahConveyor;
     public GameObject prefabItemBelanjaan;
     public float kecepatanConveyor = 60f;
-    [Tooltip("Posisi X lokal di ujung kiri belt; barang yang lewat sini balik muncul dari kanan lagi")]
+    [Tooltip("OPSIONAL: kalau diisi, 'X Batas Kiri' & 'X Mulai Conveyor' di bawah OTOMATIS dihitung dari lebar object ini - gak perlu ketik angka manual. Bikin 1 Image/RectTransform kosong sepanjang track conveyor kamu, drag ke sini.")]
+    public RectTransform trackConveyor;
+    [Tooltip("Diabaikan kalau 'Track Conveyor' di atas diisi. Posisi X lokal di ujung kiri belt (manual fallback)")]
     public float xBatasKiriConveyor = -400f;
-    [Tooltip("Posisi X lokal awal/recycle di ujung kanan belt")]
+    [Tooltip("Diabaikan kalau 'Track Conveyor' di atas diisi. Posisi X lokal awal/spawn di ujung kanan belt (manual fallback)")]
     public float xMulaiConveyor = 400f;
+    [Tooltip("Jarak minimum antar barang di conveyor - biar gak numpuk/tabrakan visual pas ngantre")]
+    public float jarakMinimalAntarItem = 70f;
 
     [Header("Referensi UI Umum")]
     public TextMeshProUGUI textGajiTerkumpul;
@@ -106,7 +110,23 @@ public class KasirManager : MonoBehaviour
 
     void Start()
     {
-        // --- TAMBAHAN: validasi wiring, biar ketauan LANGSUNG di Console kalau salah drag lagi ---
+        // --- TAMBAHAN: kalau Track Conveyor diisi, otomatis hitung X Batas Kiri & X Mulai Conveyor
+        // dari lebar object itu sendiri (dikonversi ke local space wadahConveyor, biar sinkron sama
+        // anchoredPosition barang yang di-spawn nanti) - gak perlu ketik angka manual lagi. ---
+        if (trackConveyor != null && wadahConveyor != null) {
+            Vector3[] sudutTrack = new Vector3[4];
+            trackConveyor.GetWorldCorners(sudutTrack); // [0]=kiri-bawah, [2]=kanan-atas (world space)
+
+            Vector3 kiriLocal = wadahConveyor.InverseTransformPoint(sudutTrack[0]);
+            Vector3 kananLocal = wadahConveyor.InverseTransformPoint(sudutTrack[2]);
+
+            xBatasKiriConveyor = kiriLocal.x;
+            xMulaiConveyor = kananLocal.x;
+
+            Debug.Log($"[KasirManager] Batas conveyor otomatis dari Track: kiri={xBatasKiriConveyor:F0}, kanan={xMulaiConveyor:F0}");
+        }
+
+        // --- validasi wiring, biar ketauan LANGSUNG di Console kalau salah drag lagi ---
         if (wadahConveyor == null) {
             Debug.LogError("[KasirManager] Wadah Conveyor belum diisi! Barang gak akan ke-spawn dengan benar.");
         } else if (panelPembayaran != null && wadahConveyor == panelPembayaran.transform) {
@@ -172,6 +192,26 @@ public class KasirManager : MonoBehaviour
     {
         totalHargaTerpindaiSaatIni += barang.harga;
         if (textTotalHarga) textTotalHarga.text = "Total: Rp " + totalHargaTerpindaiSaatIni.ToString("N0");
+    }
+
+    // --- TAMBAHAN: dipanggil BarangBelanjaan tiap frame, cari batas kiri EFEKTIF buat item itu -
+    // entah itu ujung track (kalau dia paling depan), atau posisi barang lain yang masih ada di depannya
+    // (biar gak numpuk/tabrakan visual, kayak antrian di conveyor belt beneran). ---
+    public float DapatkanBatasKiriUntukItem(BarangBelanjaan itemIni)
+    {
+        int indexItemIni = itemPelangganAktif.IndexOf(itemIni);
+        if (indexItemIni < 0) return xBatasKiriConveyor; // jaga-jaga kalau somehow gak ketemu di list
+
+        // Cari item TERDEKAT di depan (index lebih kecil = di-spawn lebih dulu = lebih ke kiri/depan)
+        // yang MASIH ADA (belum ke-Destroy karena udah masuk kantong)
+        for (int i = indexItemIni - 1; i >= 0; i--) {
+            BarangBelanjaan itemDiDepan = itemPelangganAktif[i];
+            if (itemDiDepan != null) {
+                return itemDiDepan.PosisiXSaatIni + jarakMinimalAntarItem;
+            }
+        }
+
+        return xBatasKiriConveyor; // gak ada barang lain yang masih ada di depan -> batasnya ujung track
     }
 
     // --- Dipanggil DaerahKantong.OnDrop ---
