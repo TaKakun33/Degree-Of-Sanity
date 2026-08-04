@@ -120,10 +120,19 @@ public class KasirManager : MonoBehaviour
             Vector3 kiriLocal = wadahConveyor.InverseTransformPoint(sudutTrack[0]);
             Vector3 kananLocal = wadahConveyor.InverseTransformPoint(sudutTrack[2]);
 
-            xBatasKiriConveyor = kiriLocal.x;
-            xMulaiConveyor = kananLocal.x;
+            // --- TAMBAHAN: kompensasi setengah lebar barang itu sendiri - tanpa ini, yang "berhenti"
+            // di ujung track cuma TITIK TENGAH (anchoredPosition) barang, jadi separuh lebar visualnya
+            // masih nembus keluar track. Diambil otomatis dari lebar prefab (asumsi pivot di tengah). ---
+            float setengahLebarItem = 0f;
+            if (prefabItemBelanjaan != null) {
+                RectTransform rectPrefab = prefabItemBelanjaan.GetComponent<RectTransform>();
+                if (rectPrefab != null) setengahLebarItem = rectPrefab.rect.width / 2f;
+            }
 
-            Debug.Log($"[KasirManager] Batas conveyor otomatis dari Track: kiri={xBatasKiriConveyor:F0}, kanan={xMulaiConveyor:F0}");
+            xBatasKiriConveyor = kiriLocal.x + setengahLebarItem;
+            xMulaiConveyor = kananLocal.x - setengahLebarItem;
+
+            Debug.Log($"[KasirManager] Batas conveyor otomatis dari Track (dikompensasi lebar item {setengahLebarItem:F0}px): kiri={xBatasKiriConveyor:F0}, kanan={xMulaiConveyor:F0}");
         }
 
         // --- validasi wiring, biar ketauan LANGSUNG di Console kalau salah drag lagi ---
