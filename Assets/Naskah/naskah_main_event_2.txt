@@ -1,0 +1,172 @@
+# =============================================================================
+# NASKAH  : MAIN EVENT 2 - Keraguan dan Janji Ibu
+# ID      : MAIN_EVENT_2
+# Syarat  : Hari ke-37 (6 April). Menyelesaikan ini membuka Threshold 2 (50%).
+# =============================================================================
+
+== Main Event 2 - Malam Penuh Keraguan | Kontrakan Andrew, Malam
+@latar bg_kontrakan_malam langsung
+@bgm bgm_sunyi_melankolis
+Gelap kembali mendekap kediaman Andrew yang kini terasa asing lantaran kesunyiannya.
+@sfx sfx_jam_dinding
+Tiada kawan bicara selain detak jam dinding yang monoton serta desis angin yang menyelinap lewat celah jendela, menemani Andrew yang termenung seorang diri di ruang tengah.
+@latar bg_meja_laptop_tagihan
+Di permukaan meja, laptopnya masih menampilkan halaman skripsi yang seolah enggan bertambah barang sepatah kata pun.
+Terserak di sampingnya, tumpukan surat tagihan, nota rumah sakit, serta memo jadwal kontrol Anna seolah mengejek kebimbangannya.
+@jeda 0.6
+Andrew memijat keningnya yang berdenyut.
+@goyang 1.0
+Pikirannya terasa begitu sesak.
+Untaian keraguan terus berpilin dalam benaknya tanpa henti.
+@posisi kiri
+Andrew (bimbang): "Apakah perjuangan ini masih punya makna?"
+@keluar
+Ia menundukkan kepala dalam-dalam.
+@posisi kiri
+Andrew (bimbang): "Jika aku memaksakan kuliah, aku harus membelah diri antara mencari uang, mengurus Anna, dan merampungkan skripsi ini."
+Andrew (bimbang): "Namun jika aku berhenti, setidaknya aku punya lebih banyak waktu untuk bekerja. Tanggungan utang ini bisa segera disingkirkan. Anna juga bisa mendapatkan kehidupan yang lebih pantas."
+@keluar
+Akan tetapi, semakin ia menimbang-nimbang, rasa takut justru kian merayap di dadanya.
+@posisi kiri
+@goyang 1.5
+Andrew (takut): "Bagaimana bila semua jerih payah ini berujung sia-sia? Bagaimana jika setelah menyandang gelar pun... nasib kami tak kunjung membaik? Apakah aku hanya sedang berjudi dengan masa depanku sendiri?"
+@keluar
+@jeda 1.0
+Keheningan kembali merajai ruangan itu.
+Napas panjang keluar dari sela bibirnya yang pucat.
+Di tengah pusaran dilema tersebut, satu nama menyeruak menghentikan segalanya.
+@lambat
+@jedasesudah 0.8
+Anna.
+@latar bg_depan_kamar_anna
+@bgm bgm_hangat_pelan
+Andrew bangkit dan melangkah perlahan menuju kamar sang adik.
+Dari balik pintu, terdengar gesekan kertas yang dibalik dengan hati-hati.
+@sfx sfx_ketuk_pintu_pelan
+Tok... tok... tok...
+@posisi kiri
+Andrew: "Anna... Kakak boleh masuk?"
+@keluar
+@sfx sfx_pintu_dibuka
+Tak berselang lama, daun pintu itu pun mengayun terbuka.
+@posisi kanan
+Anna berdiri di sana, masih mendekap buku pelajarannya dengan erat.
+Meski rona wajahnya belum sepenuhnya kembali, penampilannya jauh lebih segar ketimbang beberapa pekan yang lalu.
+Anna: "Ada apa, Kak?"
+@keluar
+Andrew memaksakan senyum tipis.
+@posisi kiri
+Andrew: "Bisa temani Kakak bicara sebentar?"
+@posisi kanan
+Anna: "Ayo, kita di ruang tengah saja."
+@keluar
+@latar bg_kontrakan_sofa
+Keduanya lantas duduk bersisian di sofa yang mulai usang.
+Suasana sempat membeku sejenak; tak ada kata yang terucap.
+Andrew tampak mengumpulkan keberanian untuk memulai.
+Ia akhirnya menarik napas dalam-dalam.
+@posisi kiri
+Andrew: "Anna... Akhir-akhir ini, ada sesuatu yang terus mengganggu pikiran Kakak."
+@posisi kanan
+Anna: "Tentang apa, Kak?"
+@keluar
+Andrew membuang pandang ke arah lantai.
+@posisi kiri
+@lambat
+Andrew: "...Kakak berniat untuk berhenti kuliah saja."
+@keluar
+@bgm stop
+@jeda 1.0
+Anna tertegun, lidahnya kelu.
+Andrew melanjutkan dengan suara bergetar.
+@posisi kiri
+@goyang 1.0
+Andrew: "Jika Kakak melepas kuliah itu, Kakak punya waktu penuh untuk mencari nafkah. Uang yang terkumpul pun akan lebih banyak. Kita tidak perlu lagi dihantui kecemasan soal makan, obat-obatan, atau tumpukan utang."
+@keluar
+Ia memberikan senyum yang getir.
+@posisi kiri
+Andrew: "Barangkali... ini jalan yang paling realistis untuk kita."
+@keluar
+Anna hanya bisa tertunduk lesu.
+Ruangan itu mendadak terasa begitu dingin dan sunyi.
+@jeda 1.0
+@bgm bgm_kenangan_ibu
+Selang beberapa detik, Anna akhirnya bersuara, nyaris seperti bisikan.
+@posisi kanan
+Anna (lirih): "Kak... Apakah Kakak masih ingat... petuah yang selalu Ibu sampaikan pada kita?"
+@keluar
+Andrew perlahan mengangkat dagunya.
+Anna mencoba membentuk senyum, walau netranya mulai digenangi air mata.
+@posisi kanan
+@lambat
+Anna (sedih): "Ibu selalu berpesan, 'Apa pun yang telah dimulai, harus dituntaskan hingga garis akhir.'"
+@keluar
+@getar
+@jeda 0.8
+Kalimat itu menghantam Andrew telak hingga ia mematung.
+Anna menggigit bibir bawahnya, menahan bendungan emosi yang hampir pecah.
+@posisi kanan
+Anna (sedih): "Ibu pasti akan sangat kecewa melihat Kakak menyerah sekarang..."
+@keluar
+@sfx sfx_isak_tangis
+Tangis Anna akhirnya pecah, membasahi pipinya.
+@posisi kanan
+@goyang 1.2
+Anna (menangis): "Aku... aku sangat rindu Ibu..."
+@keluar
+Isak tangis itu menggema merobek keheningan malam.
+Melihat kepedihan adiknya, Andrew segera merapat dan merengkuh Anna ke dalam pelukannya.
+@posisi kiri
+Andrew (sedih): "Maafkan Kakak... Tolong maafkan Kakak..."
+@keluar
+Tangan Andrew mengelus lembut rambut Anna.
+Senyum kecil mulai terukir di wajah Andrew, kendati matanya ikut memerah menahan haru.
+@latar bg_kenangan_ibu putih 1.5
+@lambat
+Dalam angannya, suara lembut sang ibu seakan terngiang kembali.
+@posisi tengah
+Ibu: "Andrew... dalam kondisi sesulit apa pun, jangan pernah berpaling dari tanggung jawabmu."
+@keluar
+@latar bg_kontrakan_sofa hitam 1.2
+Memori itu membuat dadanya terasa sesak oleh penyesalan.
+Namun untuk pertama kalinya, kabut bimbang yang menyelimutinya mulai tersingkap.
+@bgm bgm_tekad
+@posisi kiri
+Andrew: "Terima kasih, Anna."
+@keluar
+Ia menyeka butiran bening di wajah adiknya.
+@posisi kiri
+Andrew: "Tadi Kakak hampir saja kehilangan arah. Tapi ucapanmu benar."
+@keluar
+Andrew menghirup oksigen dalam-dalam, menenangkan gejolak di dadanya.
+@posisi kiri
+Andrew (bertekad): "Langkah ini sudah kuayunkan sejak awal. Maka aku pulalah yang harus menuntaskannya."
+@keluar
+Pandangannya beralih pada laptop yang masih setia menunggunya di meja.
+@posisi kiri
+Andrew (bertekad): "Mungkin medannya akan terasa amat berat. Aku harus tetap membanting tulang. Aku harus memastikan semua utang terbayar. Aku juga harus menjaga dirimu sekuat tenaga. Tapi satu hal yang pasti, aku tidak akan membuang masa depanku."
+@keluar
+Anna pun tersenyum di sela sisa isak tangisnya.
+@posisi kanan
+Anna (tersenyum): "Aku yakin, Kakak pasti sanggup melaluinya."
+@keluar
+Andrew mengangguk dengan mantap.
+@posisi kiri
+Andrew (bertekad): "Apapun rintangan yang menghadang nanti... Aku akan merampungkan apa yang telah aku mulai."
+@keluar
+@latar bg_kontrakan_malam_tenang
+@bgm bgm_awal_baru
+@jeda 0.8
+Malam itu memang tidak serta-merta melenyapkan beban di pundak Andrew.
+Tagihan masih menumpuk, draf skripsi belum juga tamat, dan hari esok masih penuh teka-teki.
+Namun, ada sesuatu yang berbeda dalam dirinya.
+@lambat
+Keraguan yang tadinya merantai hatinya kini telah lebur menjadi bara semangat.
+Ia menyadari bahwa jalan di depan mungkin masih akan penuh onak dan duri, namun ia memilih untuk terus memacu langkah demi masa depan dan amanah terakhir orang tuanya: selesaikan apa yang telah dimulai.
+@jedasesudah 2.0
+
+== Sistem - Threshold 2 Terbuka | Pengingat Mekanik
+@latar bg_ui_pengingat langsung
+@bgm bgm_ui_netral
+Threshold 2 terbuka. Progres skripsi kini bisa dinaikkan hingga 50%.
+@jedasesudah 1.0

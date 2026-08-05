@@ -1,0 +1,46 @@
+# =============================================================================
+# NASKAH  : MAIN EVENT 3 - Menjelang Garis Akhir  (KERANGKA / DRAFT)
+# ID      : MAIN_EVENT_3
+# Syarat  : Hari ke-58 (27 April). Menyelesaikan ini membuka Threshold 3 (90%).
+#
+# CATATAN: Naskah lengkap Main Event 3 belum ada di dokumen cerita kalian.
+#          Kerangka di bawah sudah bisa langsung di-import supaya alur game
+#          tidak putus, tinggal ganti isi dialognya dengan naskah final.
+# =============================================================================
+
+== Main Event 3 - Menjelang Garis Akhir | Kontrakan Andrew, Malam
+@latar bg_kontrakan_malam langsung
+@bgm bgm_haru_penuh_harap
+Skripsi yang sudah lama diperjuangkan akhirnya hampir tuntas.
+Layar laptop menampilkan bab terakhir yang tinggal menunggu sentuhan penutup.
+@jeda 0.8
+Andrew menyandarkan punggungnya, menatap langit-langit kamar yang sudah terlalu sering ia pandangi.
+Dua bulan terakhir terasa seperti dua tahun.
+@posisi kiri
+Andrew: "Sedikit lagi... tinggal sedikit lagi."
+@keluar
+# TODO: sisipkan dialog transisi Andrew menuju kamar Anna
+@latar bg_kontrakan_sofa
+@sfx sfx_ketuk_pintu_pelan
+Andrew memanggil adiknya untuk terakhir kalinya sebelum sidang.
+@posisi kanan
+Anna: "Kak, tumben belum tidur."
+@posisi kiri
+Andrew: "Kakak cuma ingin bilang sesuatu sebelum semuanya selesai."
+@keluar
+# TODO: isi percakapan inti Main Event 3 di sini
+@posisi kiri
+Andrew (bertekad): "Terima kasih sudah bertahan bersama Kakak sampai sejauh ini."
+@posisi kanan
+Anna (tersenyum): "Kakak juga. Kita hampir sampai, kan?"
+@keluar
+@latar bg_jendela_matahari_terbit putih 1.5
+@bgm bgm_awal_baru
+@lambat
+Untuk pertama kalinya sejak malam telepon itu, Andrew merasa garis akhir benar-benar terlihat.
+@jedasesudah 2.0
+
+== Sistem - Threshold 3 Terbuka | Pengingat Mekanik
+@latar bg_ui_pengingat langsung
+Threshold 3 terbuka. Progres skripsi kini bisa dinaikkan hingga 90%.
+@jedasesudah 1.0

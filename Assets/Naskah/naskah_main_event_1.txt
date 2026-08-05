@@ -1,0 +1,96 @@
+# =============================================================================
+# NASKAH  : MAIN EVENT 1 - Surat Tagihan & Pinjaman Bank
+# ID      : MAIN_EVENT_1
+# Syarat  : Hari ke-8 (8 Maret). Menyelesaikan ini membuka Threshold 1 (10%).
+# =============================================================================
+
+== Main Event 1 - Ketukan di Pagi Hari | Kontrakan Andrew, Pagi
+@latar bg_kontrakan_pagi langsung
+@bgm bgm_pagi_suram
+Sinar fajar menyelinap melalui celah gorden di kontrakan Andrew yang sempit.
+Meja belajarnya tak lagi dipenuhi buku, melainkan barisan botol obat, kuitansi rumah sakit, serta tumpukan surat tagihan yang masih tertutup rapat.
+@latar bg_meja_obat_tagihan
+Andrew masih terlelap dalam tidurnya.
+Tubuhnya tampak begitu rapuh, kelelahan setelah menghabiskan malam demi malam mencari nafkah tambahan sembari merawat Anna yang masih dalam masa pemulihan.
+@sfx sfx_ketuk_pintu_pelan
+@getar
+Tok... tok... tok...
+Bunyi ketukan di pintu depan mengoyak kesunyian pagi itu.
+Andrew bergeming, berusaha mengabaikan gangguan tersebut.
+Namun, suara itu kembali bergema, kali ini dengan tempo yang lebih mendesak.
+@sfx sfx_ketuk_pintu_keras
+@getar kuat
+TOK! TOK! TOK!
+@jeda 0.5
+Dengan kelopak mata yang terasa berat dan sembab, Andrew terpaksa menyeret tubuhnya bangun.
+@posisi kiri
+Andrew (lelah): "Iya... sebentar..."
+@keluar
+Ia melangkah gontai menuju pintu kayu yang mulai kusam itu.
+@latar bg_depan_pintu_kontrakan
+@sfx sfx_pintu_dibuka
+Di hadapannya, berdiri dua sosok pria berstelan rapi yang menggenggam sebuah map hitam.
+Tanpa basa-basi, salah seorang dari mereka menunjukkan sebuah kartu identitas resmi.
+@posisi kanan
+@bgm bgm_tegang_pelan
+Debt Collector: "Selamat pagi. Benar dengan saudara Andrew?"
+@posisi kiri
+Andrew: "...Iya."
+@posisi kanan
+Debt Collector: "Kami di sini untuk mengingatkan bahwa jatuh tempo pembayaran cicilan Anda sudah sangat dekat."
+@keluar
+@jeda 0.6
+Seketika Andrew menunduk, tak sanggup menatap mata pria itu.
+Ia ingat betul beban finansial yang kini menghimpitnya.
+Demi membiayai pengobatan jalan Anna pasca operasi, ia terpaksa mengambil pinjaman karena tabungan orang tuanya telah ludes tak bersisa.
+Kala itu, ia hanya berpikir tentang nyawa adiknya, tanpa memedulikan risiko yang membayangi di depan mata.
+@lambat
+Dan sekarang, konsekuensi dari keputusan itu telah tiba di depan pintunya.
+@posisi kanan
+Debt Collector: "Pastikan Anda melunasi sesuai jadwal. Jika tidak, denda akan terus berjalan dan kami harus menindaklanjuti proses ini."
+@keluar
+Jari-jari Andrew mencengkeram pinggiran pintu hingga memutih.
+@posisi kiri
+@goyang 1.0
+Andrew: "...Saya mengerti."
+@posisi kanan
+Debt Collector: "Ini hanya peringatan awal. Kami harap Anda bisa segera membereskannya."
+@keluar
+Setelah memberikan pernyataan singkat, kedua pria itu berbalik dan menghilang dari pandangan.
+@sfx sfx_pintu_ditutup
+@bgm bgm_hening_berat
+@latar bg_kontrakan_ruang_tengah
+Andrew menutup pintu dengan perlahan, tubuhnya luruh bersandar pada permukaan kayu.
+Napasnya terasa sesak saat ia menatap deretan obat Anna yang berjejer di atas meja.
+Matanya kemudian tertuju pada laptop yang masih terbuka, menampilkan draf skripsi yang sudah lama terbengkalai.
+Helaan napas panjang keluar dari mulutnya yang kering.
+@posisi kiri
+@lambat
+Andrew (bimbang): "Jika uangnya tidak segera terkumpul..."
+Andrew (bimbang): "...semua utang ini akan menghancurkan kami."
+Andrew (bimbang): "Tapi jika pendidikan ini kutinggalkan..."
+Andrew (bimbang): "...masa depanku akan terkubur selamanya."
+@keluar
+@jeda 1.2
+Keheningan kembali menyelimuti ruangan sempit itu.
+@latar bg_potret_keluarga
+@bgm bgm_tekad
+Sesaat kemudian, Andrew mengalihkan pandangannya pada potret keluarga yang masih tersenyum di dinding.
+Ia mengepalkan tangannya dengan penuh tekad.
+@posisi kiri
+Andrew (bertekad): "Maafkan aku..."
+Andrew (bertekad): "Untuk saat ini, prioritas utamaku adalah bertahan hidup."
+@keluar
+@jedasesudah 1.5
+
+# --- Penjelasan mekanik yang aktif setelah event ini (tampil sebagai narasi sistem)
+== Sistem - Cicilan Dimulai | Pengingat Mekanik
+@latar bg_ui_pengingat langsung
+@bgm bgm_ui_netral
+Andrew memutuskan meminjam sejumlah uang dari bank untuk menutup tagihan sekolah Anna.
+Mulai sekarang, tagihan cicilan akan datang setiap hari Senin.
+Cicilan pertama wajib dilunasi sebelum Andrew bisa melanjutkan progres skripsinya.
+Cicilan kedua dan setelahnya harus dibayar paling lambat hari Sabtu.
+@lambat
+Threshold 1 terbuka. Progres skripsi kini bisa dinaikkan hingga 10%.
+@jedasesudah 1.0
