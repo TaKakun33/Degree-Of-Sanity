@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 2efb7ff00a7c68377a9a2b155c87aae0
+guid: a705a8f925e974912b78a5f64fce51d1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2581639595732146568
-    second: backgroud-_0
+      213: -803627274415109219
+    second: Sprite-backgound-kasir1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: backgroud-_0
+      name: Sprite-backgound-kasir1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2752
-        height: 1566
+        width: 512
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 88992b1c883d3d320800000000000000
-      internalID: 2581639595732146568
+      spriteID: d9b0ca07041f8d4f0800000000000000
+      internalID: -803627274415109219
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      backgroud-_0: 2581639595732146568
+      Sprite-backgound-kasir1_0: -803627274415109219
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

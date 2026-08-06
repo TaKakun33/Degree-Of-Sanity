@@ -6,20 +6,14 @@ public class ScorePanelUI : MonoBehaviour
 {
     [SerializeField] private GameObject panelRoot;
     [SerializeField] private TMP_Text scoreText;
+    [Tooltip("TAMBAHAN: teks buat nampilin gaji/bayaran yang didapat dari sesi tutor ini")]
+    [SerializeField] private TMP_Text gajiText;
     [Tooltip("Tombol buat pulang ke scene utama setelah baca hasil skor (misal 'Button' yang udah ada di ScorePanel)")]
     [SerializeField] private Button backButton;
 
     private void Awake()
     {
-        if (panelRoot != null)
-        {
-            Debug.Log($"[DEBUG-AWAKE] panelRoot: nama='{panelRoot.name}', InstanceID={panelRoot.GetInstanceID()}"); // --- SEMENTARA ---
-            panelRoot.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[DEBUG-AWAKE] panelRoot NULL sejak Awake()! Field Panel Root belum diisi di Inspector.");
-        }
+        if (panelRoot != null) panelRoot.SetActive(false);
 
         // Hubungkan tombol balik ke MainScene, sama gaya kayak nextButton di AnswerSheetUI
         if (backButton != null)
@@ -28,21 +22,20 @@ public class ScorePanelUI : MonoBehaviour
         }
     }
 
-    public void ShowScore(int correctGradings, int totalGraded, int scorePercent)
+    // --- TAMBAHAN: parameter gajiDidapat, ditampilkan di gajiText ---
+    public void ShowScore(int correctGradings, int totalGraded, int scorePercent, int gajiDidapat)
     {
-        Debug.Log($"[DEBUG] ShowScore() TERPANGGIL. panelRoot null? {panelRoot == null}"); // --- SEMENTARA ---
-
         if (panelRoot != null)
         {
-            // --- TAMBAHAN: identitas PERSIS object yang direferensikan, biar ketauan kalau ternyata beda
-            // object dari yang kamu lihat/cek manual di Hierarchy (misal ada duplikat/hidden object) ---
-            string namaParent = panelRoot.transform.parent != null ? panelRoot.transform.parent.name : "(tidak ada parent / root Canvas)";
-            Debug.Log($"[DEBUG] panelRoot yang dipegang script ini: nama='{panelRoot.name}', InstanceID={panelRoot.GetInstanceID()}, parent='{namaParent}', siblingIndex={panelRoot.transform.GetSiblingIndex()}, activeSelf SEBELUM SetActive={panelRoot.activeSelf}");
-
             panelRoot.SetActive(true);
-            panelRoot.transform.SetAsLastSibling();
-            Debug.Log($"[DEBUG] Setelah SetActive(true): panelRoot.activeSelf = {panelRoot.activeSelf}, activeInHierarchy = {panelRoot.activeInHierarchy}");
+            panelRoot.transform.SetAsLastSibling(); // biar tampil paling depan, gak ketutupan Paper apapun urutannya di Hierarchy
         }
+
         scoreText.text = $"Skor Koreksi: {correctGradings} / {totalGraded} benar ({scorePercent}%)";
+
+        if (gajiText != null)
+        {
+            gajiText.text = $"Gaji Didapat: Rp {gajiDidapat:N0}";
+        }
     }
 }
