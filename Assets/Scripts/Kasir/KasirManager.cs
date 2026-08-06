@@ -4,12 +4,16 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-// --- Data satu jenis barang di katalog toko (nama + harga) ---
+// --- Data satu jenis barang di katalog toko (nama + harga + gambar + ukuran) ---
 [System.Serializable]
 public class ItemBelanjaan
 {
     public string namaItem;
     public int harga;
+    [Tooltip("TAMBAHAN: gambar spesifik buat produk ini - isi lewat Inspector")]
+    public Sprite sprite;
+    [Tooltip("TAMBAHAN: ukuran custom (lebar, tinggi) buat produk ini. Biarkan (0,0) buat pakai ukuran default prefab")]
+    public Vector2 ukuranCustom = Vector2.zero;
 }
 
 // --- Minigame Kerja Part Time: Kasir Supermarket (Proposal 3.3.4.1) ---
@@ -171,7 +175,7 @@ public class KasirManager : MonoBehaviour
         if (textTotalHarga) textTotalHarga.text = "Total: Rp 0";
         if (textUangDibayarkan) textUangDibayarkan.text = "Dibayar: Rp 0";
         if (textKembalianDiberikan) textKembalianDiberikan.text = "Kembalian: Rp 0";
-        if (textWaktuTersisa) textWaktuTersisa.text = "Sabar pelanggan: -";
+        if (textWaktuTersisa) textWaktuTersisa.text = "Waktu: -";
         if (textStatusTransaksi) textStatusTransaksi.text = "";
 
         int jumlahItem = Random.Range(minItemPerPelanggan, maxItemPerPelanggan + 1);
@@ -189,7 +193,7 @@ public class KasirManager : MonoBehaviour
             rect.anchoredPosition = titikSpawnConveyor.anchoredPosition + new Vector2(i * 60f, 0f);
 
             BarangBelanjaan barang = objekBaru.GetComponent<BarangBelanjaan>();
-            barang.Setup(dataItem.namaItem, dataItem.harga, kecepatanConveyor, xBatasKiriConveyor, xMulaiConveyor);
+            barang.Setup(dataItem.namaItem, dataItem.harga, kecepatanConveyor, xBatasKiriConveyor, xMulaiConveyor, dataItem.sprite, dataItem.ukuranCustom);
 
             itemPelangganAktif.Add(barang);
             yield return new WaitForSeconds(0.4f); // spawn satu-satu, gak numpuk di titik yang sama
@@ -264,7 +268,7 @@ public class KasirManager : MonoBehaviour
         float sisaWaktu = batasWaktuKesabaran;
         while (sisaWaktu > 0f) {
             sisaWaktu -= Time.deltaTime;
-            if (textWaktuTersisa) textWaktuTersisa.text = "Sabar pelanggan: " + Mathf.CeilToInt(sisaWaktu) + " dtk";
+            if (textWaktuTersisa) textWaktuTersisa.text = "Waktu : " + Mathf.CeilToInt(sisaWaktu) + " dtk";
             yield return null;
         }
         SelesaikanTransaksi(waktuHabis: true);
