@@ -110,33 +110,21 @@ public class GradingGameManager : MonoBehaviour
 
     private void FinishGame()
     {
-        Debug.Log("[DEBUG] FinishGame() TERPANGGIL."); // --- SEMENTARA, hapus lagi kalau udah beres ---
-
-        // --- Matikan cuma tombol Next-nya (bukan seluruh GameObject Paper), biar aman
-        // walaupun ScorePanel ternyata nested di dalam Paper di Hierarchy kamu ---
+        // Matikan cuma tombol Next-nya (bukan seluruh GameObject Paper), biar aman
+        // walaupun ScorePanel ternyata nested di dalam Paper di Hierarchy kamu
         if (answerSheetUI != null) answerSheetUI.DisableInteraction();
-        else Debug.LogError("[DEBUG] answerSheetUI NULL di Inspector GradingGameManager!");
 
         int scorePercent = totalQuestionsGraded > 0
             ? Mathf.RoundToInt((float)totalCorrectGradings / totalQuestionsGraded * 100f)
             : 0;
 
-        Debug.Log($"[DEBUG] Skor dihitung: {totalCorrectGradings}/{totalQuestionsGraded} ({scorePercent}%). scorePanelUI null? {scorePanelUI == null}");
-
-        if (scorePanelUI != null)
-        {
-            scorePanelUI.ShowScore(totalCorrectGradings, totalQuestionsGraded, scorePercent);
-        }
-        else
-        {
-            Debug.LogError("[DEBUG] scorePanelUI NULL di Inspector GradingGameManager! Ini penyebabnya kalau ScorePanel gak pernah muncul.");
-        }
-
-        // Hitung bayaran dari skor koreksi, titipkan hasil shift ke HasilKerjaPartTime
+        // --- TAMBAHAN: hitung gaji SEBELUM ShowScore(), biar bisa ditampilkan sekalian di panel skor ---
         int bayaran = Mathf.RoundToInt(bayaranMaksimal * (scorePercent / 100f));
-        HasilKerjaPartTime.SimpanHasil(bayaran, laparBerkurangPerShift, sanityBerkurangPerShift, jamDilewatiShift);
 
-        Debug.Log("[DEBUG] FinishGame() SELESAI diproses.");
+        if (scorePanelUI != null) scorePanelUI.ShowScore(totalCorrectGradings, totalQuestionsGraded, scorePercent, bayaran);
+
+        // Titipkan hasil shift ke HasilKerjaPartTime, diterapkan lagi begitu MainScene dimuat ulang
+        HasilKerjaPartTime.SimpanHasil(bayaran, laparBerkurangPerShift, sanityBerkurangPerShift, jamDilewatiShift);
     }
 
     // Dipanggil tombol di ScorePanel (misal "Pulang"/"Selesai") setelah pemain baca skornya

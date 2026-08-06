@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6116fae9c7ff156e284cc2e9be487370
+guid: e5524dacee568e96eb078ab680ab8520
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5189809396544256438
-    second: susu_kotak_0
+      213: 5440537047756580441
+    second: Sprite-Paper_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: susu_kotak_0
+      name: Sprite-Paper_0
       rect:
         serializedVersion: 2
-        x: 13
+        x: 0
         y: 0
-        width: 39
-        height: 62
+        width: 300
+        height: 432
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6b9310d3628e50840800000000000000
-      internalID: 5189809396544256438
+      spriteID: 95622e6ae9ba08b40800000000000000
+      internalID: 5440537047756580441
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      susu_kotak_0: 5189809396544256438
+      Sprite-Paper_0: 5440537047756580441
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
