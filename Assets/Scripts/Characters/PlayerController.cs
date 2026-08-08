@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
     private bool isMenuOpen = false; 
     private SpriteRenderer spriteRenderer;
 
+    // --- TAMBAHAN: beda dari isMenuOpen - ini cuma blokir KLIK BARU, tapi MovePlayer() TETAP jalan.
+    // Dipakai pas karakter lagi "dipaksa" jalan otomatis (misal keluar rumah buat kerja) dan
+    // gak boleh dibelokin klik pemain di tengah jalan. ---
+    private bool kontrolDikunci = false;
+
     // --- DAFTAR TARGET OBJEK ---
     private DoorController targetDoor = null;
     private BedController targetBed = null; 
@@ -37,7 +42,9 @@ public class PlayerController : MonoBehaviour
     {
         if (isMenuOpen) return;
 
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        // --- TAMBAHAN: kalau kontrolDikunci, klik BARU diabaikan - tapi kalau isMoving masih true
+        // (dari JalanKeTitik sebelumnya), MovePlayer() di bawah TETAP jalan seperti biasa ---
+        if (!kontrolDikunci && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
             HandleClick();
@@ -50,6 +57,36 @@ public class PlayerController : MonoBehaviour
     {
         isMenuOpen = status;
         if (isMenuOpen) isMoving = false; 
+    }
+
+    // --- TAMBAHAN: dipanggil script LAIN (bukan dari klik mouse) buat nyuruh karakter jalan
+    // ke titik tertentu secara otomatis - dipakai JobMenuController pas pemain milih kerja,
+    // dan PintuKlikRelay pas klik pintu tertutup.
+    //
+    // FIX: cuma X dari "tujuan" yang dipakai - Y TETAP ikutin posisi karakter sekarang, PERSIS
+    // kayak gimana HandleClick() nanganin klik ke Bed/Desk/Kompor (targetPosition = new Vector2
+    // (objekDiklik.transform.position.x, transform.position.y)). Kalau Y dari tujuan yang beda
+    // dipakai mentah-mentah (misal titik pintu digambar lebih tinggi dari lantai), karakter jadi
+    // jalan miring/​"lompat" ke Y yang salah. ---
+    public void JalanKeTitik(Vector2 tujuan)
+    {
+        targetPosition = new Vector2(tujuan.x, transform.position.y);
+        isMoving = true;
+        FlipSprite();
+    }
+
+    // --- TAMBAHAN: kunci/buka kontrol klik pemain. Dipanggil sebelum JalanKeTitik() pas mau
+    // "paksa" karakter jalan otomatis tanpa bisa dibelokin klik pemain di tengah jalan. ---
+    public void KunciKontrol(bool kunci)
+    {
+        kontrolDikunci = kunci;
+    }
+
+    // --- TAMBAHAN: hentikan gerakan yang lagi jalan secara paksa (dipanggil PenghalangKeluar.cs
+    // begitu karakter didorong balik, biar gak "gemeteran" nyoba maju terus tiap frame) ---
+    public void BerhentiPaksa()
+    {
+        isMoving = false;
     }
 
     void HandleClick()
@@ -223,6 +260,7 @@ public class PlayerController : MonoBehaviour
 
             // Karakter sampai di tujuan akhir, berhenti jalan.
             isMoving = false;
+            kontrolDikunci = false; // --- TAMBAHAN: otomatis buka kunci kontrol begitu sampai tujuan ---
         }
     }
 }
