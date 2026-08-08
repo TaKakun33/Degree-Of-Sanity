@@ -130,7 +130,18 @@ public class SaveManager : MonoBehaviour
             // 3. Restore Posisi Player
             PlayerController player = Object.FindFirstObjectByType<PlayerController>();
             if (player != null) {
-                player.transform.position = new Vector3(data.playerX, data.playerY, player.transform.position.z);
+                Vector3 posisiTujuan = new Vector3(data.playerX, data.playerY, player.transform.position.z);
+
+                // --- FIX: pakai rb.position (kalau ada Rigidbody2D), BUKAN transform.position
+                // langsung - alasan sama kayak di TitikSpawnPlayer.cs, biar gak ada lompatan
+                // koreksi physics pas load game ---
+                Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+                if (rb != null) {
+                    rb.position = posisiTujuan;
+                } else {
+                    player.transform.position = posisiTujuan;
+                }
+
                 player.lantaiSaatIni = data.lantai;
             }
 

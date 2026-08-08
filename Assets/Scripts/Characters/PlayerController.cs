@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
     private bool isMenuOpen = false; 
     private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb; // --- TAMBAHAN ---
 
     // --- TAMBAHAN: beda dari isMenuOpen - ini cuma blokir KLIK BARU, tapi MovePlayer() TETAP jalan.
     // Dipakai pas karakter lagi "dipaksa" jalan otomatis (misal keluar rumah buat kerja) dan
@@ -34,6 +35,7 @@ public class PlayerController : MonoBehaviour
     {
         targetPosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>(); // --- TAMBAHAN ---
         isMenuOpen = false;
         isMoving = false;
     }
@@ -222,7 +224,27 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        Vector2 posisiSebelum = rb != null ? rb.position : (Vector2)transform.position;
+        Vector2 posisiBaru = Vector2.MoveTowards(posisiSebelum, targetPosition, speed * Time.deltaTime);
+
+        // --- FIX: hitung arah hadap dari PERGERAKAN AKTUAL tiap frame (posisi baru vs posisi
+        // sebelumnya), BUKAN dari snapshot transform.position sekali doang pas klik. Yang lama
+        // itu bisa salah/kebalik kalau transform.position telat sinkron sama rb.MovePosition()
+        // (physics engine update-nya gak instan). Ini lebih akurat & gak bisa kebalik lagi. ---
+        if (posisiBaru.x != posisiSebelum.x) {
+            spriteRenderer.flipX = posisiBaru.x < posisiSebelum.x;
+        }
+
+        // --- FIX: pakai rb.MovePosition() (physics-aware), BUKAN transform.position = ... langsung.
+        // Nulis transform.position mentah-mentah bikin physics engine "kaget" tiap frame - itu
+        // penyebab goyang-goyang pas pakai Rigidbody2D Dynamic. MovePosition() ngasih tau physics
+        // engine ke mana kita MAU pindah, biar dia yang urus collision resolution dengan benar
+        // (masih ke-block collider solid, tapi gak lagi konflik/gemeteran). ---
+        if (rb != null) {
+            rb.MovePosition(posisiBaru);
+        } else {
+            transform.position = posisiBaru;
+        }
         
         if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
         {

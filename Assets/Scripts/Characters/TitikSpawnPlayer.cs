@@ -45,7 +45,18 @@ public class TitikSpawnPlayer : MonoBehaviour
             {
                 Vector3 posisiTujuan = transform.position;
                 posisiTujuan.z = player.transform.position.z; // jangan ganggu Z asli player
-                player.transform.position = posisiTujuan;
+
+                // --- FIX: pakai rb.position (kalau ada Rigidbody2D), BUKAN transform.position
+                // langsung. Karakter sekarang Dynamic Rigidbody2D - nulis transform.position
+                // mentah-mentah bikin physics engine "kaget" & ngoreksi balik di frame berikutnya,
+                // itu penyebab lompatan kecil pas spawn. rb.position ngasih tau physics engine
+                // dengan benar, gak ada koreksi/lompatan lagi. ---
+                Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+                if (rb != null) {
+                    rb.position = posisiTujuan;
+                } else {
+                    player.transform.position = posisiTujuan;
+                }
 
                 Debug.Log($"[TitikSpawnPlayer] Player dipindah ke titik spawn: {posisiTujuan} (gameBaru={gameBaru}, baruBalikDariKerja={baruBalikDariKerja})"); // --- SEMENTARA ---
             }
