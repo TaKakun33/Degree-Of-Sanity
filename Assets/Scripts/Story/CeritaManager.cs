@@ -20,6 +20,8 @@ public class PeristiwaTerjadwal
     public string ruangSyarat;
     [Tooltip("OPSIONAL: kalau diisi, begitu syarat terpenuhi, adegan TIDAK langsung mulai - objek ini (misal Amplop) yang diaktifkan dulu. Player harus klik & jalan ke situ, baru cutscene mulai. Kosongkan buat perilaku langsung (dipakai Prolog & event lain yang emang harus auto-mulai).")]
     public PemicuInteraktifCerita objekPemicu;
+    [Tooltip("TAMBAHAN: centang kalau peristiwa ini WAJIB kejadian di TANGGAL pemicunya, walau jamnya belum kecapai - kalau pemain nyoba tidur duluan (skip lewat hari itu) SEBELUM peristiwa ini kejadian, tidurnya diblokir & cutscene ini dipaksa jalan dulu.")]
+    public bool wajibSebelumTidur = false;
 }
 
 // --- Manager utama sistem cerita v3. Ngecek daftar Peristiwa Terjadwal terhadap tanggal+jam
@@ -137,6 +139,12 @@ public class CeritaManager : MonoBehaviour
             GameManager.Instance.MulaiCutscene(); // --- TAMBAHAN ---
         }
 
+        // --- TAMBAHAN: kunci kontrol player SELAMA cutscene - sebelumnya cuma di-UNLOCK di
+        // akhir, tapi gak pernah di-LOCK di awal, jadi player masih bisa klik/gerak bebas
+        // walau lagi ada cutscene aktif ---
+        PlayerController playerAwal = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        if (playerAwal != null) playerAwal.SetMenuStatus(true);
+
         cutsceneUI.MainkanAdegan(adeganPrologPertama, () => {
             sedangMemutarAdegan = false;
 
@@ -167,6 +175,10 @@ public class CeritaManager : MonoBehaviour
             GameManager.Instance.MulaiCutscene(); // --- TAMBAHAN ---
         }
 
+        // --- TAMBAHAN: kunci kontrol player SELAMA cutscene ---
+        PlayerController playerAwal = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        if (playerAwal != null) playerAwal.SetMenuStatus(true);
+
         cutsceneUI.MainkanAdegan(adegan, () => {
             Debug.Log("[CeritaManager] Adegan/chain SELESAI - buka kunci waktu & kontrol player."); // --- SEMENTARA ---
 
@@ -190,6 +202,45 @@ public class CeritaManager : MonoBehaviour
     }
 
     public bool ApakahFlagAktif(string nama) => cutsceneUI != null && cutsceneUI.ApakahFlagAktif(nama);
+
+    // --- TAMBAHAN: dipanggil GameManager.CobaMulaiTidur() SEBELUM beneran mulai tidur - cek
+    // apa ada peristiwa "Wajib Sebelum Tidur" yang tanggalnya udah kena tapi belum kejadian ---
+    public bool ApakahAdaPeristiwaWajibSebelumTidurHariIni()
+    {
+        if (semuaPeristiwa == null || GameManager.Instance == null) return false;
+
+        foreach (var p in semuaPeristiwa) {
+            if (p == null) continue;
+
+            bool sudahDicatatSelesai = sudahTerjadi.Contains(p.namaPeristiwa);
+            bool tanggalOk = GameManager.Instance.ApakahSudahLewatTanggal(p.tanggalPemicu, p.bulanPemicu);
+            Debug.Log($"[CeritaManager] Cek '{p.namaPeristiwa}': wajibSebelumTidur={p.wajibSebelumTidur}, sudahTerjadi={sudahDicatatSelesai}, tanggalOk={tanggalOk} (tanggal sekarang {GameManager.Instance.tanggal}/{GameManager.Instance.bulan})"); // --- SEMENTARA ---
+
+            if (!p.wajibSebelumTidur || sudahDicatatSelesai) continue;
+            if (tanggalOk) return true;
+        }
+        return false;
+    }
+
+    // --- Dipanggil GameManager.CobaMulaiTidur() begitu ApakahAdaPeristiwaWajibSebelumTidurHariIni()
+    // return true - PAKSA jalanin peristiwa itu (abaikan syarat jamMinimal-nya) ---
+    public void PaksaTriggerPeristiwaWajibSebelumTidur()
+    {
+        if (semuaPeristiwa == null || GameManager.Instance == null) return;
+
+        foreach (var p in semuaPeristiwa) {
+            if (p == null || !p.wajibSebelumTidur || sudahTerjadi.Contains(p.namaPeristiwa)) continue;
+            if (!GameManager.Instance.ApakahSudahLewatTanggal(p.tanggalPemicu, p.bulanPemicu)) continue;
+
+            sudahTerjadi.Add(p.namaPeristiwa);
+            if (p.objekPemicu != null) {
+                p.objekPemicu.Aktifkan(p.adeganPertama);
+            } else {
+                MulaiAdegan(p.adeganPertama);
+            }
+            return;
+        }
+    }
 
     // --- TAMBAHAN: dipanggil SaveManager.cs buat simpan/muat daftar peristiwa yang udah kejadian,
     // biar gak ke-reset dan ngulang lagi (misal Amplop ME1) begitu Load Game ---

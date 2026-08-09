@@ -202,9 +202,8 @@ public class GameManager : MonoBehaviour
         }
 
         if (jamSaatIni >= DapatkanBatasTidurEfektif() && !prosesTidurAktif) {
-            prosesTidurAktif = true;
             OnBatasWaktuTercapai?.Invoke();
-            StartCoroutine(ProsesTidur(true));
+            CobaMulaiTidur(true); // --- TAMBAHAN: lewat gerbang cek dulu; pingsan=true karena ini kemaleman otomatis ---
         }
     }
 
@@ -612,6 +611,27 @@ public class GameManager : MonoBehaviour
         }
 
         if (SaveManager.Instance != null) SaveManager.Instance.SimpanGame(0);
+    }
+
+    // --- TAMBAHAN: gerbang TUNGGAL buat semua cara mulai tidur (otomatis kemaleman, ATAU klik
+    // Kasur manual - Kasur/BedController.cs WAJIB manggil INI, bukan langsung ProsesTidur()).
+    // Kalau ada peristiwa cerita yang wajib kejadian hari ini tapi belum, tidur DIBLOKIR,
+    // cutscene-nya dipaksa jalan dulu - coba tidur lagi abis cutscene-nya kelar. ---
+    public void CobaMulaiTidur(bool pingsan = false)
+    {
+        Debug.Log("[GameManager] CobaMulaiTidur() TERPANGGIL."); // --- SEMENTARA ---
+
+        if (prosesTidurAktif) return;
+
+        if (CeritaManager.Instance != null && CeritaManager.Instance.ApakahAdaPeristiwaWajibSebelumTidurHariIni()) {
+            Debug.Log("[GameManager] Ada peristiwa wajib - tidur DIBLOKIR, paksa trigger cutscene."); // --- SEMENTARA ---
+            CeritaManager.Instance.PaksaTriggerPeristiwaWajibSebelumTidur();
+            return;
+        }
+
+        Debug.Log("[GameManager] Gak ada peristiwa wajib yang pending - lanjut tidur normal."); // --- SEMENTARA ---
+        prosesTidurAktif = true;
+        StartCoroutine(ProsesTidur(pingsan));
     }
 
     public IEnumerator ProsesTidur(bool pingsan = false)

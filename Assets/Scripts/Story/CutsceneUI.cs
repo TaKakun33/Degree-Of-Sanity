@@ -41,6 +41,7 @@ public class CutsceneUI : MonoBehaviour
     private Action selesaiCallback;
     private readonly HashSet<string> flagCerita = new HashSet<string>();
     private bool sedangHitam = false;
+    private bool gantiHariPendingSetelahChain = false; // --- TAMBAHAN ---
 
     void Awake()
     {
@@ -271,8 +272,13 @@ public class CutsceneUI : MonoBehaviour
                 GameManager.Instance.AktifkanBonusTekadKuat();
             }
 
-            // --- TAMBAHAN: paksa jam in-game ke angka tertentu begitu adegan ini kelar ---
-            if (e.jamBaruSetelahAdegan >= 0f) {
+            // --- TAMBAHAN: simpen niat ganti hari dulu, JANGAN langsung GantiHari() di sini -
+            // biar bisa dieksekusi lewat animasi tidur (ProsesTidur) di SelesaikanChain(), bukan
+            // lompat instan. Kalau ini dicentang, "Jam Baru Setelah Adegan" DIABAIKAN - biarin
+            // ProsesTidur() yang nentuin jam bangun (jamMulai), biar gak tabrakan urutan. ---
+            if (e.gantiHariSetelahAdegan) {
+                gantiHariPendingSetelahChain = true;
+            } else if (e.jamBaruSetelahAdegan >= 0f) {
                 GameManager.Instance.jamSaatIni = e.jamBaruSetelahAdegan;
             }
 
@@ -284,6 +290,7 @@ public class CutsceneUI : MonoBehaviour
         if (panelCutscene) panelCutscene.SetActive(false);
 
         if (adeganAktif.adaPilihan) {
+            Debug.Log($"[CutsceneUI] Adegan '{adeganAktif.id}' Ada Pilihan = true, jumlah cabang: {adeganAktif.pilihanCabang?.Count ?? 0}"); // --- SEMENTARA ---
             TampilkanPilihan();
             return;
         }
@@ -291,6 +298,7 @@ public class CutsceneUI : MonoBehaviour
         if (adeganAktif.adeganBerikutnya != null) {
             MulaiSatuAdegan(adeganAktif.adeganBerikutnya);
         } else {
+            Debug.Log($"[CutsceneUI] Adegan '{adeganAktif.id}' selesai TANPA pilihan dan TANPA adeganBerikutnya - chain berakhir di sini."); // --- SEMENTARA ---
             SelesaikanChain();
         }
     }
@@ -302,12 +310,29 @@ public class CutsceneUI : MonoBehaviour
     {
         adeganAktif = null;
         if (GameManager.Instance != null) GameManager.Instance.SetTampilanJamAktif(true);
+
+        if (gantiHariPendingSetelahChain) {
+            gantiHariPendingSetelahChain = false;
+            StartCoroutine(TidurLaluLanjutkanChain());
+        } else {
+            selesaiCallback?.Invoke();
+        }
+    }
+
+    // --- TAMBAHAN: mainin animasi tidur (ProsesTidur) yang udah ada di GameManager, BARU
+    // setelah itu beneran kelar, lanjutkan callback penutup chain ---
+    IEnumerator TidurLaluLanjutkanChain()
+    {
+        if (GameManager.Instance != null) {
+            yield return StartCoroutine(GameManager.Instance.ProsesTidur());
+        }
         selesaiCallback?.Invoke();
     }
 
     void TampilkanPilihan()
     {
         if (panelPilihan == null || wadahTombolPilihan == null || prefabTombolPilihan == null) {
+            Debug.LogError($"[CutsceneUI] TampilkanPilihan() GAGAL - ada field kosong: Panel Pilihan={(panelPilihan == null ? "NULL" : "OK")}, Wadah Tombol Pilihan={(wadahTombolPilihan == null ? "NULL" : "OK")}, Prefab Tombol Pilihan={(prefabTombolPilihan == null ? "NULL" : "OK")}"); // --- SEMENTARA ---
             SelesaikanChain();
             return;
         }

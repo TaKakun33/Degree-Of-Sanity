@@ -52,6 +52,8 @@ public class EfekParameterCutscene
     public int paksaBukaThresholdKe = -1;
     [Tooltip("TAMBAHAN: centang buat ngasih bonus 'TEKAD_KUAT' (ME2_03) - distorsi Sanity dimatikan paksa 1 hari + Sanity gak akan jatuh di bawah 10 selama 3 hari")]
     public bool aktifkanBonusTekadKuat = false;
+    [Tooltip("TAMBAHAN: centang buat langsung GANTI HARI (GantiHari()) begitu adegan ini kelar - TANPA animasi tidur, cuma lompat ke hari berikutnya. Kalau 'Jam Baru Setelah Adegan' JUGA diisi, itu diterapkan SETELAH hari berganti (override jam di hari baru itu).")]
+    public bool gantiHariSetelahAdegan = false;
 }
 
 [System.Serializable]
