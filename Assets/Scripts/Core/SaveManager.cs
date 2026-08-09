@@ -32,6 +32,11 @@ public class DataSimpanan
     public bool kerjaPartTimeSudahDilakukanHariIni;
     public bool prologSelesai;
     public System.Collections.Generic.List<string> peristiwaCeritaSudahTerjadi;
+    public float utangBank;
+    public System.Collections.Generic.List<MingguCicilan> daftarMingguCicilan;
+    public int cicilanNomorMingguBerikutnya;
+    public int cicilanGagalBerturutTurut;
+    public bool cicilanPertamaSudahLunas;
 }
 
 public class SaveManager : MonoBehaviour
@@ -67,6 +72,13 @@ public class SaveManager : MonoBehaviour
             data.prologSelesai = GameManager.Instance.prologSelesai; // --- TAMBAHAN ---
             if (CeritaManager.Instance != null) {
                 data.peristiwaCeritaSudahTerjadi = CeritaManager.Instance.DapatkanPeristiwaSudahTerjadi(); // --- TAMBAHAN ---
+            }
+            data.utangBank = GameManager.Instance.utangBank; // --- TAMBAHAN ---
+            if (CicilanManager.Instance != null) {
+                data.daftarMingguCicilan = CicilanManager.Instance.DapatkanDaftarMinggu(); // --- TAMBAHAN ---
+                data.cicilanNomorMingguBerikutnya = CicilanManager.Instance.DapatkanNomorMingguBerikutnya(); // --- TAMBAHAN ---
+                data.cicilanGagalBerturutTurut = CicilanManager.Instance.DapatkanGagalBerturutTurut(); // --- TAMBAHAN ---
+                data.cicilanPertamaSudahLunas = CicilanManager.Instance.DapatkanCicilanPertamaSudahLunas(); // --- TAMBAHAN ---
             }
         }
 
@@ -123,6 +135,11 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.prologSelesai = data.prologSelesai; // --- TAMBAHAN ---
                 if (CeritaManager.Instance != null) {
                     CeritaManager.Instance.MuatPeristiwaSudahTerjadi(data.peristiwaCeritaSudahTerjadi); // --- TAMBAHAN ---
+                }
+                GameManager.Instance.utangBank = data.utangBank; // --- TAMBAHAN ---
+                GameManager.Instance.UpdateTombolUtang(); // --- TAMBAHAN: FIX bug tombol ilang ---
+                if (CicilanManager.Instance != null) {
+                    CicilanManager.Instance.MuatDaftarMinggu(data.daftarMingguCicilan, data.cicilanNomorMingguBerikutnya, data.cicilanGagalBerturutTurut, data.cicilanPertamaSudahLunas); // --- TAMBAHAN ---
                 }
             }
 

@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     [Header("Referensi UI")]
     public TextMeshProUGUI textTanggal;
     public TextMeshProUGUI textUang;
+    public TextMeshProUGUI textUtang; // --- TAMBAHAN ---
     public TextMeshProUGUI textJamHarian;
     public Slider sliderProgresSkripsi;
     public Slider sliderLapar;
@@ -224,7 +225,22 @@ public class GameManager : MonoBehaviour
         return "?";
     }
 
-    public string TanggalFormatted => $"{tanggal} {NamaBulan(bulan)}";
+    // --- TAMBAHAN: nama hari dalam minggu, digabung ke depan tanggal ---
+    public string NamaHari(int h)
+    {
+        switch (h) {
+            case 0: return "Minggu";
+            case 1: return "Senin";
+            case 2: return "Selasa";
+            case 3: return "Rabu";
+            case 4: return "Kamis";
+            case 5: return "Jumat";
+            case 6: return "Sabtu";
+            default: return "?";
+        }
+    }
+
+    public string TanggalFormatted => $"{NamaHari(HariMingguSaatIni)}, {tanggal} {NamaBulan(bulan)}";
 
     // --- Hari ke berapa sejak 1 Maret (1 Maret = hari 1) - dipakai internal buat perbandingan tanggal ---
     public int HariKeDariTanggal(int t, int b)
@@ -250,12 +266,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- Dipakai CicilanManager: true kalau hari ini "Senin" relatif ke hari referensi yang dikasih ---
+    // --- Dipakai CicilanManager versi lama: true kalau hari ini "Senin" relatif ke hari referensi yang dikasih ---
     public bool ApakahKelipatan7HariDari(int hariKeReferensi)
     {
         int selisih = HariKeSaatIni - hariKeReferensi;
         return selisih >= 0 && selisih % 7 == 0;
     }
+
+    // ================== TAMBAHAN: HARI DALAM MINGGU (buat Cicilan versi baru) ==================
+
+    [Header("Hari Dalam Minggu")]
+    [Tooltip("Hari dalam minggu pas Hari 1 (1 Maret): 0=Minggu, 1=Senin, 2=Selasa, 3=Rabu, 4=Kamis, 5=Jumat, 6=Sabtu")]
+    public int hariMingguSaatHariPertama = 1;
+
+    // --- 0=Minggu, 1=Senin, ..., 6=Sabtu ---
+    public int HariMingguSaatIni => ((hariMingguSaatHariPertama + HariKeSaatIni - 1) % 7 + 7) % 7;
+    public bool ApakahHariIniSenin => HariMingguSaatIni == 1;
+    public bool ApakahHariIniSabtu => HariMingguSaatIni == 6;
+    public bool ApakahHariIniMinggu => HariMingguSaatIni == 0;
 
     // ================== REVEAL PARAMETER (TUTORIAL PROLOG) ==================
 
@@ -284,6 +312,7 @@ public class GameManager : MonoBehaviour
     {
         if (textTanggal) textTanggal.text = TanggalFormatted;
         if (textUang) textUang.text = "Rp " + uang.ToString("N0");
+        if (textUtang) textUtang.text = "Rp " + Mathf.RoundToInt(utangBank).ToString("N0"); // --- TAMBAHAN ---
         if (textJamHarian) textJamHarian.text = string.Format("{0:00}:{1:00}", (int)jamSaatIni % 24, (int)((jamSaatIni % 1) * 60));
         if (sliderProgresSkripsi) sliderProgresSkripsi.value = progresSkripsi;
         if (sliderLapar) sliderLapar.value = lapar;
@@ -362,19 +391,47 @@ public class GameManager : MonoBehaviour
         if (jumlahSanityDipulihkan > 0f) TambahSanity(jumlahSanityDipulihkan);
     }
 
+    [Header("TAMBAHAN: Parameter Utang Bank (terpisah dari Uang, gak pernah bikin Uang minus)")]
+    [Tooltip("Total utang yang masih harus dibayar - naik dari efek pinjaman (CutsceneScene), berkurang dari pembayaran cicilan")]
+    public float utangBank = 0f;
+    [Tooltip("TUNABLE: bunga harian yang nambah ke Utang Bank tiap hari (0.003 = 0,3% - sesuai batas resmi OJK 2025 buat pinjol konsumtif tenor <6 bulan)")]
+    [Range(0f, 0.02f)] public float bungaHarianUtang = 0.003f;
+    [Tooltip("Tombol Utang di HUD - otomatis nyala kalau Utang Bank > 0, mati kalau lunas")]
+    public GameObject tombolUtang;
+
+    public void TambahUtang(float jumlah)
+    {
+        utangBank += jumlah;
+        UpdateUI();
+        UpdateTombolUtang();
+
+        // --- TAMBAHAN: langsung munculin "Minggu ke-1" di jadwal cicilan, gak nunggu tidur dulu ---
+        if (CicilanManager.Instance != null) CicilanManager.Instance.PastikanMingguPertamaAda();
+    }
+
+    public void KurangiUtang(float jumlah)
+    {
+        utangBank = Mathf.Max(0f, utangBank - jumlah);
+        UpdateUI();
+        UpdateTombolUtang();
+    }
+
+    public void UpdateTombolUtang()
+    {
+        if (tombolUtang) tombolUtang.SetActive(utangBank > 0f);
+    }
+
     public void KurangiUang(int jumlah)
     {
-        // --- FIX: gak di-clamp ke 0 lagi - boleh minus, representasi utang (naskah: Main Event 1) ---
-        uang = uang - jumlah;
+        // --- REVISI: balik di-clamp ke 0 lagi - sekarang utang punya parameter sendiri
+        // (Utang Bank), jadi Uang gak perlu lagi merangkap jadi representasi utang minus ---
+        uang = Mathf.Max(0, uang - jumlah);
         UpdateUI();
     }
 
     public void TambahUang(int jumlah)
     {
-        // --- FIX: sama, gak di-clamp ke 0 juga. PENTING: kalau clamp ini dibiarin, penghasilan
-        // yang masuk pas uang lagi minus bakal langsung "reset" ke 0 instead of ngurangin utang
-        // pelan-pelan (misal uang=-500rb + income 200rb harusnya jadi -300rb, bukan 0). ---
-        uang = uang + jumlah;
+        uang = Mathf.Max(0, uang + jumlah);
         UpdateUI();
     }
 
@@ -527,6 +584,13 @@ public class GameManager : MonoBehaviour
         // --- TAMBAHAN: hitung mundur durasi bonus TEKAD_KUAT (kalau lagi aktif) ---
         if (hariDistorsiDimatikanPaksaSisa > 0) hariDistorsiDimatikanPaksaSisa--;
         if (hariSanityFloorSisa > 0) hariSanityFloorSisa--;
+
+        // --- TAMBAHAN: bunga harian nambah ke Utang Bank tiap hari, kalau masih ada utang ---
+        if (utangBank > 0f) {
+            utangBank += utangBank * bungaHarianUtang;
+            UpdateUI();
+            UpdateTombolUtang();
+        }
 
         // --- Bad Ending 2: lapar kritis BERTURUT-TURUT sekian hari ---
         if (SedangKelaparan) {

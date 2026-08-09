@@ -40,6 +40,8 @@ public class EfekParameterCutscene
     public int uangDelta = 0;
     public float progresSkripsiDelta = 0f;
     public int tambahRoti = 0;
+    [Tooltip("TAMBAHAN: nambah Utang Bank sejumlah ini (misal ME1: pinjaman 2000000) - TERPISAH dari Uang Delta, gak bikin Uang minus")]
+    public float tambahUtang = 0f;
     [Tooltip("Centang kalau adegan ini yang mengaktifkan mekanik Cicilan Mingguan (Main Event 1)")]
     public bool aktifkanHutang = false;
     [Tooltip("TAMBAHAN: kalau diisi (bukan -1), jam in-game LANGSUNG diset ke angka ini begitu adegan ini kelar (format 24 jam, misal 11 = jam 11 siang). Biarkan -1 kalau gak mau ubah jam sama sekali.")]

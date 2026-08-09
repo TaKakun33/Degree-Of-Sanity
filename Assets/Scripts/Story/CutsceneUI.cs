@@ -253,7 +253,13 @@ public class CutsceneUI : MonoBehaviour
 
             if (e.tambahRoti > 0 && InventoryManager.Instance != null) InventoryManager.Instance.jumlahRoti += e.tambahRoti;
 
-            if (e.aktifkanHutang && CicilanManager.Instance != null) CicilanManager.Instance.AktifkanCicilan();
+            // --- TAMBAHAN: nambah Utang Bank (terpisah dari Uang) ---
+            if (e.tambahUtang > 0f) {
+                GameManager.Instance.TambahUtang(e.tambahUtang);
+            }
+
+            // --- (aktifkanHutang field sengaja gak dipakai lagi - Utang Bank sekarang otomatis
+            // aktif begitu Tambah Utang > 0, lihat GameManager.TambahUtang()) ---
 
             // --- TAMBAHAN: paksa buka Threshold ke-N, terlepas dari progres skripsi ---
             if (e.paksaBukaThresholdKe > 0 && ThresholdSkripsi.Instance != null) {
