@@ -31,6 +31,7 @@ public class DataSimpanan
     public bool skripsiSudahDikerjakanHariIni;
     public bool kerjaPartTimeSudahDilakukanHariIni;
     public bool prologSelesai;
+    public System.Collections.Generic.List<string> peristiwaCeritaSudahTerjadi;
 }
 
 public class SaveManager : MonoBehaviour
@@ -64,6 +65,9 @@ public class SaveManager : MonoBehaviour
             data.skripsiSudahDikerjakanHariIni = GameManager.Instance.SkripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
             data.kerjaPartTimeSudahDilakukanHariIni = GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
             data.prologSelesai = GameManager.Instance.prologSelesai; // --- TAMBAHAN ---
+            if (CeritaManager.Instance != null) {
+                data.peristiwaCeritaSudahTerjadi = CeritaManager.Instance.DapatkanPeristiwaSudahTerjadi(); // --- TAMBAHAN ---
+            }
         }
 
         // 2. Kumpulkan Data Inventory
@@ -117,6 +121,9 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.SkripsiSudahDikerjakanHariIni = data.skripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
                 GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni = data.kerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
                 GameManager.Instance.prologSelesai = data.prologSelesai; // --- TAMBAHAN ---
+                if (CeritaManager.Instance != null) {
+                    CeritaManager.Instance.MuatPeristiwaSudahTerjadi(data.peristiwaCeritaSudahTerjadi); // --- TAMBAHAN ---
+                }
             }
 
             // 2. Restore Inventory

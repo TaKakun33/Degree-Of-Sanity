@@ -21,51 +21,91 @@ MonoBehaviour:
     teks: Dulu bukan Andrew yang berdiri di dapur ini jam segini.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: Pagi, Kak
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
     teks: Pagi
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: Ada roti. Sisa dua.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 9156598758646539555, guid: f6fb7aab343886aeda4a271fb8b4f63a, type: 3}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
     teks: Buat kamu aja.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: Aku udah ambil satu.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: ...
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: Simpen aja dulu.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: Nanti kalau kakak inget, dimakan.
     parameterUntukDitampilkan: Lapar
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Anna
     teks: Aku berangkat.
     parameterUntukDitampilkan: Inventory
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 1
   efek:
     sanityDelta: 0
     laparDelta: 0

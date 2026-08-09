@@ -17,10 +17,18 @@ public class BarisCutscene
     [Tooltip("TAMBAHAN: baris ini CUMA muncul kalau Sanity pemain saat itu di bawah angka ini (0 = selalu muncul, gak ada syarat). Buat varian bisikan sesuai Sanity (naskah: <25% dst)")]
     [Range(0f, 100f)]
     public float munculKalauSanityDiBawah = 0f;
+    [Tooltip("TAMBAHAN: baris ini CUMA muncul kalau flag ini SUDAH aktif (dari pilihan sebelumnya). Kosongkan kalau gak ada syarat.")]
+    public string munculKalauFlagAktif;
+    [Tooltip("TAMBAHAN: baris ini CUMA muncul kalau flag ini BELUM aktif. Kosongkan kalau gak ada syarat.")]
+    public string munculKalauFlagTidakAktif;
     [Tooltip("TAMBAHAN: prop di scene (misal Amplop/Laci) yang DIMUNCULKAN pas baris ini tampil. Kosongkan (None) kalau gak ada.")]
     public GameObject objekTampilkan;
     [Tooltip("TAMBAHAN: prop di scene yang DISEMBUNYIKAN pas baris ini tampil. Kosongkan (None) kalau gak ada.")]
     public GameObject objekSembunyikan;
+    [Tooltip("TAMBAHAN: gambar/sprite yang muncul DI DEPAN LAYAR (kayak ilustrasi VN, bukan di posisi ruangan) pas baris ini tampil - misal close-up Laci/Amplop. Kosongkan kalau gak ada.")]
+    public Sprite gambarPropUntukDitampilkan;
+    [Tooltip("Centang buat SEMBUNYIKAN gambar prop yang lagi tampil di depan layar (biasanya diisi di baris SETELAH prop-nya gak perlu kelihatan lagi)")]
+    public bool sembunyikanGambarProp;
 }
 
 [System.Serializable]
@@ -34,6 +42,14 @@ public class EfekParameterCutscene
     public int tambahRoti = 0;
     [Tooltip("Centang kalau adegan ini yang mengaktifkan mekanik Cicilan Mingguan (Main Event 1)")]
     public bool aktifkanHutang = false;
+    [Tooltip("TAMBAHAN: kalau diisi (bukan -1), jam in-game LANGSUNG diset ke angka ini begitu adegan ini kelar (format 24 jam, misal 11 = jam 11 siang). Biarkan -1 kalau gak mau ubah jam sama sekali.")]
+    public float jamBaruSetelahAdegan = -1f;
+    [Tooltip("TAMBAHAN: kalau diisi (bukan -1), Sanity gak akan dibiarkan jatuh di bawah angka ini akibat efek 'Sanity Delta' negatif di ADEGAN INI (naskah ME2: jangan sampai di bawah 15%). Cuma jepit ke ATAS kalau kurang, gak narik turun kalau udah lebih tinggi.")]
+    public float sanityMinimalSetelahEfek = -1f;
+    [Tooltip("TAMBAHAN: paksa buka Threshold ke-berapa (1/2/3) begitu adegan ini kelar, TERLEPAS dari progres skripsi saat ini. Isi -1 kalau gak perlu.")]
+    public int paksaBukaThresholdKe = -1;
+    [Tooltip("TAMBAHAN: centang buat ngasih bonus 'TEKAD_KUAT' (ME2_03) - distorsi Sanity dimatikan paksa 1 hari + Sanity gak akan jatuh di bawah 10 selama 3 hari")]
+    public bool aktifkanBonusTekadKuat = false;
 }
 
 [System.Serializable]

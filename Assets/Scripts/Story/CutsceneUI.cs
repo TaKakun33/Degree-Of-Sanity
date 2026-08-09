@@ -28,6 +28,9 @@ public class CutsceneUI : MonoBehaviour
     [Tooltip("Drag GameObject Anna di scene ke sini (yang dipakai di seluruh game, bukan yang baru)")]
     public Transform annaTransform;
 
+    [Header("Gambar Prop (ilustrasi close-up di depan layar - misal Laci/Amplop)")]
+    public Image gambarProp;
+
     [Header("Panel Pilihan (JembatanCerita)")]
     public GameObject panelPilihan;
     public Transform wadahTombolPilihan;
@@ -50,6 +53,8 @@ public class CutsceneUI : MonoBehaviour
         // Kalau Prolog gak jalan (Load Game/balik kerja), gak ada yang pernah matiin ini,
         // dan kalau Raycast Target default-nya nyala di Editor, klik ke lantai/objek keblokir. ---
         if (layarTransisi != null) layarTransisi.raycastTarget = false;
+
+        if (gambarProp) gambarProp.gameObject.SetActive(false);
     }
 
     public bool ApakahFlagAktif(string nama) => !string.IsNullOrEmpty(nama) && flagCerita.Contains(nama);
@@ -70,6 +75,7 @@ public class CutsceneUI : MonoBehaviour
     public void MainkanAdegan(CutsceneSceneSO adegan, Action onSemuaChainSelesai)
     {
         selesaiCallback = onSemuaChainSelesai;
+        if (GameManager.Instance != null) GameManager.Instance.SetTampilanJamAktif(false); // TAMBAHAN: sembunyiin jam selama cutscene
         MulaiSatuAdegan(adegan);
     }
 
@@ -88,6 +94,7 @@ public class CutsceneUI : MonoBehaviour
 
         if (panelCutscene) panelCutscene.SetActive(true);
         if (goyangTeks) goyangTeks.Matikan();
+        if (gambarProp) gambarProp.gameObject.SetActive(false);
 
         LanjutkanBaris();
     }
@@ -175,7 +182,12 @@ public class CutsceneUI : MonoBehaviour
 
         while (adeganAktif.baris != null && indexBaris < adeganAktif.baris.Count) {
             var baris = adeganAktif.baris[indexBaris];
-            if (baris.munculKalauSanityDiBawah > 0f && GameManager.Instance != null && GameManager.Instance.sanity >= baris.munculKalauSanityDiBawah) {
+
+            bool lewatiKarenaSanity = baris.munculKalauSanityDiBawah > 0f && GameManager.Instance != null && GameManager.Instance.sanity >= baris.munculKalauSanityDiBawah;
+            bool lewatiKarenaFlagAktif = !string.IsNullOrEmpty(baris.munculKalauFlagAktif) && !ApakahFlagAktif(baris.munculKalauFlagAktif);
+            bool lewatiKarenaFlagTidakAktif = !string.IsNullOrEmpty(baris.munculKalauFlagTidakAktif) && ApakahFlagAktif(baris.munculKalauFlagTidakAktif);
+
+            if (lewatiKarenaSanity || lewatiKarenaFlagAktif || lewatiKarenaFlagTidakAktif) {
                 indexBaris++;
                 continue;
             }
@@ -204,6 +216,16 @@ public class CutsceneUI : MonoBehaviour
         if (b.objekTampilkan != null) b.objekTampilkan.SetActive(true);
         if (b.objekSembunyikan != null) b.objekSembunyikan.SetActive(false);
 
+        // --- TAMBAHAN: tampilkan/sembunyikan gambar prop DI DEPAN LAYAR (bukan di world) ---
+        if (gambarProp != null) {
+            if (b.gambarPropUntukDitampilkan != null) {
+                gambarProp.sprite = b.gambarPropUntukDitampilkan;
+                gambarProp.gameObject.SetActive(true);
+            } else if (b.sembunyikanGambarProp) {
+                gambarProp.gameObject.SetActive(false);
+            }
+        }
+
         if (!string.IsNullOrEmpty(b.parameterUntukDitampilkan) && GameManager.Instance != null) {
             GameManager.Instance.TampilkanParameter(b.parameterUntukDitampilkan);
         }
@@ -216,6 +238,11 @@ public class CutsceneUI : MonoBehaviour
             if (e.sanityDelta > 0) GameManager.Instance.TambahSanity(e.sanityDelta);
             else if (e.sanityDelta < 0) GameManager.Instance.KurangiSanity(-e.sanityDelta);
 
+            // --- TAMBAHAN: jepit Sanity ke minimal tertentu SETELAH efek di atas (naskah ME2: gak boleh di bawah 15%) ---
+            if (e.sanityMinimalSetelahEfek >= 0f) {
+                GameManager.Instance.TetapkanSanityMinimal(e.sanityMinimalSetelahEfek);
+            }
+
             if (e.laparDelta > 0) GameManager.Instance.TambahLapar(e.laparDelta);
             else if (e.laparDelta < 0) GameManager.Instance.KurangiLapar(-e.laparDelta);
 
@@ -227,6 +254,21 @@ public class CutsceneUI : MonoBehaviour
             if (e.tambahRoti > 0 && InventoryManager.Instance != null) InventoryManager.Instance.jumlahRoti += e.tambahRoti;
 
             if (e.aktifkanHutang && CicilanManager.Instance != null) CicilanManager.Instance.AktifkanCicilan();
+
+            // --- TAMBAHAN: paksa buka Threshold ke-N, terlepas dari progres skripsi ---
+            if (e.paksaBukaThresholdKe > 0 && ThresholdSkripsi.Instance != null) {
+                ThresholdSkripsi.Instance.PaksaBukaThresholdKe(e.paksaBukaThresholdKe);
+            }
+
+            // --- TAMBAHAN: bonus TEKAD_KUAT (ME2_03) ---
+            if (e.aktifkanBonusTekadKuat) {
+                GameManager.Instance.AktifkanBonusTekadKuat();
+            }
+
+            // --- TAMBAHAN: paksa jam in-game ke angka tertentu begitu adegan ini kelar ---
+            if (e.jamBaruSetelahAdegan >= 0f) {
+                GameManager.Instance.jamSaatIni = e.jamBaruSetelahAdegan;
+            }
 
             if (!string.IsNullOrEmpty(adeganAktif.monologAkhirHari)) {
                 GameManager.Instance.monologAkhirHariBerikutnya = adeganAktif.monologAkhirHari;
@@ -243,16 +285,24 @@ public class CutsceneUI : MonoBehaviour
         if (adeganAktif.adeganBerikutnya != null) {
             MulaiSatuAdegan(adeganAktif.adeganBerikutnya);
         } else {
-            adeganAktif = null;
-            selesaiCallback?.Invoke();
+            SelesaikanChain();
         }
+    }
+
+    // --- TAMBAHAN: titik tunggal buat nutup seluruh chain adegan - dipanggil dari 2 tempat
+    // (abis baris terakhir tanpa pilihan, ATAU abis pilihan tanpa adeganLanjutan). Nampilin lagi
+    // jam yang disembunyikan pas cutscene mulai. ---
+    void SelesaikanChain()
+    {
+        adeganAktif = null;
+        if (GameManager.Instance != null) GameManager.Instance.SetTampilanJamAktif(true);
+        selesaiCallback?.Invoke();
     }
 
     void TampilkanPilihan()
     {
         if (panelPilihan == null || wadahTombolPilihan == null || prefabTombolPilihan == null) {
-            adeganAktif = null;
-            selesaiCallback?.Invoke();
+            SelesaikanChain();
             return;
         }
 
@@ -280,8 +330,7 @@ public class CutsceneUI : MonoBehaviour
         if (cabang.adeganLanjutan != null) {
             MulaiSatuAdegan(cabang.adeganLanjutan);
         } else {
-            adeganAktif = null;
-            selesaiCallback?.Invoke();
+            SelesaikanChain();
         }
     }
 }

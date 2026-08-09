@@ -110,6 +110,13 @@ public class GameManager : MonoBehaviour
     public GameObject panelBadEndingUang;
     private bool endingSudahDipicu = false;
 
+    [Header("TAMBAHAN: Status Cutscene & Bonus Sementara")]
+    [Tooltip("True selagi CutsceneUI lagi muter apapun - dipakai buat NUNDA cek Bad Ending 1 sampai kontrol balik ke pemain (naskah ME2: 'Bad Ending 1 tidak boleh terpicu selama cutscene berlangsung')")]
+    public bool sedangDalamCutscene = false;
+    private int hariDistorsiDimatikanPaksaSisa = 0;
+    private int hariSanityFloorSisa = 0;
+    private float sanityFloorNilai = 0f;
+
     [Header("Bad Ending 2: Lapar Kritis Berkepanjangan")]
     [Tooltip("TUNABLE: berapa hari BERTURUT-TURUT lapar kritis sebelum Bad Ending 2 terpicu")]
     public int batasHariLaparKritisBerturutTurut = 3;
@@ -156,6 +163,12 @@ public class GameManager : MonoBehaviour
         if (uiUang) uiUang.SetActive(true);
         if (uiTombolInventory) uiTombolInventory.SetActive(true);
         if (tombolBukaToko) tombolBukaToko.SetActive(true);
+    }
+
+    // --- TAMBAHAN: sembunyikan/tampilkan teks jam - dipanggil CutsceneUI begitu cutscene mulai/kelar ---
+    public void SetTampilanJamAktif(bool aktif)
+    {
+        if (textJamHarian) textJamHarian.gameObject.SetActive(aktif);
     }
 
     void TerapkanHasilKerjaPartTimeJikaAda()
@@ -279,7 +292,7 @@ public class GameManager : MonoBehaviour
 
     public void SetJedaWaktu(bool jeda) { waktuBerjalan = !jeda; }
 
-    public bool SedangDistorsi => sanity < ambangSanityDistorsi;
+    public bool SedangDistorsi => hariDistorsiDimatikanPaksaSisa <= 0 && sanity < ambangSanityDistorsi;
     public bool SedangKelaparan => lapar < ambangLaparKritis;
 
     public bool BisaKerjakanSkripsiHariIni => !skripsiSudahDikerjakanHariIni;
@@ -301,9 +314,28 @@ public class GameManager : MonoBehaviour
     public void KurangiSanity(float jumlah)
     {
         float pengali = SedangKelaparan ? pengaliSanitySaatLaparKritis : 1f;
-        sanity = Mathf.Clamp(sanity - (jumlah * pengali), 0f, 100f);
+        float floor = hariSanityFloorSisa > 0 ? sanityFloorNilai : 0f; // --- TAMBAHAN: floor sementara dari bonus TEKAD_KUAT ---
+        sanity = Mathf.Clamp(sanity - (jumlah * pengali), floor, 100f);
         UpdateUI();
         CekBadEndingSanity();
+    }
+
+    // --- TAMBAHAN: paksa Sanity gak jatuh di bawah angka ini, TAPI cuma naikin (jepit ke atas) -
+    // gak narik turun kalau Sanity udah lebih tinggi. Dipakai buat "penalti ME2 gak boleh di bawah 15%". ---
+    public void TetapkanSanityMinimal(float minimal)
+    {
+        if (sanity < minimal) {
+            sanity = minimal;
+            UpdateUI();
+        }
+    }
+
+    // --- TAMBAHAN: bonus TEKAD_KUAT (ME2_03, kalau pilih "Jujur") ---
+    public void AktifkanBonusTekadKuat()
+    {
+        hariDistorsiDimatikanPaksaSisa = 1;
+        hariSanityFloorSisa = 3;
+        sanityFloorNilai = 10f;
     }
 
     public void TambahSanity(float jumlah)
@@ -332,13 +364,17 @@ public class GameManager : MonoBehaviour
 
     public void KurangiUang(int jumlah)
     {
-        uang = Mathf.Max(0, uang - jumlah);
+        // --- FIX: gak di-clamp ke 0 lagi - boleh minus, representasi utang (naskah: Main Event 1) ---
+        uang = uang - jumlah;
         UpdateUI();
     }
 
     public void TambahUang(int jumlah)
     {
-        uang = Mathf.Max(0, uang + jumlah);
+        // --- FIX: sama, gak di-clamp ke 0 juga. PENTING: kalau clamp ini dibiarin, penghasilan
+        // yang masuk pas uang lagi minus bakal langsung "reset" ke 0 instead of ngurangin utang
+        // pelan-pelan (misal uang=-500rb + income 200rb harusnya jadi -300rb, bukan 0). ---
+        uang = uang + jumlah;
         UpdateUI();
     }
 
@@ -353,7 +389,22 @@ public class GameManager : MonoBehaviour
     void CekBadEndingSanity()
     {
         if (endingSudahDipicu) return;
+        if (sedangDalamCutscene) return; // --- TAMBAHAN: jangan cek selama cutscene, tunda dulu ---
         if (sanity <= 0f) TampilkanBadEndingSanity();
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager pas cutscene MULAI ---
+    public void MulaiCutscene()
+    {
+        sedangDalamCutscene = true;
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager begitu cutscene BENERAN kelar - buka gerbang lagi
+    // DAN re-cek kondisi ending yang mungkin sempet ketunda selama cutscene tadi ---
+    public void SelesaiCutscene()
+    {
+        sedangDalamCutscene = false;
+        CekBadEndingSanity();
     }
 
     // --- Dipanggil CicilanManager begitu uang habis / cicilan gagal berulang ---
@@ -472,6 +523,10 @@ public class GameManager : MonoBehaviour
 
         KurangiLapar(penguranganLaparSaatTidur);
         TambahSanity(pemulihanSanitySaatTidur);
+
+        // --- TAMBAHAN: hitung mundur durasi bonus TEKAD_KUAT (kalau lagi aktif) ---
+        if (hariDistorsiDimatikanPaksaSisa > 0) hariDistorsiDimatikanPaksaSisa--;
+        if (hariSanityFloorSisa > 0) hariSanityFloorSisa--;
 
         // --- Bad Ending 2: lapar kritis BERTURUT-TURUT sekian hari ---
         if (SedangKelaparan) {

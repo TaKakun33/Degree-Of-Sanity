@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: ME1_03b
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: ME1_03a
+  ruangId: KAMAR_ANDREW
+  karakterAnnaHadir: 0
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Andrew memasukkan amplop itu ke laci.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 1813628816210538444, guid: 3d5df7b17bf7874249ac774d15f4d1ed, type: 3}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: Andrew
+    teks: SPP Anna aman. Tiap Senin nanti ada yang datang nagih.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 1
+  - jenis: 0
+    namaTokoh: Andrew
+    teks: Nggak apa-apa. Ini cuma nyicil waktu.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 2
+    namaTokoh: Andrew
+    teks: Yang kamu cicil itu dirimu sendiri.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: Andrew
+    teks: Iya. Aku tau.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  efek:
+    sanityDelta: -5
+    laparDelta: 0
+    uangDelta: -750000
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    aktifkanHutang: 1
+    jamBaruSetelahAdegan: 11
+  adaPilihan: 0
+  pilihanCabang: []
+  adeganBerikutnya: {fileID: 0}
+  monologAkhirHari: 

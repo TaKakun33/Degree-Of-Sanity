@@ -21,22 +21,38 @@ MonoBehaviour:
     teks: Rumah ini tinggal punya empat ruang yang berarti.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 0
     namaTokoh: 
     teks: Kamar buat nulis dan buat berhenti. Dapur buat masak. Pintu buat cari uang.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 0
     namaTokoh: 
     teks: Dan satu kamar di ujung, yang pintunya selalu ditutup pelan-pelan dari
       dalam.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
     teks: Hari pertama.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   efek:
     sanityDelta: 0
     laparDelta: 0
@@ -44,6 +60,7 @@ MonoBehaviour:
     progresSkripsiDelta: 0
     tambahRoti: 0
     aktifkanHutang: 0
+    jamBaruSetelahAdegan: 9
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 0}

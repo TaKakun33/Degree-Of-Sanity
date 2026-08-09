@@ -10,85 +10,86 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
-  m_Name: P_04
+  m_Name: P_05
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
-  id: P_04
+  id: P_05
   ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 0
   baris:
   - jenis: 0
     namaTokoh: 
-    teks: "Laptopnya butuh empat puluh detik buat nyala. Andrew nggak pernah ngeluh
-      \u2014 itu satu-satunya waktu di mana dia nggak harus ngapa-ngapain."
+    teks: Sisa uang peninggalan orang tuanya disimpen di laci, di amplop yang belum
+      diganti sejak dikasih ke Andrew.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 1813628816210538444, guid: 3d5df7b17bf7874249ac774d15f4d1ed, type: 3}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
-    teks: Dua puluh empat halaman. Bab satu doang.
-    parameterUntukDitampilkan: ProgresSkripsi
+    teks: Segini.
+    parameterUntukDitampilkan: Uang
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
-  - jenis: 0
-    namaTokoh: 
-    teks: 'Ada email belum dibuka dari bagian akademik. Subjeknya satu kata: Peringatan.'
+    gambarPropUntukDitampilkan: {fileID: 3058730461592448298, guid: 5939d070ee234500086e57fe788d5f18, type: 3}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Cukup buat makan. Nggak cukup buat SPP Anna.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
-    namaTokoh: Andew
-    teks: ...batas masa studi 1 Mei.
-    parameterUntukDitampilkan: Tanggal
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
-  - jenis: 1
-    namaTokoh: Andew
-    teks: Aku nunda ini dua tahun, terus dikasih enam puluh satu hari.
+    namaTokoh: Andrew
+    teks: Berarti aku harus kerja. Sambil nulis. Sambil ngurus Anna.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 1
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: ...bisa.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 2
     namaTokoh: 
-    teks: Kamu yang nunda.
+    teks: Bilang lagi.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
-  - jenis: 0
-    namaTokoh: 
-    teks: Itu suara pertama hari itu yang bukan dari mulut orang. Nggak bakal jadi
-      yang terakhir.
-    parameterUntukDitampilkan: Sanity
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
-  - jenis: 0
-    namaTokoh: 
-    teks: Ada garis kecil muncul di sudut layar. Andrew nggak inget sejak kapan itu
-      ada.
-    parameterUntukDitampilkan: 
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
-    teks: ...aku waras, kan?
+    teks: Bisa.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
-  - jenis: 1
-    namaTokoh: Andrew
-    teks: ...aku waras, kan?
-    parameterUntukDitampilkan: 
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Ada aplikasi belanja di ponselnya yang biasa dipake beli kebutuhan tanpa
+      keluar rumah. Sekarang harus beneran kepake.
+    parameterUntukDitampilkan: Toko
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   efek:
     sanityDelta: 0
     laparDelta: 0
@@ -98,5 +99,5 @@ MonoBehaviour:
     aktifkanHutang: 0
   adaPilihan: 0
   pilihanCabang: []
-  adeganBerikutnya: {fileID: 11400000, guid: 3c09f7074248fb5deb53e6a7b6ce0470, type: 2}
+  adeganBerikutnya: {fileID: 11400000, guid: b14843c835b8be8058181058db6b21c9, type: 2}
   monologAkhirHari: 

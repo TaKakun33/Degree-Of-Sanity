@@ -10,70 +10,75 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
-  m_Name: P_05
+  m_Name: ME1_02
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
-  id: P_05
-  ruangId: KAMAR_ANDREW
-  karakterAnnaHadir: 0
+  id: ME1_02
+  ruangId: LORONG
+  karakterAnnaHadir: 1
   baris:
+  - jenis: 1
+    namaTokoh: Anna
+    teks: "Kak, aku berang\u2014"
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 0
-    namaTokoh: 
-    teks: Sisa uang peninggalan orang tuanya disimpen di laci, di amplop yang belum
-      diganti sejak dikasih ke Andrew.
+    namaTokoh: Anna
+    teks: ...itu apa?
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
-    teks: Segini.
-    parameterUntukDitampilkan: Uang
+    teks: Iklan.
+    parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Iklan pakai kop sekolahku?
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
-    teks: Cukup buat makan. Nggak cukup buat SPP Anna.
+    teks: ...
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Aku bisa berhenti dulu satu semester. Temenku ada yang gitu.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
-    teks: Berarti aku harus kerja. Sambil nulis. Sambil ngurus Anna.
+    teks: Nggak. Berangkat, nanti telat.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
-  - jenis: 1
-    namaTokoh: Andrew
-    teks: ...bisa.
-    parameterUntukDitampilkan: 
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
-  - jenis: 2
-    namaTokoh: 
-    teks: Bilang lagi.
-    parameterUntukDitampilkan: 
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
-  - jenis: 1
-    namaTokoh: Andrew
-    teks: Bisa.
-    parameterUntukDitampilkan: 
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
-  - jenis: 0
-    namaTokoh: 
-    teks: Ada aplikasi belanja di ponselnya yang biasa dipake beli kebutuhan tanpa
-      keluar rumah. Sekarang harus beneran kepake.
-    parameterUntukDitampilkan: Toko
-    munculKalauSanityDiBawah: 0
-    objekTampilkan: {fileID: 0}
-    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
   efek:
     sanityDelta: 0
     laparDelta: 0
@@ -83,5 +88,5 @@ MonoBehaviour:
     aktifkanHutang: 0
   adaPilihan: 0
   pilihanCabang: []
-  adeganBerikutnya: {fileID: 11400000, guid: b14843c835b8be8058181058db6b21c9, type: 2}
+  adeganBerikutnya: {fileID: 11400000, guid: c60795b5b66875381a6986565cb008c7, type: 2}
   monologAkhirHari: 

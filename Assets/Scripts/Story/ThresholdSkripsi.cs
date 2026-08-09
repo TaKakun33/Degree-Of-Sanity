@@ -81,4 +81,14 @@ public class ThresholdSkripsi : MonoBehaviour
             if (th.butuhSyaratTambahan) th.syaratTambahanTerpenuhi = true;
         }
     }
+
+    // --- TAMBAHAN: paksa buka Threshold ke-N (1/2/3), TERLEPAS dari progres skripsi saat ini.
+    // Dipakai adegan Main Event yang emang narasinya nentuin threshold kebuka (ME2_03, ME3_02). ---
+    public void PaksaBukaThresholdKe(int nomorKe1)
+    {
+        if (daftarThreshold == null || nomorKe1 < 1 || nomorKe1 > daftarThreshold.Count) return;
+        var th = daftarThreshold[nomorKe1 - 1];
+        if (th.sudahTerbuka) return;
+        BukaThreshold(th);
+    }
 }
