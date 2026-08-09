@@ -12,11 +12,10 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
     private bool isMenuOpen = false; 
     private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rb; // --- TAMBAHAN ---
+    private Rigidbody2D rb;
 
-    // --- TAMBAHAN: beda dari isMenuOpen - ini cuma blokir KLIK BARU, tapi MovePlayer() TETAP jalan.
-    // Dipakai pas karakter lagi "dipaksa" jalan otomatis (misal keluar rumah buat kerja) dan
-    // gak boleh dibelokin klik pemain di tengah jalan. ---
+    // --- Beda dari isMenuOpen - ini cuma blokir KLIK BARU, MovePlayer() TETAP jalan.
+    // Dipakai pas karakter "dipaksa" jalan otomatis (JalanKeTitik) dan gak boleh dibelokin klik. ---
     private bool kontrolDikunci = false;
 
     // --- DAFTAR TARGET OBJEK ---
@@ -26,7 +25,8 @@ public class PlayerController : MonoBehaviour
     private ExitDoorController targetExitDoor = null;
     private KomporController targetKompor = null;
 
-    // --- SISTEM MEMORI LANTAI (WAYPOINT) ---
+    // --- SISTEM MEMORI LANTAI (WAYPOINT) - dipakai pas klik objek/lantai di LANTAI LAIN,
+    // karakter otomatis jalan dulu ke pintu/tangga penghubung sebelum lanjut ke tujuan asli ---
     private bool sedangTransit = false; 
     private GameObject targetInteraksiAkhir = null; 
     private float targetXAkhir = 0f; 
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     {
         targetPosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        rb = GetComponent<Rigidbody2D>(); // --- TAMBAHAN ---
+        rb = GetComponent<Rigidbody2D>();
         isMenuOpen = false;
         isMoving = false;
     }
@@ -44,8 +44,6 @@ public class PlayerController : MonoBehaviour
     {
         if (isMenuOpen) return;
 
-        // --- TAMBAHAN: kalau kontrolDikunci, klik BARU diabaikan - tapi kalau isMoving masih true
-        // (dari JalanKeTitik sebelumnya), MovePlayer() di bawah TETAP jalan seperti biasa ---
         if (!kontrolDikunci && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
@@ -61,15 +59,18 @@ public class PlayerController : MonoBehaviour
         if (isMenuOpen) isMoving = false; 
     }
 
-    // --- TAMBAHAN: dipanggil script LAIN (bukan dari klik mouse) buat nyuruh karakter jalan
-    // ke titik tertentu secara otomatis - dipakai JobMenuController pas pemain milih kerja,
-    // dan PintuKlikRelay pas klik pintu tertutup.
-    //
-    // FIX: cuma X dari "tujuan" yang dipakai - Y TETAP ikutin posisi karakter sekarang, PERSIS
-    // kayak gimana HandleClick() nanganin klik ke Bed/Desk/Kompor (targetPosition = new Vector2
-    // (objekDiklik.transform.position.x, transform.position.y)). Kalau Y dari tujuan yang beda
-    // dipakai mentah-mentah (misal titik pintu digambar lebih tinggi dari lantai), karakter jadi
-    // jalan miring/​"lompat" ke Y yang salah. ---
+    // --- Dipakai script lain (CutsceneUI, dll) buat ngecek udah nyampe tujuan belum ---
+    public bool SedangBergerak => isMoving;
+
+    // --- Kunci/buka kontrol klik pemain, dipanggil sebelum JalanKeTitik() ---
+    public void KunciKontrol(bool kunci)
+    {
+        kontrolDikunci = kunci;
+    }
+
+    // --- Dipanggil script LAIN (bukan klik mouse) buat nyuruh karakter jalan otomatis.
+    // Cuma X yang dipakai - Y TETAP ikutin posisi karakter sekarang (gaya side-scroller,
+    // sama kayak gimana HandleClick() nanganin klik ke Bed/Desk/Kompor). ---
     public void JalanKeTitik(Vector2 tujuan)
     {
         targetPosition = new Vector2(tujuan.x, transform.position.y);
@@ -77,15 +78,7 @@ public class PlayerController : MonoBehaviour
         FlipSprite();
     }
 
-    // --- TAMBAHAN: kunci/buka kontrol klik pemain. Dipanggil sebelum JalanKeTitik() pas mau
-    // "paksa" karakter jalan otomatis tanpa bisa dibelokin klik pemain di tengah jalan. ---
-    public void KunciKontrol(bool kunci)
-    {
-        kontrolDikunci = kunci;
-    }
-
-    // --- TAMBAHAN: hentikan gerakan yang lagi jalan secara paksa (dipanggil PenghalangKeluar.cs
-    // begitu karakter didorong balik, biar gak "gemeteran" nyoba maju terus tiap frame) ---
+    // --- Hentikan gerakan yang lagi jalan secara paksa (dipanggil PenghalangKeluar.cs, dll) ---
     public void BerhentiPaksa()
     {
         isMoving = false;
@@ -142,7 +135,7 @@ public class PlayerController : MonoBehaviour
         // LOGIKA PERGERAKAN (TRANSIT & SATU LANTAI)
         // ==============================================================
 
-        // JIKA BARANG ATAU LANTAI ADA DI LANTAI YANG BERBEDA
+        // JIKA BARANG ATAU LANTAI ADA DI LANTAI YANG BERBEDA -> cari pintu/tangga penghubung
         if (lantaiTujuan != lantaiSaatIni)
         {
             DoorController pintuPenghubung = CariPintuKeLantai(lantaiTujuan);
@@ -191,7 +184,7 @@ public class PlayerController : MonoBehaviour
                obj.CompareTag("Kompor");
     }
 
-    // Fungsi pencari rute tangga
+    // Fungsi pencari rute tangga - cari DoorController di lantai SAAT INI yang lantaiTujuan-nya cocok
     DoorController CariPintuKeLantai(int lantaiTujuan)
     {
         DoorController[] semuaPintu = Object.FindObjectsByType<DoorController>(FindObjectsSortMode.None);
@@ -227,19 +220,12 @@ public class PlayerController : MonoBehaviour
         Vector2 posisiSebelum = rb != null ? rb.position : (Vector2)transform.position;
         Vector2 posisiBaru = Vector2.MoveTowards(posisiSebelum, targetPosition, speed * Time.deltaTime);
 
-        // --- FIX: hitung arah hadap dari PERGERAKAN AKTUAL tiap frame (posisi baru vs posisi
-        // sebelumnya), BUKAN dari snapshot transform.position sekali doang pas klik. Yang lama
-        // itu bisa salah/kebalik kalau transform.position telat sinkron sama rb.MovePosition()
-        // (physics engine update-nya gak instan). Ini lebih akurat & gak bisa kebalik lagi. ---
+        // Arah hadap dihitung dari pergerakan AKTUAL tiap frame, bukan snapshot sekali doang
         if (posisiBaru.x != posisiSebelum.x) {
             spriteRenderer.flipX = posisiBaru.x < posisiSebelum.x;
         }
 
-        // --- FIX: pakai rb.MovePosition() (physics-aware), BUKAN transform.position = ... langsung.
-        // Nulis transform.position mentah-mentah bikin physics engine "kaget" tiap frame - itu
-        // penyebab goyang-goyang pas pakai Rigidbody2D Dynamic. MovePosition() ngasih tau physics
-        // engine ke mana kita MAU pindah, biar dia yang urus collision resolution dengan benar
-        // (masih ke-block collider solid, tapi gak lagi konflik/gemeteran). ---
+        // Pakai rb.MovePosition() (physics-aware) - tetap ke-block collider solid, gak gemeteran
         if (rb != null) {
             rb.MovePosition(posisiBaru);
         } else {
@@ -248,13 +234,13 @@ public class PlayerController : MonoBehaviour
         
         if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
         {
-            // JIKA SAMPAI DI DEPAN PINTU
+            // JIKA SAMPAI DI DEPAN PINTU/TANGGA
             if (targetDoor != null) 
             { 
                 targetDoor.UseDoor(gameObject); 
                 targetDoor = null; 
                 
-                // Cek jika habis keluar pintu, apakah masih harus jalan ke kasur/kompor?
+                // Cek jika habis keluar pintu, apakah masih harus jalan ke kasur/kompor/dll?
                 if (sedangTransit)
                 {
                     sedangTransit = false; 
@@ -271,7 +257,7 @@ public class PlayerController : MonoBehaviour
                     
                     targetInteraksiAkhir = null; 
                     FlipSprite(); 
-                    return; // Lanjut jalan!
+                    return; // Lanjut jalan ke lantai baru!
                 }
             }
             // EKSEKUSI JIKA SAMPAI DI BARANG BUKAN PINTU
@@ -282,7 +268,7 @@ public class PlayerController : MonoBehaviour
 
             // Karakter sampai di tujuan akhir, berhenti jalan.
             isMoving = false;
-            kontrolDikunci = false; // --- TAMBAHAN: otomatis buka kunci kontrol begitu sampai tujuan ---
+            kontrolDikunci = false; // otomatis buka kunci begitu sampai tujuan
         }
     }
 }

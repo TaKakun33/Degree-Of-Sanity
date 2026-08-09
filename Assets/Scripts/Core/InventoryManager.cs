@@ -8,6 +8,8 @@ public class InventoryManager : MonoBehaviour
     public int jumlahKopi = 0;
     public int jumlahMieAyam = 0;
     public int jumlahBoneka = 0;
+    [Tooltip("TAMBAHAN: item Roti dari Prolog (dikasih Anna) - dipakai buat mulihin Lapar, jadi kunci Bad Ending 2 kalau gak pernah dimakan")]
+    public int jumlahRoti = 0;
 
     [Header("Bahan Makanan & Masakan")]
     public int jumlahBahan1 = 0; // Menghasilkan 1 porsi
@@ -24,4 +26,7 @@ public class InventoryManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
+
+    // --- TAMBAHAN: dipakai teks Bad Ending 2 ("Sisa makanan di tas: [N]") ---
+    public int TotalMakananDiTas() => jumlahRoti + jumlahMieAyam + jumlahMakananJadi;
 }

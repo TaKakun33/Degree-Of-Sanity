@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
 
-// Daftar jenis barang diperbarui dengan tambahan Bahan dan Makanan Jadi
-public enum JenisItem { Kosong, Kopi, Mie, Boneka, Bahan1, Bahan2, Bahan3, MakananJadi, Keyboard, Buku }
+// Daftar jenis barang diperbarui dengan tambahan Bahan, Makanan Jadi, dan Roti
+public enum JenisItem { Kosong, Kopi, Mie, Boneka, Bahan1, Bahan2, Bahan3, MakananJadi, Keyboard, Buku, Roti }
 
 public class InventoryUIController : MonoBehaviour
 {
@@ -22,6 +22,7 @@ public class InventoryUIController : MonoBehaviour
     public Sprite ikonMakananJadi;
     public Sprite ikonKeyboard;
     public Sprite ikonBuku;
+    public Sprite ikonRoti;
 
     [Header("Referensi UI Detail Item")]
     public GameObject panelDetail; 
@@ -54,6 +55,13 @@ public class InventoryUIController : MonoBehaviour
         if (InventoryManager.Instance.jumlahKopi > 0 && indexSlot < daftarSlot.Count)
         {
             if (daftarSlot[indexSlot] != null) daftarSlot[indexSlot].IsiSlot(ikonKopi, InventoryManager.Instance.jumlahKopi, () => PilihItem(JenisItem.Kopi, "Kopi Espresso", "Menambah toleransi typo dan batas tidur +1 jam.", 7500, true));
+            indexSlot++;
+        }
+
+        // --- TAMBAHAN: Roti (dari Prolog, dikasih Anna) - dimakan buat mulihin Lapar ---
+        if (InventoryManager.Instance.jumlahRoti > 0 && indexSlot < daftarSlot.Count)
+        {
+            if (daftarSlot[indexSlot] != null) daftarSlot[indexSlot].IsiSlot(ikonRoti, InventoryManager.Instance.jumlahRoti, () => PilihItem(JenisItem.Roti, "Roti", "Simpanan dari Anna. Dimakan buat mulihin Lapar.", 0, true));
             indexSlot++;
         }
         
@@ -143,6 +151,11 @@ public class InventoryUIController : MonoBehaviour
                 InventoryManager.Instance.jumlahMakananJadi--;
                 GameManager.Instance.lapar = 100f; // Bikin kenyang!
                 break;
+            case JenisItem.Roti:
+                // --- TAMBAHAN: TUNABLE - roti cuma pulihin Lapar SEBAGIAN (bukan penuh kayak Mie/Masakan) ---
+                InventoryManager.Instance.jumlahRoti--;
+                GameManager.Instance.TambahLapar(25f);
+                break;
         }
         
         CekSetelahInteraksi();
@@ -161,6 +174,7 @@ public class InventoryUIController : MonoBehaviour
             case JenisItem.Bahan2: InventoryManager.Instance.jumlahBahan2--; break;
             case JenisItem.Bahan3: InventoryManager.Instance.jumlahBahan3--; break;
             case JenisItem.MakananJadi: InventoryManager.Instance.jumlahMakananJadi--; break;
+            case JenisItem.Roti: InventoryManager.Instance.jumlahRoti--; break;
             case JenisItem.Keyboard: InventoryManager.Instance.punyaKeyboard = false; break;
             case JenisItem.Buku: InventoryManager.Instance.punyaBuku = false; break;
         }
@@ -180,6 +194,7 @@ public class InventoryUIController : MonoBehaviour
             case JenisItem.Bahan2: if (InventoryManager.Instance.jumlahBahan2 <= 0) habis = true; break;
             case JenisItem.Bahan3: if (InventoryManager.Instance.jumlahBahan3 <= 0) habis = true; break;
             case JenisItem.MakananJadi: if (InventoryManager.Instance.jumlahMakananJadi <= 0) habis = true; break;
+            case JenisItem.Roti: if (InventoryManager.Instance.jumlahRoti <= 0) habis = true; break;
             case JenisItem.Keyboard: if (!InventoryManager.Instance.punyaKeyboard) habis = true; break;
             case JenisItem.Buku: if (!InventoryManager.Instance.punyaBuku) habis = true; break;
         }

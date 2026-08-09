@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: P_01
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: P_01
+  ruangId: LAYAR_HITAM
+  karakterAnnaHadir: 0
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Empat puluh satu hari yang lalu, ada telepon jam dua pagi.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Andrew nggak inget siapa yang ngomong.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Dia cuma inget sempat bilang "iya, saya anaknya" dua kali.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Yang kedua lebih pelan.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+  efek:
+    sanityDelta: 0
+    laparDelta: 0
+    uangDelta: 0
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    aktifkanHutang: 0
+  adaPilihan: 0
+  pilihanCabang: []
+  adeganBerikutnya: {fileID: 11400000, guid: 776f03985599f025aac944073b807bd9, type: 2}
+  monologAkhirHari: 

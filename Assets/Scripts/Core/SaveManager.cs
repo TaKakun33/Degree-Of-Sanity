@@ -14,7 +14,7 @@ public class DaftarSlotSave
 public class DataSimpanan
 {
     // Status GameManager
-    public int waktu, uang;
+    public int tanggal, bulan, uang;
     public float progresSkripsi, lapar, sanity, jamSaatIni;
 
     // Inventory
@@ -30,6 +30,7 @@ public class DataSimpanan
     // bakal reset ke false lagi tiap kali GameManager baru dibuat, walau harusnya masih hari yang sama ---
     public bool skripsiSudahDikerjakanHariIni;
     public bool kerjaPartTimeSudahDilakukanHariIni;
+    public bool prologSelesai;
 }
 
 public class SaveManager : MonoBehaviour
@@ -53,7 +54,8 @@ public class SaveManager : MonoBehaviour
 
         // 1. Kumpulkan Data GameManager
         if (GameManager.Instance != null) {
-            data.waktu = GameManager.Instance.waktu;
+            data.tanggal = GameManager.Instance.tanggal;
+            data.bulan = GameManager.Instance.bulan;
             data.uang = GameManager.Instance.uang;
             data.progresSkripsi = GameManager.Instance.progresSkripsi;
             data.lapar = GameManager.Instance.lapar;
@@ -61,6 +63,7 @@ public class SaveManager : MonoBehaviour
             data.jamSaatIni = GameManager.Instance.jamSaatIni;
             data.skripsiSudahDikerjakanHariIni = GameManager.Instance.SkripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
             data.kerjaPartTimeSudahDilakukanHariIni = GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
+            data.prologSelesai = GameManager.Instance.prologSelesai; // --- TAMBAHAN ---
         }
 
         // 2. Kumpulkan Data Inventory
@@ -104,7 +107,8 @@ public class SaveManager : MonoBehaviour
 
             // 1. Restore GameManager
             if (GameManager.Instance != null) {
-                GameManager.Instance.waktu = data.waktu;
+                GameManager.Instance.tanggal = data.tanggal;
+                GameManager.Instance.bulan = data.bulan;
                 GameManager.Instance.uang = data.uang;
                 GameManager.Instance.progresSkripsi = data.progresSkripsi;
                 GameManager.Instance.lapar = data.lapar;
@@ -112,6 +116,7 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.jamSaatIni = data.jamSaatIni;
                 GameManager.Instance.SkripsiSudahDikerjakanHariIni = data.skripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
                 GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni = data.kerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.prologSelesai = data.prologSelesai; // --- TAMBAHAN ---
             }
 
             // 2. Restore Inventory
@@ -240,7 +245,8 @@ public class SaveManager : MonoBehaviour
         if (nomorSlot == 0) return PlayerPrefs.HasKey("SaveData_Slot_0") ? "AUTOSAVE" : "Autosave Kosong";
         if (CekSaveAda(nomorSlot)) {
             DataSimpanan d = JsonUtility.FromJson<DataSimpanan>(PlayerPrefs.GetString("SaveData_Slot_" + nomorSlot));
-            return "Slot " + nomorSlot + " | Hari " + d.waktu + " | Rp " + d.uang;
+            string namaBulan = d.bulan == 3 ? "Maret" : (d.bulan == 4 ? "April" : "Mei");
+            return "Slot " + nomorSlot + " | " + d.tanggal + " " + namaBulan + " | Rp " + d.uang;
         }
         return "Slot " + nomorSlot + " (Empty)";
     }
