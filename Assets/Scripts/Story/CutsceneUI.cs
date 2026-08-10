@@ -60,6 +60,18 @@ public class CutsceneUI : MonoBehaviour
 
     public bool ApakahFlagAktif(string nama) => !string.IsNullOrEmpty(nama) && flagCerita.Contains(nama);
 
+    // --- TAMBAHAN: dipakai CeritaManager/SaveManager buat simpan/muat flag cerita (misal
+    // JANJI_ANNA, AMBIL_TABUNGAN, TEKAD_KUAT) ke save data - biar gak ke-reset begitu Load Game ---
+    public List<string> DapatkanFlagCerita() => new List<string>(flagCerita);
+
+    public void MuatFlagCerita(List<string> daftar)
+    {
+        flagCerita.Clear();
+        if (daftar != null) {
+            foreach (var f in daftar) flagCerita.Add(f);
+        }
+    }
+
     // --- TAMBAHAN: paksa layar HITAM LANGSUNG (gak lewat animasi fade 0.5 detik) - dipakai
     // CeritaManager.Start() SEBELUM Prolog mulai, biar gak ada jeda "keliatan sebentar" pas
     // Game Baru dimulai. ---

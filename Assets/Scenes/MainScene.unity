@@ -279,8 +279,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000015259, y: 184}
-  m_SizeDelta: {x: 499.5305, y: 104.2009}
+  m_AnchoredPosition: {x: -0.000011444, y: 134}
+  m_SizeDelta: {x: 623.9138, y: 104.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &22139741
 MonoBehaviour:
@@ -302,7 +302,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: VIctory
+  m_text: Good Ending
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2947,7 +2947,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5391,7 +5391,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Main Menu
+  m_text: Kembali ke Menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5418,8 +5418,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
-  m_fontSizeBase: 42
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -15832,7 +15832,8 @@ MonoBehaviour:
   ambangSanityDistorsi: 50
   ambangLaparKritis: 20
   pengaliSanitySaatLaparKritis: 2
-  panelHappyEnding: {fileID: 0}
+  panelHappyEnding: {fileID: 183432072}
+  adeganHappyEndingPertama: {fileID: 11400000, guid: 469cac2bc4f3ff5dba625d694f8999df, type: 2}
   panelBadEndingSanity: {fileID: 0}
   panelBadEndingLapar: {fileID: 0}
   panelBadEndingUang: {fileID: 0}
@@ -28232,8 +28233,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 264, y: -46}
-  m_SizeDelta: {x: 299.7809, y: 61.3794}
+  m_AnchoredPosition: {x: 202.03, y: -128}
+  m_SizeDelta: {x: 266.81, y: 70.375}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1403797612
 MonoBehaviour:
@@ -30038,8 +30039,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0000076294, y: 105.47}
-  m_SizeDelta: {x: 249.77, y: 52.8528}
+  m_AnchoredPosition: {x: 0.000015259, y: 22.68}
+  m_SizeDelta: {x: 670.8752, y: 45.3598}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1482963115
 MonoBehaviour:
@@ -30061,7 +30062,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Masih belum jadi
+  m_text: Andrew menyelesaikan masa studinya pada hari ke-61.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -35138,8 +35139,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -230, y: -46}
-  m_SizeDelta: {x: 299.7809, y: 61.3794}
+  m_AnchoredPosition: {x: -202.03, y: -128}
+  m_SizeDelta: {x: 266.8119, y: 70.371}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1769638654
 MonoBehaviour:
@@ -38314,7 +38315,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Restart
+  m_text: Main Lagi
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -38341,8 +38342,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
-  m_fontSizeBase: 42
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

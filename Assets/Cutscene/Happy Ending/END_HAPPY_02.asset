@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: END_HAPPY_02
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: END_HAPPY_02
+  ruangId: LORONG
+  karakterAnnaHadir: 1
+  lewatiTransisiAwal: 0
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Pintu dibuka jam empat lewat.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: GIMANA?!
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Revisi minor.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Itu artinya apa?!
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Artinya lulus.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: ...
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: KAKAK LULUS?!
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Iya. Pelan-pelan, tetangga denger.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: BIARIN.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Kakak nepatin janji.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: JANJI_ANNA
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: ...iya.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: JANJI_ANNA
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Anna.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: AMBIL_TABUNGAN
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Yang di amplop kemarin.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: AMBIL_TABUNGAN
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Udah, Kak. Nggak usah dibahas.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: AMBIL_TABUNGAN
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Bulan depan kakak ganti.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: AMBIL_TABUNGAN
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Kakak selalu bilang gitu.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: AMBIL_TABUNGAN
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: (nyengir) Tapi ya udah. Sekarang kakak udah lulus.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: AMBIL_TABUNGAN
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  efek:
+    sanityDelta: 0
+    laparDelta: 0
+    uangDelta: 0
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    tambahUtang: 0
+    aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
+  adaPilihan: 0
+  pilihanCabang: []
+  adeganBerikutnya: {fileID: 11400000, guid: e86464a6e1eb0425bb385f4111c6fc8e, type: 2}
+  monologAkhirHari: 

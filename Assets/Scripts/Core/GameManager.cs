@@ -103,6 +103,8 @@ public class GameManager : MonoBehaviour
 
     [Header("4 Ending (naskah v3: Happy + 3 Bad)")]
     public GameObject panelHappyEnding;
+    [Tooltip("TAMBAHAN: adegan pertama chain cutscene Happy Ending (misal END_HAPPY_01) - dimuter DULU sebelum Panel Happy Ending (layar akhir statis) ditampilkan. Kosongkan buat perilaku lama (langsung tampil panel, gak ada cutscene).")]
+    public CutsceneSceneSO adeganHappyEndingPertama;
     [Tooltip("Bad Ending 1 'Hari Keenam Puluh Dua' - Sanity 0%")]
     public GameObject panelBadEndingSanity;
     [Tooltip("Bad Ending 2 'Nanti Kalau Kakak Inget' - lapar kritis berkepanjangan")]
@@ -497,10 +499,10 @@ public class GameManager : MonoBehaviour
         if (panelBadEndingLapar) panelBadEndingLapar.SetActive(true);
     }
 
-    void TampilkanHappyEnding()
+    // --- TAMBAHAN: dijadiin public + diganti nama, biar bisa dipanggil CeritaManager begitu
+    // chain cutscene Happy Ending BENERAN kelar (dulu private, namanya TampilkanHappyEnding()) ---
+    public void TampilkanLayarAkhirHappyEnding()
     {
-        if (endingSudahDipicu) return;
-        endingSudahDipicu = true;
         Debug.Log("Happy Ending 'Pulang' dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
@@ -512,7 +514,18 @@ public class GameManager : MonoBehaviour
     void CekHappyEnding()
     {
         if (endingSudahDipicu) return;
-        if (progresSkripsi >= 100f) TampilkanHappyEnding();
+        if (progresSkripsi < 100f) return;
+
+        endingSudahDipicu = true; // --- ditandai DI SINI, sebelum cutscene mulai, biar gak ke-trigger dobel ---
+
+        // --- TAMBAHAN: kalau Adegan Happy Ending Pertama udah diisi, muter cutscene-nya dulu -
+        // baru munculin layar akhir begitu chain-nya kelar. Kalau belum diisi, fallback ke
+        // perilaku lama (langsung tampil panel). ---
+        if (CeritaManager.Instance != null && adeganHappyEndingPertama != null) {
+            CeritaManager.Instance.MulaiHappyEndingChain(adeganHappyEndingPertama);
+        } else {
+            TampilkanLayarAkhirHappyEnding();
+        }
     }
 
     public void RestartGame()

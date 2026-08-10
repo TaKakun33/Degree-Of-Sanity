@@ -201,6 +201,28 @@ public class CeritaManager : MonoBehaviour
         });
     }
 
+    // --- TAMBAHAN: dipanggil GameManager.CekHappyEnding() - pembungkus KHUSUS buat chain Happy
+    // Ending, beda dari MulaiAdegan() biasa: begitu chain-nya kelar, JANGAN kembalikan kontrol
+    // ke pemain - malah munculin layar akhir statis & bekukan game. ---
+    public void MulaiHappyEndingChain(CutsceneSceneSO adeganPertama)
+    {
+        if (adeganPertama == null || cutsceneUI == null) return;
+
+        sedangMemutarAdegan = true;
+        if (GameManager.Instance != null) {
+            GameManager.Instance.SetJedaWaktu(true);
+            GameManager.Instance.MulaiCutscene();
+        }
+
+        PlayerController playerAwal = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        if (playerAwal != null) playerAwal.SetMenuStatus(true);
+
+        cutsceneUI.MainkanAdegan(adeganPertama, () => {
+            // --- Chain kelar - JANGAN buka kunci/kembalikan kontrol, munculin layar akhir aja ---
+            if (GameManager.Instance != null) GameManager.Instance.TampilkanLayarAkhirHappyEnding();
+        });
+    }
+
     public bool ApakahFlagAktif(string nama) => cutsceneUI != null && cutsceneUI.ApakahFlagAktif(nama);
 
     // --- TAMBAHAN: dipanggil GameManager.CobaMulaiTidur() SEBELUM beneran mulai tidur - cek
@@ -252,6 +274,16 @@ public class CeritaManager : MonoBehaviour
         if (daftar != null) {
             foreach (var nama in daftar) sudahTerjadi.Add(nama);
         }
+    }
+
+    // --- TAMBAHAN: sama, tapi buat FLAG CERITA (JANJI_ANNA, AMBIL_TABUNGAN, TEKAD_KUAT, dll) -
+    // disimpen di CutsceneUI.cs, diteruskan lewat sini biar SaveManager gak perlu referensi
+    // CutsceneUI langsung ---
+    public List<string> DapatkanFlagCerita() => cutsceneUI != null ? cutsceneUI.DapatkanFlagCerita() : new List<string>();
+
+    public void MuatFlagCerita(List<string> daftar)
+    {
+        if (cutsceneUI != null) cutsceneUI.MuatFlagCerita(daftar);
     }
 
     // --- TAMBAHAN: dipanggil PemicuInteraktifCerita.cs begitu player beneran nyampe di objeknya ---

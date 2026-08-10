@@ -32,6 +32,7 @@ public class DataSimpanan
     public bool kerjaPartTimeSudahDilakukanHariIni;
     public bool prologSelesai;
     public System.Collections.Generic.List<string> peristiwaCeritaSudahTerjadi;
+    public System.Collections.Generic.List<string> flagCeritaAktif;
     public float utangBank;
     public System.Collections.Generic.List<MingguCicilan> daftarMingguCicilan;
     public int cicilanNomorMingguBerikutnya;
@@ -72,6 +73,7 @@ public class SaveManager : MonoBehaviour
             data.prologSelesai = GameManager.Instance.prologSelesai; // --- TAMBAHAN ---
             if (CeritaManager.Instance != null) {
                 data.peristiwaCeritaSudahTerjadi = CeritaManager.Instance.DapatkanPeristiwaSudahTerjadi(); // --- TAMBAHAN ---
+                data.flagCeritaAktif = CeritaManager.Instance.DapatkanFlagCerita(); // --- TAMBAHAN ---
             }
             data.utangBank = GameManager.Instance.utangBank; // --- TAMBAHAN ---
             if (CicilanManager.Instance != null) {
@@ -135,6 +137,7 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.prologSelesai = data.prologSelesai; // --- TAMBAHAN ---
                 if (CeritaManager.Instance != null) {
                     CeritaManager.Instance.MuatPeristiwaSudahTerjadi(data.peristiwaCeritaSudahTerjadi); // --- TAMBAHAN ---
+                    CeritaManager.Instance.MuatFlagCerita(data.flagCeritaAktif); // --- TAMBAHAN ---
                 }
                 GameManager.Instance.utangBank = data.utangBank; // --- TAMBAHAN ---
                 GameManager.Instance.UpdateTombolUtang(); // --- TAMBAHAN: FIX bug tombol ilang ---
