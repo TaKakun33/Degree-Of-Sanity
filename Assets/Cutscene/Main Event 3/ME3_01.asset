@@ -15,7 +15,11 @@ MonoBehaviour:
   id: ME3_01
   ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 1
+  balikArahAndrew: 0
+  balikArahAnna: 0
   lewatiTransisiAwal: 1
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
   baris:
   - jenis: 0
     namaTokoh: 
@@ -25,6 +29,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 3058730461592448298, guid: 5939d070ee234500086e57fe788d5f18, type: 3}
@@ -36,6 +42,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -47,6 +55,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -58,6 +68,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -69,6 +81,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -80,6 +94,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -91,6 +107,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}

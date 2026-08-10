@@ -15,12 +15,21 @@ MonoBehaviour:
   id: ME1_01
   ruangId: LORONG
   karakterAnnaHadir: 0
+  balikArahAndrew: 1
+  balikArahAnna: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
   baris:
   - jenis: 0
     namaTokoh: 
     teks: Ada yang diselipin di bawah pintu semalam. Amplop putih, tanpa perangko.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 3058730461592448298, guid: 5939d070ee234500086e57fe788d5f18, type: 3}
@@ -30,6 +39,10 @@ MonoBehaviour:
     teks: Tunggakan SPP tiga bulan.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -39,6 +52,10 @@ MonoBehaviour:
     teks: Batas akhir minggu depan.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -48,6 +65,10 @@ MonoBehaviour:
     teks: Anna nggak pernah cerita.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -58,7 +79,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 11400000, guid: 26745f991665beabb855574c90bfbb42, type: 2}

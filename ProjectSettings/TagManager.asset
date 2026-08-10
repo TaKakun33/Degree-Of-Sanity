@@ -9,6 +9,8 @@ TagManager:
   - Desk
   - ExitDoor
   - Kompor
+  - Mandi
+  - ObjekCerita
   layers:
   - Default
   - TransparentFX

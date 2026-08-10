@@ -15,12 +15,21 @@ MonoBehaviour:
   id: ME1_02
   ruangId: LORONG
   karakterAnnaHadir: 1
+  balikArahAndrew: 0
+  balikArahAnna: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
   baris:
   - jenis: 1
     namaTokoh: Anna
     teks: "Kak, aku berang\u2014"
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -30,6 +39,10 @@ MonoBehaviour:
     teks: ...itu apa?
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -39,6 +52,10 @@ MonoBehaviour:
     teks: Iklan.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -48,6 +65,10 @@ MonoBehaviour:
     teks: Iklan pakai kop sekolahku?
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -57,6 +78,10 @@ MonoBehaviour:
     teks: ...
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -66,6 +91,10 @@ MonoBehaviour:
     teks: Aku bisa berhenti dulu satu semester. Temenku ada yang gitu.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -75,6 +104,10 @@ MonoBehaviour:
     teks: Nggak. Berangkat, nanti telat.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -85,7 +118,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 11400000, guid: c60795b5b66875381a6986565cb008c7, type: 2}
