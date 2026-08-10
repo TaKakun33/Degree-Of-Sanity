@@ -15,6 +15,7 @@ MonoBehaviour:
   id: ME3_01_AMBIL
   ruangId: 
   karakterAnnaHadir: 0
+  lewatiTransisiAwal: 0
   baris:
   - jenis: 1
     namaTokoh: Andrew
@@ -152,5 +153,5 @@ MonoBehaviour:
     gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
-  adeganBerikutnya: {fileID: 0}
+  adeganBerikutnya: {fileID: 11400000, guid: 081612a71f7c0f5e68ac465213318db5, type: 2}
   monologAkhirHari: 

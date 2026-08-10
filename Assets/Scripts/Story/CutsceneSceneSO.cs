@@ -78,6 +78,8 @@ public class CutsceneSceneSO : ScriptableObject
     [Tooltip("'LORONG' / 'DAPUR' / 'KAMAR_ANDREW' / 'KAMAR_ANNA' / 'LAYAR_HITAM'")]
     public string ruangId;
     public bool karakterAnnaHadir;
+    [Tooltip("TAMBAHAN: centang buat SKIP transisi layar hitam + teleport di AWAL adegan ini - langsung tampil dialog apa adanya. Berguna buat adegan yang mulai tepat setelah animasi lain (misal abis ProsesTidur), biar gak ada fade dobel.")]
+    public bool lewatiTransisiAwal = false;
 
     [Header("Baris-baris (urut dari atas ke bawah)")]
     public List<BarisCutscene> baris;

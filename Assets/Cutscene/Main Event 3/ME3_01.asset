@@ -15,6 +15,7 @@ MonoBehaviour:
   id: ME3_01
   ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 1
+  lewatiTransisiAwal: 1
   baris:
   - jenis: 0
     namaTokoh: 

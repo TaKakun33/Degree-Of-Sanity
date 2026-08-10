@@ -90,14 +90,33 @@ public class CutsceneUI : MonoBehaviour
         adeganAktif = adegan;
         indexBaris = -1;
 
-        // --- TAMBAHAN: transisi layar hitam + teleport karakter ke Ruang Id adegan ini ---
-        yield return StartCoroutine(TransisiKeRuangan(adegan));
+        // --- Kalau "Lewati Transisi Awal" dicentang: SKIP fade hitamnya doang, tapi posisi/
+        // kemunculan karakter (Andrew/Anna) TETAP diterapkan - cuma instan, gak ada animasi
+        // yang keliatan. Biar Anna tetap sinkron ke ruangan yang bener walau gak ada fade. ---
+        if (adegan.lewatiTransisiAwal) {
+            TerapkanPosisiKarakterInstan(adegan);
+        } else {
+            yield return StartCoroutine(TransisiKeRuangan(adegan));
+        }
 
         if (panelCutscene) panelCutscene.SetActive(true);
         if (goyangTeks) goyangTeks.Matikan();
         if (gambarProp) gambarProp.gameObject.SetActive(false);
 
         LanjutkanBaris();
+    }
+
+    // --- TAMBAHAN: versi TerapkanPosisiKarakter TANPA fade sama sekali - dipanggil kalau
+    // "Lewati Transisi Awal" dicentang, biar Anna/Andrew tetap kepasang ke Ruang Id yang bener. ---
+    void TerapkanPosisiKarakterInstan(CutsceneSceneSO adegan)
+    {
+        if (adegan == null || string.IsNullOrEmpty(adegan.ruangId) || adegan.ruangId == "LAYAR_HITAM") return;
+
+        if (RuangTrigger.semuaRuang.TryGetValue(adegan.ruangId, out RuangTrigger ruang)) {
+            TeleportKarakter(ruang, adegan.karakterAnnaHadir);
+        } else {
+            Debug.LogWarning($"[CutsceneUI] Ruang Id '{adegan.ruangId}' gak ketemu di registry RuangTrigger! (Lewati Transisi Awal)");
+        }
     }
 
     // --- Kalau Ruang Id = "LAYAR_HITAM": fade ke hitam SEKALI, TETAP hitam (gak fade balik).
