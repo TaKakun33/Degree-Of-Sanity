@@ -285,6 +285,8 @@ public class CutsceneUI : MonoBehaviour
 
         // --- Anna Cerita: objek FIXED per-ruangan - posisinya udah diatur manual di Editor
         // lewat RuangTrigger.spriteAnnaCutscene, GAK ADA lagi perhitungan posisi di kode. ---
+        Debug.Log($"[CutsceneUI] TeleportKarakter ke ruang '{ruang.ruangId}': annaHadir={annaHadir}, spriteAnnaCutscene={(ruang.spriteAnnaCutscene != null ? ruang.spriteAnnaCutscene.name : "NULL/BELUM DIISI")}"); // --- SEMENTARA ---
+
         if (annaHadir && ruang.spriteAnnaCutscene != null) {
             ruang.spriteAnnaCutscene.SetActive(true);
             annaCeritaAktifSaatIni = ruang.spriteAnnaCutscene;

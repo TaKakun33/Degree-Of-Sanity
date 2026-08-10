@@ -88,7 +88,30 @@ public class CeritaManager : MonoBehaviour
     // --- Dipanggil ObjekKlikCerita.cs di object Anna ---
     public void CobaMulaiKlikAnna()
     {
-        CekPeristiwa(JenisPemicuCerita.KlikAnna, null);
+        bool adaPeristiwaTerpicu = CekPeristiwa(JenisPemicuCerita.KlikAnna, null);
+
+        // --- TAMBAHAN: kalau gak ada Main Event yang emang lagi nunggu klik Anna, fallback
+        // ke dialog interaksi KASUAL - dipilih otomatis sesuai progres cerita saat ini ---
+        if (!adaPeristiwaTerpicu) {
+            CutsceneSceneSO dialogDipilih = PilihDialogAnnaKasual();
+            if (dialogDipilih != null) MulaiAdegan(dialogDipilih);
+        }
+    }
+
+    // --- TAMBAHAN: dialog interaksi kasual Anna - 4 varian tergantung Main Event mana yang
+    // udah kejadian. Dicek dari yang PALING BARU dulu (Main Event 3 -> mundur ke awal). ---
+    [Header("TAMBAHAN: Dialog Interaksi Anna Kasual (fallback kalau gak ada Main Event pending)")]
+    public CutsceneSceneSO dialogAnnaSebelumME1;
+    public CutsceneSceneSO dialogAnnaAntaraME1DanME2;
+    public CutsceneSceneSO dialogAnnaAntaraME2DanME3;
+    public CutsceneSceneSO dialogAnnaSetelahME3;
+
+    CutsceneSceneSO PilihDialogAnnaKasual()
+    {
+        if (sudahTerjadi.Contains("Main Event 3")) return dialogAnnaSetelahME3;
+        if (sudahTerjadi.Contains("Main Event 2")) return dialogAnnaAntaraME2DanME3;
+        if (sudahTerjadi.Contains("Main Event 1")) return dialogAnnaAntaraME1DanME2;
+        return dialogAnnaSebelumME1;
     }
 
     // --- Dipanggil ObjekKlikCerita.cs di object Laptop (juga dipakai bark "Cicilan belum dibayar") ---
@@ -97,10 +120,12 @@ public class CeritaManager : MonoBehaviour
         CekPeristiwa(JenisPemicuCerita.KlikLaptop, null);
     }
 
-    void CekPeristiwa(JenisPemicuCerita jenis, string ruangId)
+    // --- FIX: sekarang return bool (true kalau ADA Peristiwa Terjadwal yang beneran kepicu) -
+    // dipakai CobaMulaiKlikAnna() buat tau kapan perlu fallback ke dialog kasual ---
+    bool CekPeristiwa(JenisPemicuCerita jenis, string ruangId)
     {
-        if (sedangMemutarAdegan) return;
-        if (GameManager.Instance == null || semuaPeristiwa == null) return;
+        if (sedangMemutarAdegan) return false;
+        if (GameManager.Instance == null || semuaPeristiwa == null) return false;
 
         foreach (var p in semuaPeristiwa) {
             if (p == null || sudahTerjadi.Contains(p.namaPeristiwa)) continue;
@@ -121,9 +146,10 @@ public class CeritaManager : MonoBehaviour
                 } else {
                     MulaiAdegan(p.adeganPertama);
                 }
-                break;
+                return true; // --- TAMBAHAN ---
             }
         }
+        return false; // --- TAMBAHAN: gak ada satupun Peristiwa yang cocok ---
     }
 
     // --- TAMBAHAN: pembungkus KHUSUS Prolog - beda dari MulaiAdegan() biasa (dipakai Main Event)
