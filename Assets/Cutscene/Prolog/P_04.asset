@@ -15,6 +15,9 @@ MonoBehaviour:
   id: P_04
   ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
   baris:
   - jenis: 0
     namaTokoh: 
@@ -22,6 +25,10 @@ MonoBehaviour:
       itu satu-satunya waktu di mana dia nggak harus ngapa-ngapain.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -31,6 +38,10 @@ MonoBehaviour:
     teks: Dua puluh empat halaman. Bab satu doang.
     parameterUntukDitampilkan: ProgresSkripsi
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -40,24 +51,36 @@ MonoBehaviour:
     teks: 'Ada email belum dibuka dari bagian akademik. Subjeknya satu kata: Peringatan.'
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
     sembunyikanGambarProp: 0
   - jenis: 1
-    namaTokoh: Andew
+    namaTokoh: Andrew
     teks: ...batas masa studi 1 Mei.
     parameterUntukDitampilkan: Tanggal
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
     sembunyikanGambarProp: 0
   - jenis: 1
-    namaTokoh: Andew
+    namaTokoh: Andrew
     teks: Aku nunda ini dua tahun, terus dikasih enam puluh satu hari.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -67,6 +90,10 @@ MonoBehaviour:
     teks: Kamu yang nunda.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -77,6 +104,10 @@ MonoBehaviour:
       yang terakhir.
     parameterUntukDitampilkan: Sanity
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -87,6 +118,10 @@ MonoBehaviour:
       ada.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -96,6 +131,10 @@ MonoBehaviour:
     teks: ...aku waras, kan?
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -105,6 +144,10 @@ MonoBehaviour:
     teks: ...aku waras, kan?
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -115,7 +158,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 11400000, guid: 3c09f7074248fb5deb53e6a7b6ce0470, type: 2}
