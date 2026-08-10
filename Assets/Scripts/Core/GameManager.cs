@@ -196,6 +196,31 @@ public class GameManager : MonoBehaviour
         if (textJamHarian) textJamHarian.gameObject.SetActive(aktif);
     }
 
+    // --- TAMBAHAN: sembunyikan/tampilkan tombol Toko/Inventory/Utang - dipakai Main Event & Ending
+    // (BUKAN Prolog, itu udah punya sistem reveal-nya sendiri). Pas ditampilkan lagi, Tombol Utang
+    // dicek ulang lewat UpdateTombolUtang() biar statusnya bener (gak asal nyala walau utang 0). ---
+    public void SembunyikanTombolSaatCutscene(bool sembunyikan)
+    {
+        if (sembunyikan) {
+            if (tombolBukaToko) tombolBukaToko.SetActive(false);
+            if (uiTombolInventory) uiTombolInventory.SetActive(false);
+            if (tombolUtang) tombolUtang.SetActive(false);
+        } else {
+            if (tombolBukaToko) tombolBukaToko.SetActive(true);
+            if (uiTombolInventory) uiTombolInventory.SetActive(true);
+            UpdateTombolUtang();
+        }
+    }
+
+    // --- TAMBAHAN: sembunyikan/tampilkan parameter Sanity/Lapar/Progres Skripsi - KHUSUS dipakai
+    // pas Ending (bukan Main Event biasa) ---
+    public void SembunyikanParameterSaatEnding(bool sembunyikan)
+    {
+        if (uiSanity) uiSanity.SetActive(!sembunyikan);
+        if (uiLapar) uiLapar.SetActive(!sembunyikan);
+        if (uiProgresSkripsi) uiProgresSkripsi.SetActive(!sembunyikan);
+    }
+
     void TerapkanHasilKerjaPartTimeJikaAda()
     {
         if (!HasilKerjaPartTime.adaHasilPending) return;

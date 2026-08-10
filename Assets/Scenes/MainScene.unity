@@ -2339,7 +2339,13 @@ MonoBehaviour:
   textDialog: {fileID: 1146966040}
   goyangTeks: {fileID: 1146966039}
   portrait: {fileID: 1465318372}
+  gambarPotrait: {fileID: 0}
   tombolLanjut: {fileID: 1235707501}
+  daftarPotrait:
+  - namaTokoh: Andrew
+    sprite: {fileID: 1892539370802409873, guid: 182aab038cd910c2780a3afb80957f4a, type: 3}
+  - namaTokoh: Anna
+    sprite: {fileID: -3603348194956054849, guid: 7a3330e7378561489ad3415cae443d39, type: 3}
   layarTransisi: {fileID: 1929499850}
   durasiFade: 0.5
   layarPutih: {fileID: 1069270212}
@@ -39934,11 +39940,11 @@ RectTransform:
   - {fileID: 2035119742}
   - {fileID: 304430094}
   - {fileID: 1710557453}
-  - {fileID: 623926108}
   - {fileID: 741280738}
   - {fileID: 1387218282}
   - {fileID: 138204591}
   - {fileID: 1284980512}
+  - {fileID: 623926108}
   - {fileID: 1215314328}
   - {fileID: 197356049}
   - {fileID: 1556568903}

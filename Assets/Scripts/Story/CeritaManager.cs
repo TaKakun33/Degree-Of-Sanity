@@ -173,6 +173,7 @@ public class CeritaManager : MonoBehaviour
         if (GameManager.Instance != null) {
             GameManager.Instance.SetJedaWaktu(true);
             GameManager.Instance.MulaiCutscene(); // --- TAMBAHAN ---
+            GameManager.Instance.SembunyikanTombolSaatCutscene(true); // --- TAMBAHAN ---
         }
 
         // --- TAMBAHAN: kunci kontrol player SELAMA cutscene ---
@@ -186,6 +187,7 @@ public class CeritaManager : MonoBehaviour
             if (GameManager.Instance != null) {
                 GameManager.Instance.SetJedaWaktu(false);
                 GameManager.Instance.SelesaiCutscene(); // --- TAMBAHAN ---
+                GameManager.Instance.SembunyikanTombolSaatCutscene(false); // --- TAMBAHAN ---
             }
 
             // --- TAMBAHAN: paksa buka kunci kontrol player, jaga-jaga ada yang kesangkut
@@ -219,12 +221,18 @@ public class CeritaManager : MonoBehaviour
         if (GameManager.Instance != null) {
             GameManager.Instance.SetJedaWaktu(true);
             GameManager.Instance.MulaiCutscene();
+            GameManager.Instance.SembunyikanTombolSaatCutscene(true); // --- TAMBAHAN ---
+            GameManager.Instance.SembunyikanParameterSaatEnding(true); // --- TAMBAHAN ---
         }
 
         PlayerController playerAwal = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
         if (playerAwal != null) playerAwal.SetMenuStatus(true);
 
         cutsceneUI.MainkanAdegan(adeganPertama, () => {
+            if (GameManager.Instance != null) {
+                GameManager.Instance.SembunyikanTombolSaatCutscene(false); // --- TAMBAHAN ---
+                GameManager.Instance.SembunyikanParameterSaatEnding(false); // --- TAMBAHAN ---
+            }
             onChainSelesai?.Invoke();
         });
     }

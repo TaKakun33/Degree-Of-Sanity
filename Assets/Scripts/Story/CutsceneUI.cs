@@ -9,6 +9,15 @@ using UnityEngine.UI;
 // buat Narasi, GoyangTeks buat Bisikan, panel pilihan (JembatanCerita) kalau ada.
 // TAMBAHAN: transisi layar hitam + TELEPORT karakter (Andrew & Anna) ke titik yang sesuai
 // tiap ganti Ruang Id - gaya visual novel, bukan jalan kelihatan (belum ada animasi jalan). ---
+// --- TAMBAHAN: 1 pasangan nama tokoh -> sprite potrait ---
+[System.Serializable]
+public class PotraitTokoh
+{
+    [Tooltip("Nama tokoh - HARUS SAMA PERSIS (gak case-sensitive) sama 'Nama Tokoh' di baris dialog, misal 'Andrew', 'Anna', 'Dosen'")]
+    public string namaTokoh;
+    public Sprite sprite;
+}
+
 public class CutsceneUI : MonoBehaviour
 {
     [Header("Referensi UI")]
@@ -17,7 +26,13 @@ public class CutsceneUI : MonoBehaviour
     public TextMeshProUGUI textDialog;
     public GoyangTeks goyangTeks;
     public GameObject portrait;
+    [Tooltip("TAMBAHAN: Image di dalam 'Portrait' yang nampilin sprite tokoh - diganti otomatis sesuai Nama Tokoh baris yang lagi tampil")]
+    public Image gambarPotrait;
     public Button tombolLanjut;
+
+    [Header("TAMBAHAN: Potrait per Tokoh")]
+    [Tooltip("Daftar pasangan Nama Tokoh -> Sprite Potrait. Tambah entri baru buat tiap tokoh yang ada (Andrew, Anna, Dosen, dll)")]
+    public List<PotraitTokoh> daftarPotrait = new List<PotraitTokoh>();
 
     [Header("Transisi Layar Hitam")]
     [Tooltip("Image full-screen, warna hitam, dipakai KHUSUS buat transisi cutscene (beda dari 'Layar Gelap' punya GameManager buat tidur)")]
@@ -72,6 +87,19 @@ public class CutsceneUI : MonoBehaviour
     }
 
     public bool ApakahFlagAktif(string nama) => !string.IsNullOrEmpty(nama) && flagCerita.Contains(nama);
+
+    // --- TAMBAHAN: cari sprite potrait yang cocok sama nama tokoh (gak case-sensitive) ---
+    Sprite CariPotrait(string namaTokoh)
+    {
+        if (string.IsNullOrEmpty(namaTokoh) || daftarPotrait == null) return null;
+
+        foreach (var p in daftarPotrait) {
+            if (p != null && string.Equals(p.namaTokoh, namaTokoh, System.StringComparison.OrdinalIgnoreCase)) {
+                return p.sprite;
+            }
+        }
+        return null;
+    }
 
     // --- TAMBAHAN: dipakai CeritaManager/SaveManager buat simpan/muat flag cerita (misal
     // JANJI_ANNA, AMBIL_TABUNGAN, TEKAD_KUAT) ke save data - biar gak ke-reset begitu Load Game ---
@@ -260,6 +288,21 @@ public class CutsceneUI : MonoBehaviour
 
         if (portrait) portrait.SetActive(!iniNarasi && !iniBisikan);
         if (textNamaTokoh) textNamaTokoh.text = iniNarasi ? "" : (iniBisikan ? "" : b.namaTokoh);
+
+        // --- TAMBAHAN: ganti sprite potrait sesuai Nama Tokoh baris ini, cuma pas Dialog ---
+        if (gambarPotrait != null) {
+            if (!iniNarasi && !iniBisikan) {
+                Sprite spriteDipakai = CariPotrait(b.namaTokoh);
+                if (spriteDipakai != null) {
+                    gambarPotrait.sprite = spriteDipakai;
+                    gambarPotrait.gameObject.SetActive(true);
+                } else {
+                    gambarPotrait.gameObject.SetActive(false); // gak ketemu potrait yang cocok
+                }
+            } else {
+                gambarPotrait.gameObject.SetActive(false);
+            }
+        }
 
         if (textDialog) {
             string teksFinal = b.teks ?? "";
