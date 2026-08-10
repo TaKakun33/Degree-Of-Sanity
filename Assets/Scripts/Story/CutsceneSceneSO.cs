@@ -83,6 +83,11 @@ public class CutsceneSceneSO : ScriptableObject
     [Tooltip("'LORONG' / 'DAPUR' / 'KAMAR_ANDREW' / 'KAMAR_ANNA' / 'LAYAR_HITAM'")]
     public string ruangId;
     public bool karakterAnnaHadir;
+    [Header("TAMBAHAN: Balik Arah Hadap (opsional)")]
+    [Tooltip("Centang buat FLIP sprite Andrew dari kondisi normalnya (sesuai yang udah diatur di sprite ruangan) - dipakai nyesuain arah hadap sesuai cerita")]
+    public bool balikArahAndrew = false;
+    [Tooltip("Sama, buat Anna (cuma ngefek kalau Karakter Anna Hadir dicentang)")]
+    public bool balikArahAnna = false;
     [Tooltip("TAMBAHAN: centang buat SKIP transisi layar hitam + teleport di AWAL adegan ini - langsung tampil dialog apa adanya. Berguna buat adegan yang mulai tepat setelah animasi lain (misal abis ProsesTidur), biar gak ada fade dobel.")]
     public bool lewatiTransisiAwal = false;
     [Tooltip("TAMBAHAN: centang buat layar GOYANG ringan SEPANJANG adegan ini - dipakai buat momen fisik gak stabil (naskah Bad Ending 2: 'blur radial')")]

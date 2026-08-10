@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
     private DeskController targetDesk = null;
     private ExitDoorController targetExitDoor = null;
     private KomporController targetKompor = null;
+    private MandiController targetMandi = null;
+    private PemicuInteraktifCerita targetPemicu = null; // --- TAMBAHAN ---
 
     // --- SISTEM MEMORI LANTAI (WAYPOINT) - dipakai pas klik objek/lantai di LANTAI LAIN,
     // karakter otomatis jalan dulu ke pintu/tangga penghubung sebelum lanjut ke tujuan asli ---
@@ -95,6 +97,8 @@ public class PlayerController : MonoBehaviour
 
         // Bersihkan memori klik sebelumnya
         targetDoor = null; targetBed = null; targetDesk = null; targetExitDoor = null; targetKompor = null;
+        targetMandi = null;
+        targetPemicu = null; // --- TAMBAHAN ---
         targetInteraksiAkhir = null;
         sedangTransit = false;
 
@@ -181,7 +185,8 @@ public class PlayerController : MonoBehaviour
     {
         return obj.CompareTag("Door") || obj.CompareTag("Bed") || 
                obj.CompareTag("Desk") || obj.CompareTag("ExitDoor") || 
-               obj.CompareTag("Kompor");
+               obj.CompareTag("Kompor") || obj.CompareTag("Mandi") ||
+               obj.CompareTag("ObjekCerita"); // --- TAMBAHAN ---
     }
 
     // Fungsi pencari rute tangga - cari DoorController di lantai SAAT INI yang lantaiTujuan-nya cocok
@@ -207,6 +212,8 @@ public class PlayerController : MonoBehaviour
         else if (obj.CompareTag("Desk")) targetDesk = obj.GetComponent<DeskController>();
         else if (obj.CompareTag("ExitDoor")) targetExitDoor = obj.GetComponent<ExitDoorController>();
         else if (obj.CompareTag("Kompor")) targetKompor = obj.GetComponent<KomporController>();
+        else if (obj.CompareTag("Mandi")) targetMandi = obj.GetComponent<MandiController>();
+        else if (obj.CompareTag("ObjekCerita")) targetPemicu = obj.GetComponent<PemicuInteraktifCerita>(); // --- TAMBAHAN ---
     }
 
     void FlipSprite()
@@ -265,6 +272,8 @@ public class PlayerController : MonoBehaviour
             else if (targetDesk != null) { targetDesk.MulaiSkripsi(); targetDesk = null; }
             else if (targetExitDoor != null) { targetExitDoor.BukaMenuKerja(); targetExitDoor = null; }
             else if (targetKompor != null) { targetKompor.BukaMenuMasak(); targetKompor = null; }
+            else if (targetMandi != null) { targetMandi.Mandi(); targetMandi = null; }
+            else if (targetPemicu != null) { targetPemicu.Sampai(); targetPemicu = null; } // --- TAMBAHAN ---
 
             // Karakter sampai di tujuan akhir, berhenti jalan.
             isMoving = false;

@@ -19,6 +19,12 @@ public class RuangTrigger : MonoBehaviour
     [Tooltip("Opsional: titik tempat Anna muncul, kalau adegan itu 'Karakter Anna Hadir' dicentang")]
     public Transform titikAnna;
 
+    [Header("TAMBAHAN: Sprite Placeholder Cutscene (objek FIXED per-ruangan, pola sama kayak Amplop)")]
+    [Tooltip("Opsional: Object sprite Andrew KHUSUS ruangan ini - biarin NONAKTIF dari awal")]
+    public GameObject spriteAndrewCutscene;
+    [Tooltip("Object sprite Anna KHUSUS ruangan ini - biarin NONAKTIF dari awal. Dipakai CutsceneUI buat munculin Anna Cerita di ruangan ini.")]
+    public GameObject spriteAnnaCutscene;
+
     void Awake()
     {
         if (!string.IsNullOrEmpty(ruangId)) {

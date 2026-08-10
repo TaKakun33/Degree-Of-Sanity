@@ -50,8 +50,8 @@ public class CutsceneUI : MonoBehaviour
     public float intensitasGeterCutscene = 1f;
 
     [Header("Karakter")]
-    [Tooltip("Drag GameObject Anna di scene ke sini (yang dipakai di seluruh game, bukan yang baru)")]
-    public Transform annaTransform;
+    [Tooltip("Drag GameObject Anna INTERAKSI (NPC yang bisa diklik pemain sehari-hari, ObjekKlikCerita dkk) - OTOMATIS disembunyikan begitu ada cutscene yang butuh Anna hadir")]
+    public Transform annaInteraksiTransform;
 
     [Header("Gambar Prop (ilustrasi close-up di depan layar - misal Laci/Amplop)")]
     public Image gambarProp;
@@ -66,6 +66,13 @@ public class CutsceneUI : MonoBehaviour
     private Action selesaiCallback;
     private readonly HashSet<string> flagCerita = new HashSet<string>();
     private bool sedangHitam = false;
+    private GameObject annaCeritaAktifSaatIni; // --- TAMBAHAN: sprite Anna Cerita ruangan yang lagi nyala, biar bisa dimatiin pas pindah/kelar ---
+    private GameObject andrewCeritaAktifSaatIni; // --- TAMBAHAN: sama, buat sprite Andrew Cerita ---
+    // --- TAMBAHAN: nyimpen kondisi flipX ASLI tiap sprite ruangan, dicatat SEKALI pertama kali
+    // ketemu - biar "Balik Arah Hadap" selalu flip dari kondisi asli yang KONSISTEN, gak numpuk
+    // dari sisa flip adegan sebelumnya ---
+    private readonly Dictionary<GameObject, bool> flipXAsliSprite = new Dictionary<GameObject, bool>();
+    private RuangTrigger ruangTerakhirDipakai; // --- TAMBAHAN: dipakai buat teleport Andrew asli ke ruangan terakhir begitu chain kelar ---
     private bool gantiHariPendingSetelahChain = false; // --- TAMBAHAN ---
 
     void Awake()
@@ -162,7 +169,43 @@ public class CutsceneUI : MonoBehaviour
             distorsiSanity.PaksaAktifSementara(adegan.geterSepanjangAdegan, intensitasGeterCutscene);
         }
 
+        // --- TAMBAHAN: paksa arah hadap Andrew/Anna sesuai adegan ini, kalau diisi ---
+        TerapkanArahHadap(adegan);
+
         LanjutkanBaris();
+    }
+
+    // --- TAMBAHAN: flip sprite Andrew/Anna secara RELATIF dari kondisi asli sprite ruangan -
+    // "Balik Arah Hadap" dicentang = di-flip, gak dicentang = biarin apa adanya ---
+    // "Tidak Diubah" dilewatin (biarin arah apa adanya) ---
+    void TerapkanArahHadap(CutsceneSceneSO adegan)
+    {
+        if (andrewCeritaAktifSaatIni != null) {
+            SpriteRenderer sr = andrewCeritaAktifSaatIni.GetComponent<SpriteRenderer>();
+            if (sr != null) {
+                bool asli = DapatkanFlipXAsli(andrewCeritaAktifSaatIni, sr);
+                sr.flipX = adegan.balikArahAndrew ? !asli : asli;
+            }
+        }
+
+        if (annaCeritaAktifSaatIni != null) {
+            SpriteRenderer sr = annaCeritaAktifSaatIni.GetComponent<SpriteRenderer>();
+            if (sr != null) {
+                bool asli = DapatkanFlipXAsli(annaCeritaAktifSaatIni, sr);
+                sr.flipX = adegan.balikArahAnna ? !asli : asli;
+            }
+        }
+    }
+
+    // --- TAMBAHAN: catat flipX ASLI sprite ini SEKALI (pertama kali ketemu), biar toggle
+    // "Balik Arah Hadap" selalu konsisten flip dari kondisi awal, gak numpuk ---
+    bool DapatkanFlipXAsli(GameObject obj, SpriteRenderer sr)
+    {
+        if (!flipXAsliSprite.TryGetValue(obj, out bool asli)) {
+            asli = sr.flipX;
+            flipXAsliSprite[obj] = asli;
+        }
+        return asli;
     }
 
     // --- TAMBAHAN: versi TerapkanPosisiKarakter TANPA fade sama sekali - dipanggil kalau
@@ -206,25 +249,45 @@ public class CutsceneUI : MonoBehaviour
 
     void TeleportKarakter(RuangTrigger ruang, bool annaHadir)
     {
-        // --- Andrew (Player) ---
-        PlayerController player = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
-        if (player != null && ruang.titikAndrew != null) {
-            Vector3 posisi = ruang.titikAndrew.position;
-            posisi.z = player.transform.position.z;
+        ruangTerakhirDipakai = ruang; // --- TAMBAHAN: dicatat, dipakai SelesaikanChain() buat teleport Andrew asli ---
 
-            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.position = posisi;
-            else player.transform.position = posisi;
+        // --- TAMBAHAN: Andrew ASLI (PlayerController) - POSISINYA GAK DISENTUH LAGI SAMA
+        // SEKALI, cuma render-nya disembunyikan. Ini nyegah resiko posisi/lantai kacau kalau
+        // ruangan cutscene ada di lantai beda dari posisi asli pemain. ---
+        PlayerController player = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        if (player != null) {
+            SpriteRenderer srPlayer = player.GetComponent<SpriteRenderer>();
+            if (srPlayer != null) srPlayer.enabled = false;
         }
 
-        // --- Anna: cuma dimunculin & dipindah kalau adegan ini butuh dia ---
-        if (annaTransform != null) {
-            annaTransform.gameObject.SetActive(annaHadir);
-            if (annaHadir && ruang.titikAnna != null) {
-                Vector3 posisiAnna = ruang.titikAnna.position;
-                posisiAnna.z = annaTransform.position.z;
-                annaTransform.position = posisiAnna;
-            }
+        // --- matiin sprite Andrew Cerita RUANGAN SEBELUMNYA (kalau ada) ---
+        if (andrewCeritaAktifSaatIni != null) {
+            andrewCeritaAktifSaatIni.SetActive(false);
+            andrewCeritaAktifSaatIni = null;
+        }
+
+        // --- Andrew Cerita: objek FIXED per-ruangan (pola SAMA PERSIS kayak Anna) - posisinya
+        // udah diatur manual di Editor lewat RuangTrigger.spriteAndrewCutscene ---
+        if (ruang.spriteAndrewCutscene != null) {
+            ruang.spriteAndrewCutscene.SetActive(true);
+            andrewCeritaAktifSaatIni = ruang.spriteAndrewCutscene;
+        }
+
+        // --- Anna Interaksi (NPC sehari-hari) SELALU disembunyikan begitu ada cutscene aktif ---
+        if (annaInteraksiTransform != null) annaInteraksiTransform.gameObject.SetActive(false);
+
+        // --- matiin sprite Anna Cerita RUANGAN SEBELUMNYA (kalau ada), biar gak
+        // ada 2 Anna Cerita nyala bareng dari ruangan berbeda ---
+        if (annaCeritaAktifSaatIni != null) {
+            annaCeritaAktifSaatIni.SetActive(false);
+            annaCeritaAktifSaatIni = null;
+        }
+
+        // --- Anna Cerita: objek FIXED per-ruangan - posisinya udah diatur manual di Editor
+        // lewat RuangTrigger.spriteAnnaCutscene, GAK ADA lagi perhitungan posisi di kode. ---
+        if (annaHadir && ruang.spriteAnnaCutscene != null) {
+            ruang.spriteAnnaCutscene.SetActive(true);
+            annaCeritaAktifSaatIni = ruang.spriteAnnaCutscene;
         }
     }
 
@@ -458,6 +521,40 @@ public class CutsceneUI : MonoBehaviour
     {
         adeganAktif = null;
         if (GameManager.Instance != null) GameManager.Instance.SetTampilanJamAktif(true);
+
+        // --- TAMBAHAN: begitu chain BENERAN kelar, matiin sprite Andrew Cerita ruangan yang
+        // lagi aktif, balikin render Andrew asli ke normal (nyala lagi) ---
+        if (andrewCeritaAktifSaatIni != null) {
+            andrewCeritaAktifSaatIni.SetActive(false);
+            andrewCeritaAktifSaatIni = null;
+        }
+        PlayerController playerSelesai = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        if (playerSelesai != null) {
+            // --- TAMBAHAN: teleport Andrew ASLI ke titikAndrew RUANGAN TERAKHIR yang dipakai
+            // cutscene ini (pola sama kayak sistem lama) - biar begitu render-nya nyala lagi,
+            // posisinya cocok sama cerita yang barusan ditampilin, bukan balik ke posisi
+            // SEBELUM cutscene mulai (yang bisa aja beda ruangan sama sekali). ---
+            if (ruangTerakhirDipakai != null && ruangTerakhirDipakai.titikAndrew != null) {
+                Vector3 posisiAkhir = ruangTerakhirDipakai.titikAndrew.position;
+                posisiAkhir.z = playerSelesai.transform.position.z;
+
+                Rigidbody2D rbAkhir = playerSelesai.GetComponent<Rigidbody2D>();
+                if (rbAkhir != null) rbAkhir.position = posisiAkhir;
+                else playerSelesai.transform.position = posisiAkhir;
+            }
+
+            SpriteRenderer srPlayerSelesai = playerSelesai.GetComponent<SpriteRenderer>();
+            if (srPlayerSelesai != null) srPlayerSelesai.enabled = true;
+        }
+        ruangTerakhirDipakai = null; // --- reset, siap buat chain cutscene berikutnya ---
+
+        // --- begitu chain BENERAN kelar, matiin sprite Anna Cerita ruangan yang lagi
+        // aktif dan balikin Anna Interaksi ke normal (nyala lagi) ---
+        if (annaCeritaAktifSaatIni != null) {
+            annaCeritaAktifSaatIni.SetActive(false);
+            annaCeritaAktifSaatIni = null;
+        }
+        if (annaInteraksiTransform != null) annaInteraksiTransform.gameObject.SetActive(true);
 
         if (gantiHariPendingSetelahChain) {
             gantiHariPendingSetelahChain = false;
