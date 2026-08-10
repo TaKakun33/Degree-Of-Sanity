@@ -107,10 +107,32 @@ public class GameManager : MonoBehaviour
     public CutsceneSceneSO adeganHappyEndingPertama;
     [Tooltip("Bad Ending 1 'Hari Keenam Puluh Dua' - Sanity 0%")]
     public GameObject panelBadEndingSanity;
+    [Tooltip("TAMBAHAN: adegan pertama chain cutscene Bad Ending 1 (END_BAD1_01)")]
+    public CutsceneSceneSO adeganBadEnding1Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEndingSanity - diisi otomatis dengan {SKRIPSI} diganti persen skripsi saat ending terpicu")]
+    public TextMeshProUGUI textLayarAkhirBadEnding1;
+
     [Tooltip("Bad Ending 2 'Nanti Kalau Kakak Inget' - lapar kritis berkepanjangan")]
     public GameObject panelBadEndingLapar;
-    [Tooltip("Bad Ending 3 'Lemari Bawah' - uang habis / cicilan gagal berulang")]
+    [Tooltip("TAMBAHAN: adegan pertama chain cutscene Bad Ending 2 (END_BAD2_01)")]
+    public CutsceneSceneSO adeganBadEnding2Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEndingLapar")]
+    public TextMeshProUGUI textLayarAkhirBadEnding2;
+
+    [Tooltip("Bad Ending 3 'Lemari Bawah' - kehabisan biaya (gagal bayar utang)")]
     public GameObject panelBadEndingUang;
+    [Tooltip("TAMBAHAN: adegan pertama Bad Ending 3 (END_BAD3_01)")]
+    public CutsceneSceneSO adeganBadEnding3Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEndingUang")]
+    public TextMeshProUGUI textLayarAkhirBadEnding3;
+
+    [Tooltip("TAMBAHAN - Bad Ending 4 (dulu 'varian B' Bad Ending 3) - kehabisan waktu, sekarang ending berdiri sendiri")]
+    public GameObject panelBadEnding4Waktu;
+    [Tooltip("TAMBAHAN: adegan pertama Bad Ending 4 (END_BAD4_01)")]
+    public CutsceneSceneSO adeganBadEnding4Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEnding4Waktu")]
+    public TextMeshProUGUI textLayarAkhirBadEnding4;
+
     private bool endingSudahDipicu = false;
 
     [Header("TAMBAHAN: Status Cutscene & Bonus Sementara")]
@@ -201,6 +223,13 @@ public class GameManager : MonoBehaviour
             OnJamBerubah?.Invoke(jamSaatIni);
             UpdateUI();
             akumulatorJamSejakTick = 0f;
+
+            // --- TAMBAHAN: safety net - cek Bad Ending 1 (Sanity=0) SECARA INDEPENDEN tiap tick,
+            // gak cuma nyandarin ke pengecekan yang nempel di KurangiSanity(). Ini nyegah kasus
+            // Sanity nyampe 0% tapi "kesalip" sebelum sempet ke-trigger (misal race timing pas
+            // deket-deket jam mau tidur otomatis) - dengan ini, paling telat 0.2 detik terdeteksi. ---
+            CekBadEndingSanity();
+            CekBadEndingLaparInstant(); // --- TAMBAHAN: safety net yang sama buat Lapar=0 ---
         }
 
         if (jamSaatIni >= DapatkanBatasTidurEfektif() && !prosesTidurAktif) {
@@ -378,6 +407,17 @@ public class GameManager : MonoBehaviour
     {
         lapar = Mathf.Clamp(lapar - jumlah, 0f, 100f);
         UpdateUI();
+        CekBadEndingLaparInstant(); // --- TAMBAHAN: mirip CekBadEndingSanity(), trigger instan pas Lapar=0 ---
+    }
+
+    // --- TAMBAHAN: sama polanya kayak CekBadEndingSanity() - langsung trigger begitu Lapar
+    // nyampe 0, gak perlu nunggu streak 3 hari berturut-turut lagi (itu tetap ada sebagai
+    // jaring pengaman tambahan, gak saya hapus, tapi ini yang bakal kena duluan biasanya) ---
+    void CekBadEndingLaparInstant()
+    {
+        if (endingSudahDipicu) return;
+        if (sedangDalamCutscene) return;
+        if (lapar <= 0f) TampilkanBadEndingLapar();
     }
 
     public void TambahLapar(float jumlah)
@@ -465,38 +505,112 @@ public class GameManager : MonoBehaviour
         CekBadEndingSanity();
     }
 
-    // --- Dipanggil CicilanManager begitu uang habis / cicilan gagal berulang ---
+    // --- Bad Ending 3 "Lemari Bawah" - kehabisan biaya. Dipanggil CicilanManager begitu
+    // uang habis / cicilan gagal berulang. BERDIRI SENDIRI, gak ada varian lain lagi. ---
     public void PicuBadEndingUang()
     {
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
-        Debug.Log("Bad Ending 3 'Lemari Bawah' dipicu.");
+
+        if (CeritaManager.Instance != null && adeganBadEnding3Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding3Pertama, TampilkanLayarAkhirBadEnding3);
+        } else {
+            TampilkanLayarAkhirBadEnding3();
+        }
+    }
+
+    // --- Dipanggil CeritaManager begitu chain END_BAD3_01->02 kelar ---
+    public void TampilkanLayarAkhirBadEnding3()
+    {
+        Debug.Log("Bad Ending 3 'Lemari Bawah' (kehabisan biaya) dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelBadEndingUang) panelBadEndingUang.SetActive(true);
+
+        if (textLayarAkhirBadEnding3) {
+            textLayarAkhirBadEnding3.text = "Bukan angkanya yang berat.\nTapi minggu yang terus datang, nagih, tanpa pernah nunggu.";
+        }
+    }
+
+    // --- TAMBAHAN - Bad Ending 4, BERDIRI SENDIRI (dulu "varian B") - kehabisan waktu.
+    // Dipanggil GantiHari() begitu hari ke-61 lewat dengan Skripsi < 100%. ---
+    public void PicuBadEnding4Waktu()
+    {
+        if (endingSudahDipicu) return;
+        endingSudahDipicu = true;
+
+        if (CeritaManager.Instance != null && adeganBadEnding4Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding4Pertama, TampilkanLayarAkhirBadEnding4);
+        } else {
+            TampilkanLayarAkhirBadEnding4();
+        }
+    }
+
+    // --- Dipanggil CeritaManager begitu chain END_BAD4_01->02 kelar ---
+    public void TampilkanLayarAkhirBadEnding4()
+    {
+        Debug.Log("Bad Ending 4 (kehabisan waktu) dipicu.");
+        OnPermainanBerakhir?.Invoke();
+        Time.timeScale = 0;
+        TutupSemuaPanelGame();
+        if (panelBadEnding4Waktu) panelBadEnding4Waktu.SetActive(true);
+
+        if (textLayarAkhirBadEnding4) {
+            textLayarAkhirBadEnding4.text = $"Skripsi Andrew berhenti di {Mathf.RoundToInt(progresSkripsi)}%.\nia nggak berhenti ngerjain melainkan waktunya aja yang berhenti duluan.";
+        }
     }
 
     void TampilkanBadEndingSanity()
     {
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
+
+        if (CeritaManager.Instance != null && adeganBadEnding1Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding1Pertama, TampilkanLayarAkhirBadEnding1);
+        } else {
+            TampilkanLayarAkhirBadEnding1();
+        }
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager begitu chain END_BAD1_01->02 kelar ---
+    void TampilkanLayarAkhirBadEnding1()
+    {
         Debug.Log("Bad Ending 1 'Hari Keenam Puluh Dua' dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelBadEndingSanity) panelBadEndingSanity.SetActive(true);
+
+        if (textLayarAkhirBadEnding1) {
+            textLayarAkhirBadEnding1.text = $"Skripsi Andrew berhenti di {Mathf.RoundToInt(progresSkripsi)}%.\nBukan karena dia malas tetapi karena nggak ada yang nanya lebih awal.";
+        }
     }
 
     void TampilkanBadEndingLapar()
     {
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
+
+        if (CeritaManager.Instance != null && adeganBadEnding2Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding2Pertama, TampilkanLayarAkhirBadEnding2);
+        } else {
+            TampilkanLayarAkhirBadEnding2();
+        }
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager begitu chain END_BAD2_01->02 kelar ---
+    void TampilkanLayarAkhirBadEnding2()
+    {
         Debug.Log("Bad Ending 2 'Nanti Kalau Kakak Inget' dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
         if (panelBadEndingLapar) panelBadEndingLapar.SetActive(true);
+
+        if (textLayarAkhirBadEnding2) {
+            textLayarAkhirBadEnding2.text = "Badan nagih lebih sabar daripada bank.\nTapi tetep nagih.";
+        }
     }
 
     // --- TAMBAHAN: dijadiin public + diganti nama, biar bisa dipanggil CeritaManager begitu
@@ -616,11 +730,14 @@ public class GameManager : MonoBehaviour
 
         OnHariBerganti?.Invoke();
 
-        CekHappyEnding();
-
-        // --- Deadline lewat sebelum skripsi 100% -> ikutan Bad Ending Uang (kuliah gak selesai) ---
+        // --- FIX: urutan prioritas sesuai naskah ("URUTAN PENGECEKAN ENDING") - Sanity=0 udah
+        // independen lewat KurangiSanity(), Lapar kritis udah dicek di atas. Sisanya: Hari ke-61
+        // Skripsi<100% (Bad Ending 3 Varian B) HARUS dicek SEBELUM Happy Ending, bukan sesudah -
+        // biar kalau dua-duanya kebetulan valid bareng di hari yang sama, yang menang Bad Ending. ---
         if (ApakahSudahLewatTanggal(tanggalDeadline, bulanDeadline) && progresSkripsi < 100f) {
-            PicuBadEndingUang();
+            PicuBadEnding4Waktu();
+        } else {
+            CekHappyEnding();
         }
 
         if (SaveManager.Instance != null) SaveManager.Instance.SimpanGame(0);

@@ -11,10 +11,10 @@ public class MingguCicilan
     public bool sudahTelat;
 }
 
-// --- Sistem pembayaran Utang Bank (v4): daftar MINGGU (bukan pilih rencana lagi). Minggu ke-1
-// muncul begitu utang aktif (GAK ADA deadline, cuma nge-gate skripsi). Minggu ke-2 dst muncul
-// tiap SENIN, harus dibayar sebelum hari MINGGU (maksimal Sabtu), telat kalau enggak. Semua
-// minggu (lunas/belum/telat) tetap nangkring di daftar - ditampilkan lewat Scroll View. ---
+// --- Sistem pembayaran Utang Bank (v7 - SIMPEL): semua minggu (termasuk Minggu 1) diperlakukan
+// SAMA - dicek tiap hari SENIN (ngevaluasi minggu yang barusan lewat). Belum dibayar = Telat,
+// TITIK. Begitu status Telat ke-set, notifikasi (Adegan Denda) jalan dulu, terus LANGSUNG
+// (gak perlu nunggu berapa kali) Bad Ending 3 kepicu setelah notifikasi itu kelar. ---
 public class CicilanManager : MonoBehaviour
 {
     public static CicilanManager Instance;
@@ -23,17 +23,14 @@ public class CicilanManager : MonoBehaviour
     [Tooltip("Nominal cicilan tiap minggu - hasil riset: SPP 2 juta, bunga 0,3%/hari (batas OJK 2025), lunas ~8 minggu -> ~292.000/minggu")]
     public int nominalCicilanMingguan = 292000;
     public float sanityDendaTelat = 8f;
-    public int batasGagalBerturutTurut = 3;
 
-    [Header("Cutscene (opsional)")]
+    [Header("Cutscene (dimainkan otomatis begitu status Telat ke-set)")]
     public CutsceneSceneSO adeganDenda;
 
     [Header("Jadwal Cicilan (baca-saja saat runtime, ditampilkan PanelUtangController)")]
     public List<MingguCicilan> daftarMinggu = new List<MingguCicilan>();
 
     private int nomorMingguBerikutnya = 1;
-    private bool sudahDicekJatuhTempoMingguIni = false;
-    private int gagalBerturutTurut = 0;
     private bool cicilanPertamaSudahLunas = false;
 
     void Awake()
@@ -55,22 +52,17 @@ public class CicilanManager : MonoBehaviour
     {
         if (GameManager.Instance == null || GameManager.Instance.utangBank <= 0f) return;
 
-        // --- Minggu PERTAMA muncul begitu utang ada, gak nunggu Senin, GAK PERNAH dicek telat ---
+        // --- Minggu PERTAMA muncul begitu utang ada, gak nunggu Senin ---
         if (daftarMinggu.Count == 0) {
             TambahMingguBaru();
             return;
         }
 
-        int hariMinggu = GameManager.Instance.HariMingguSaatIni; // 0=Minggu, 1=Senin, ..., 6=Sabtu
-
-        if (hariMinggu == 1) { // Senin - minggu baru muncul
-            sudahDicekJatuhTempoMingguIni = false;
-            TambahMingguBaru();
-        }
-
-        if (hariMinggu == 0 && !sudahDicekJatuhTempoMingguIni) { // Minggu - Sabtu udah lewat
-            sudahDicekJatuhTempoMingguIni = true;
+        // --- Hari SENIN: evaluasi minggu yang BARU AJA lewat (belum dibayar = Telat),
+        // SAMA RATA buat semua minggu termasuk Minggu 1 - baru setelah itu minggu baru muncul ---
+        if (GameManager.Instance.HariMingguSaatIni == 1) {
             CekMingguTerbaruTelat();
+            TambahMingguBaru();
         }
     }
 
@@ -85,8 +77,7 @@ public class CicilanManager : MonoBehaviour
         nomorMingguBerikutnya++;
     }
 
-    // --- TAMBAHAN: dipanggil GameManager.TambahUtang() LANGSUNG pas utang pertama kali muncul -
-    // biar Minggu ke-1 gak nunggu OnHariBerganti (tidur) dulu buat ada di daftar ---
+    // --- Dipanggil GameManager.TambahUtang() LANGSUNG pas utang pertama kali muncul ---
     public void PastikanMingguPertamaAda()
     {
         if (daftarMinggu.Count == 0 && GameManager.Instance != null && GameManager.Instance.utangBank > 0f) {
@@ -96,14 +87,27 @@ public class CicilanManager : MonoBehaviour
 
     void CekMingguTerbaruTelat()
     {
-        // --- Cuma entri PALING BARU yang dicek - minggu ke-1 (index 0) gak pernah masuk sini
-        // soalnya daftarMinggu.Count harus >= 2 dulu (minggu ke-1 + minggu berjalan) ---
-        if (daftarMinggu.Count < 2) return;
+        if (daftarMinggu.Count == 0) return;
 
         var entriTerbaru = daftarMinggu[daftarMinggu.Count - 1];
         if (!entriTerbaru.sudahDibayar && !entriTerbaru.sudahTelat) {
             entriTerbaru.sudahTelat = true;
             GagalBayar();
+        }
+    }
+
+    // --- Titik TUNGGAL pas status Telat ke-set - jalanin notifikasi DULU, begitu itu kelar
+    // (kontrol balik normal), LANGSUNG trigger Bad Ending 3, gak perlu itung berapa kali lagi ---
+    void GagalBayar()
+    {
+        GameManager.Instance.KurangiSanity(sanityDendaTelat);
+
+        if (adeganDenda != null && CeritaManager.Instance != null) {
+            CeritaManager.Instance.MulaiAdeganLangsung(adeganDenda, () => {
+                if (GameManager.Instance != null) GameManager.Instance.PicuBadEndingUang();
+            });
+        } else {
+            GameManager.Instance.PicuBadEndingUang();
         }
     }
 
@@ -119,7 +123,6 @@ public class CicilanManager : MonoBehaviour
         GameManager.Instance.KurangiUang(entri.nominal);
         GameManager.Instance.KurangiUtang(entri.nominal);
         entri.sudahDibayar = true;
-        gagalBerturutTurut = 0;
 
         if (!cicilanPertamaSudahLunas) {
             cicilanPertamaSudahLunas = true;
@@ -129,31 +132,15 @@ public class CicilanManager : MonoBehaviour
         return true;
     }
 
-    void GagalBayar()
-    {
-        gagalBerturutTurut++;
-        GameManager.Instance.KurangiSanity(sanityDendaTelat);
-
-        if (adeganDenda != null && CeritaManager.Instance != null) {
-            CeritaManager.Instance.MulaiAdeganLangsung(adeganDenda);
-        }
-
-        if (gagalBerturutTurut >= batasGagalBerturutTurut) {
-            GameManager.Instance.PicuBadEndingUang();
-        }
-    }
-
     // ================== TAMBAHAN: dipakai SaveManager.cs ==================
     public List<MingguCicilan> DapatkanDaftarMinggu() => daftarMinggu;
     public int DapatkanNomorMingguBerikutnya() => nomorMingguBerikutnya;
-    public int DapatkanGagalBerturutTurut() => gagalBerturutTurut;
     public bool DapatkanCicilanPertamaSudahLunas() => cicilanPertamaSudahLunas;
 
-    public void MuatDaftarMinggu(List<MingguCicilan> daftar, int nomorBerikutnya, int gagalBerturut, bool pertamaLunas)
+    public void MuatDaftarMinggu(List<MingguCicilan> daftar, int nomorBerikutnya, bool pertamaLunas)
     {
         daftarMinggu = daftar ?? new List<MingguCicilan>();
         nomorMingguBerikutnya = nomorBerikutnya > 0 ? nomorBerikutnya : 1;
-        gagalBerturutTurut = gagalBerturut;
         cicilanPertamaSudahLunas = pertamaLunas;
     }
 }

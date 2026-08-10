@@ -30,11 +30,25 @@ public class SanityDistortionEffect : MonoBehaviour
     [Range(0f, 1f)]
     [Tooltip("Ambang intensitas (0-1) minimum sebelum bisikan mulai diputar")]
     public float ambangIntensitasBisikan = 0.3f;
+    [Tooltip("TAMBAHAN: distorsi JUGA aktif kalau Lapar di bawah angka ini (mirip pola Sanity) - dipakai buat efek visual Bad Ending 2")]
+    public float ambangLaparDistorsi = 30f;
 
     // 0 = normal (tidak ada distorsi), 1 = distorsi penuh
     private float intensitasSaatIni = 0f;
     private Vector3 offsetShakeSebelumnya = Vector3.zero; // TAMBAHAN: gantiin posisiAsliKamera yang beku
     private float timerBisikan;
+
+    // --- TAMBAHAN: override manual dari luar (misal CutsceneUI) - kalau aktif, intensitas
+    // PAKSA ke nilai ini, gak peduli Sanity beneran berapa. Dipakai buat momen cutscene
+    // spesifik yang butuh efek goyang kamera walau Sanity pemain lagi tinggi. ---
+    private bool paksaAktif = false;
+    private float intensitasPaksa = 1f;
+
+    public void PaksaAktifSementara(bool aktif, float intensitas = 1f)
+    {
+        paksaAktif = aktif;
+        intensitasPaksa = Mathf.Clamp01(intensitas);
+    }
 
     void Start()
     {
@@ -55,10 +69,27 @@ public class SanityDistortionEffect : MonoBehaviour
 
         float sanity = GameManager.Instance.sanity;
         float ambang = GameManager.Instance.ambangSanityDistorsi;
+        float lapar = GameManager.Instance.lapar;
 
-        float targetIntensitas = 0f;
-        if (sanity < ambang) {
-            targetIntensitas = Mathf.InverseLerp(ambang, 0f, sanity);
+        // --- TAMBAHAN: kalau lagi di-paksa aktif (dari CutsceneUI), pakai intensitas paksa itu,
+        // abaikan Sanity/Lapar beneran buat sementara ---
+        float targetIntensitas;
+        if (paksaAktif) {
+            targetIntensitas = intensitasPaksa;
+        } else {
+            float dariSanity = 0f;
+            if (sanity < ambang) {
+                dariSanity = Mathf.InverseLerp(ambang, 0f, sanity);
+            }
+
+            // --- TAMBAHAN: distorsi dari Lapar, pola sama persis kayak Sanity ---
+            float dariLapar = 0f;
+            if (lapar < ambangLaparDistorsi) {
+                dariLapar = Mathf.InverseLerp(ambangLaparDistorsi, 0f, lapar);
+            }
+
+            // --- Ambil yang PALING PARAH dari dua-duanya, biar efeknya reaktif ke krisis manapun yang lebih berat ---
+            targetIntensitas = Mathf.Max(dariSanity, dariLapar);
         }
 
         intensitasSaatIni = Mathf.MoveTowards(intensitasSaatIni, targetIntensitas, Time.deltaTime * kecepatanTransisi);

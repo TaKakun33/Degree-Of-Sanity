@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: END_BAD1_01
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: END_BAD1_01
+  ruangId: LAYAR_HITAM
+  karakterAnnaHadir: 0
+  lewatiTransisiAwal: 0
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Pagi datang. Andrew tau, karena cahayanya pindah dari lantai ke dinding.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Dia nggak bangun.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 2
+    namaTokoh: 
+    teks: Bangun.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 2
+    namaTokoh: 
+    teks: Bangun.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Bukan nggak mau. Perintahnya dikirim, tapi nggak ada yang nerima.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Cahayanya pindah lagi. Andrew nggak yakin ini masih hari yang sama.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: (dari balik pintu) Kak? Aku masuk ya.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Andrew pengen bilang nanti aja. Nggak ada satu pun yang keluar.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  efek:
+    sanityDelta: 0
+    laparDelta: 0
+    uangDelta: 0
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    tambahUtang: 0
+    aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
+  adaPilihan: 0
+  pilihanCabang: []
+  adeganBerikutnya: {fileID: 11400000, guid: c1db2954f4853ad2d83e20c2c29e2407, type: 2}
+  monologAkhirHari: 

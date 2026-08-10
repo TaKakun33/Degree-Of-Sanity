@@ -163,7 +163,7 @@ public class CeritaManager : MonoBehaviour
         });
     }
 
-    void MulaiAdegan(CutsceneSceneSO adegan)
+    void MulaiAdegan(CutsceneSceneSO adegan, System.Action callbackTambahan = null)
     {
         Debug.Log($"[CeritaManager] MulaiAdegan() TERPANGGIL. adegan={(adegan != null ? adegan.id : "NULL")}, cutsceneUI={(cutsceneUI != null ? "OK" : "NULL")}"); // --- SEMENTARA ---
 
@@ -198,13 +198,20 @@ public class CeritaManager : MonoBehaviour
             } else {
                 Debug.LogError("[CeritaManager] Gak nemu PlayerController pas mau buka kunci!"); // --- SEMENTARA ---
             }
+
+            // --- TAMBAHAN: kalau ada aksi lanjutan (misal langsung ke Bad Ending setelah
+            // notifikasi telat ini selesai), jalanin SETELAH kontrol beneran balik normal ---
+            callbackTambahan?.Invoke();
         });
     }
 
     // --- TAMBAHAN: dipanggil GameManager.CekHappyEnding() - pembungkus KHUSUS buat chain Happy
     // Ending, beda dari MulaiAdegan() biasa: begitu chain-nya kelar, JANGAN kembalikan kontrol
     // ke pemain - malah munculin layar akhir statis & bekukan game. ---
-    public void MulaiHappyEndingChain(CutsceneSceneSO adeganPertama)
+    // --- TAMBAHAN: versi GENERIK - dipakai buat SEMUA ending (Happy + 3 Bad), nerima callback
+    // custom yang dipanggil begitu chain-nya kelar. Sama sekali gak buka kunci/kembaliin kontrol
+    // ke pemain (soalnya ending = game berhenti, bukan lanjut main). ---
+    public void MulaiEndingChain(CutsceneSceneSO adeganPertama, System.Action onChainSelesai)
     {
         if (adeganPertama == null || cutsceneUI == null) return;
 
@@ -218,7 +225,15 @@ public class CeritaManager : MonoBehaviour
         if (playerAwal != null) playerAwal.SetMenuStatus(true);
 
         cutsceneUI.MainkanAdegan(adeganPertama, () => {
-            // --- Chain kelar - JANGAN buka kunci/kembalikan kontrol, munculin layar akhir aja ---
+            onChainSelesai?.Invoke();
+        });
+    }
+
+    // --- Happy Ending sekarang cuma pembungkus tipis di atas MulaiEndingChain() - perilaku
+    // publiknya TETAP SAMA, gak ada yang berubah buat kode yang udah manggil ini ---
+    public void MulaiHappyEndingChain(CutsceneSceneSO adeganPertama)
+    {
+        MulaiEndingChain(adeganPertama, () => {
             if (GameManager.Instance != null) GameManager.Instance.TampilkanLayarAkhirHappyEnding();
         });
     }
@@ -287,9 +302,9 @@ public class CeritaManager : MonoBehaviour
     }
 
     // --- TAMBAHAN: dipanggil PemicuInteraktifCerita.cs begitu player beneran nyampe di objeknya ---
-    public void MulaiAdeganLangsung(CutsceneSceneSO adegan)
+    public void MulaiAdeganLangsung(CutsceneSceneSO adegan, System.Action callbackTambahan = null)
     {
-        MulaiAdegan(adegan);
+        MulaiAdegan(adegan, callbackTambahan);
     }
 
     // --- Testing: klik kanan komponen ini di Inspector pas Play, biar bisa paksa trigger tanpa nunggu tanggal asli ---

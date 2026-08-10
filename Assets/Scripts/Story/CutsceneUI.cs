@@ -24,6 +24,16 @@ public class CutsceneUI : MonoBehaviour
     public Image layarTransisi;
     public float durasiFade = 0.5f;
 
+    [Header("TAMBAHAN: Fade Putih (opsional, misal momen pingsan)")]
+    [Tooltip("Image full-screen TERPISAH, warna PUTIH, alpha 0 dari awal - dipakai KHUSUS pas 'Fade Ke Putih Di Akhir' dicentang")]
+    public Image layarPutih;
+
+    [Header("TAMBAHAN: Efek Goyang Kamera (pakai SanityDistortionEffect yang udah ada)")]
+    [Tooltip("Drag object yang punya SanityDistortionEffect.cs (biasanya di Canvas HUD)")]
+    public SanityDistortionEffect distorsiSanity;
+    [Range(0f, 1f)]
+    public float intensitasGeterCutscene = 1f;
+
     [Header("Karakter")]
     [Tooltip("Drag GameObject Anna di scene ke sini (yang dipakai di seluruh game, bukan yang baru)")]
     public Transform annaTransform;
@@ -54,6 +64,9 @@ public class CutsceneUI : MonoBehaviour
         // Kalau Prolog gak jalan (Load Game/balik kerja), gak ada yang pernah matiin ini,
         // dan kalau Raycast Target default-nya nyala di Editor, klik ke lantai/objek keblokir. ---
         if (layarTransisi != null) layarTransisi.raycastTarget = false;
+
+        // --- TAMBAHAN: sama alasannya kayak layarTransisi - pastiin gak nge-block klik dari awal ---
+        if (layarPutih != null) layarPutih.raycastTarget = false;
 
         if (gambarProp) gambarProp.gameObject.SetActive(false);
     }
@@ -114,6 +127,12 @@ public class CutsceneUI : MonoBehaviour
         if (panelCutscene) panelCutscene.SetActive(true);
         if (goyangTeks) goyangTeks.Matikan();
         if (gambarProp) gambarProp.gameObject.SetActive(false);
+
+        // --- TAMBAHAN: goyang KAMERA (bukan panel) sepanjang adegan kalau dicentang, lewat
+        // SanityDistortionEffect yang udah ada - pakai sistem shake yang sama kayak Sanity rendah ---
+        if (distorsiSanity != null) {
+            distorsiSanity.PaksaAktifSementara(adegan.geterSepanjangAdegan, intensitasGeterCutscene);
+        }
 
         LanjutkanBaris();
     }
@@ -219,7 +238,11 @@ public class CutsceneUI : MonoBehaviour
             bool lewatiKarenaFlagAktif = !string.IsNullOrEmpty(baris.munculKalauFlagAktif) && !ApakahFlagAktif(baris.munculKalauFlagAktif);
             bool lewatiKarenaFlagTidakAktif = !string.IsNullOrEmpty(baris.munculKalauFlagTidakAktif) && ApakahFlagAktif(baris.munculKalauFlagTidakAktif);
 
-            if (lewatiKarenaSanity || lewatiKarenaFlagAktif || lewatiKarenaFlagTidakAktif) {
+            int totalMakanan = InventoryManager.Instance != null ? InventoryManager.Instance.TotalMakananDiTas() : 0;
+            bool lewatiKarenaAdaMakanan = baris.munculKalauAdaMakananDiTas && totalMakanan <= 0;
+            bool lewatiKarenaTidakAdaMakanan = baris.munculKalauTidakAdaMakananDiTas && totalMakanan > 0;
+
+            if (lewatiKarenaSanity || lewatiKarenaFlagAktif || lewatiKarenaFlagTidakAktif || lewatiKarenaAdaMakanan || lewatiKarenaTidakAdaMakanan) {
                 indexBaris++;
                 continue;
             }
@@ -239,7 +262,10 @@ public class CutsceneUI : MonoBehaviour
         if (textNamaTokoh) textNamaTokoh.text = iniNarasi ? "" : (iniBisikan ? "" : b.namaTokoh);
 
         if (textDialog) {
-            textDialog.text = b.teks;
+            string teksFinal = b.teks ?? "";
+            if (GameManager.Instance != null) teksFinal = teksFinal.Replace("{SKRIPSI}", Mathf.RoundToInt(GameManager.Instance.progresSkripsi).ToString());
+            teksFinal = teksFinal.Replace("{MAKANAN}", (InventoryManager.Instance != null ? InventoryManager.Instance.TotalMakananDiTas() : 0).ToString());
+            textDialog.text = teksFinal;
             textDialog.fontStyle = iniBisikan ? FontStyles.Italic : FontStyles.Normal;
         }
 
@@ -326,11 +352,59 @@ public class CutsceneUI : MonoBehaviour
             return;
         }
 
+        // --- TAMBAHAN: matiin goyang kamera begitu adegan ini kelar (scene berikutnya nyalain sendiri kalau perlu) ---
+        if (distorsiSanity != null) distorsiSanity.PaksaAktifSementara(false);
+
+        // --- TAMBAHAN: fade ke PUTIH dulu (bukan hitam) sebelum lanjut, kalau dicentang ---
+        if (adeganAktif.fadeKePutihDiAkhir) {
+            StartCoroutine(FadeKePutihLaluLanjut(adeganAktif.adeganBerikutnya));
+            return;
+        }
+
         if (adeganAktif.adeganBerikutnya != null) {
             MulaiSatuAdegan(adeganAktif.adeganBerikutnya);
         } else {
             Debug.Log($"[CutsceneUI] Adegan '{adeganAktif.id}' selesai TANPA pilihan dan TANPA adeganBerikutnya - chain berakhir di sini."); // --- SEMENTARA ---
             SelesaikanChain();
+        }
+    }
+
+    // --- TAMBAHAN: fade layarPutih 0->1, jeda sebentar, mulai adegan berikutnya (disaranin pakai
+    // "Lewati Transisi Awal" biar gak dobel sama fade hitam), lalu fade layarPutih 1->0 nampilinnya ---
+    IEnumerator FadeKePutihLaluLanjut(CutsceneSceneSO adeganBerikutnyaLokal)
+    {
+        if (layarPutih != null) {
+            layarPutih.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarPutih.color;
+                c.a = Mathf.Lerp(0f, 1f, t / durasiFade);
+                layarPutih.color = c;
+                yield return null;
+            }
+            Color penuh = layarPutih.color; penuh.a = 1f; layarPutih.color = penuh;
+        }
+
+        yield return new WaitForSeconds(0.3f);
+
+        if (adeganBerikutnyaLokal != null) {
+            MulaiSatuAdegan(adeganBerikutnyaLokal);
+        } else {
+            SelesaikanChain();
+        }
+
+        if (layarPutih != null) {
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarPutih.color;
+                c.a = Mathf.Lerp(1f, 0f, t / durasiFade);
+                layarPutih.color = c;
+                yield return null;
+            }
+            Color kosong = layarPutih.color; kosong.a = 0f; layarPutih.color = kosong;
+            layarPutih.raycastTarget = false;
         }
     }
 

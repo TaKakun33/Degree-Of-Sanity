@@ -11,6 +11,7 @@ public class BarisCutscene
     [Tooltip("Kosongkan buat Narasi/Bisikan. Isi 'ANDREW', 'ANNA', 'DOSEN', dll buat Dialog")]
     public string namaTokoh;
     [TextArea(2, 5)]
+    [Tooltip("Isi teks dialog/narasi. TAMBAHAN: bisa pakai placeholder {SKRIPSI} (otomatis diganti angka Progres Skripsi saat ini, misal '47') dan {MAKANAN} (otomatis diganti jumlah makanan di Inventory) - dipakai buat LAYAR AKHIR yang butuh angka dinamis.")]
     public string teks;
     [Tooltip("TAMBAHAN: kosongkan biasanya. Isi 'Lapar'/'ProgresSkripsi'/'Tanggal'/'Sanity'/'Uang'/'Inventory' kalau baris INI yang mesti nampilin parameter itu (Prolog: reveal satu-satu)")]
     public string parameterUntukDitampilkan;
@@ -21,6 +22,10 @@ public class BarisCutscene
     public string munculKalauFlagAktif;
     [Tooltip("TAMBAHAN: baris ini CUMA muncul kalau flag ini BELUM aktif. Kosongkan kalau gak ada syarat.")]
     public string munculKalauFlagTidakAktif;
+    [Tooltip("TAMBAHAN (Bad Ending 2): baris ini CUMA muncul kalau Inventory MASIH ada makanan (Roti+Mie+Masakan) pas ending ini terpicu")]
+    public bool munculKalauAdaMakananDiTas;
+    [Tooltip("TAMBAHAN (Bad Ending 2): baris ini CUMA muncul kalau Inventory KOSONG makanan pas ending ini terpicu")]
+    public bool munculKalauTidakAdaMakananDiTas;
     [Tooltip("TAMBAHAN: prop di scene (misal Amplop/Laci) yang DIMUNCULKAN pas baris ini tampil. Kosongkan (None) kalau gak ada.")]
     public GameObject objekTampilkan;
     [Tooltip("TAMBAHAN: prop di scene yang DISEMBUNYIKAN pas baris ini tampil. Kosongkan (None) kalau gak ada.")]
@@ -80,6 +85,10 @@ public class CutsceneSceneSO : ScriptableObject
     public bool karakterAnnaHadir;
     [Tooltip("TAMBAHAN: centang buat SKIP transisi layar hitam + teleport di AWAL adegan ini - langsung tampil dialog apa adanya. Berguna buat adegan yang mulai tepat setelah animasi lain (misal abis ProsesTidur), biar gak ada fade dobel.")]
     public bool lewatiTransisiAwal = false;
+    [Tooltip("TAMBAHAN: centang buat layar GOYANG ringan SEPANJANG adegan ini - dipakai buat momen fisik gak stabil (naskah Bad Ending 2: 'blur radial')")]
+    public bool geterSepanjangAdegan = false;
+    [Tooltip("TAMBAHAN: centang buat fade ke PUTIH (bukan hitam) tepat SEBELUM lanjut ke adegan berikutnya - dipakai buat momen 'blackout'/pingsan (naskah Bad Ending 2: '[Putih]'). SARAN: adegan BERIKUTNYA sebaiknya centang 'Lewati Transisi Awal' juga, biar gak dobel fade item hitam+putih.")]
+    public bool fadeKePutihDiAkhir = false;
 
     [Header("Baris-baris (urut dari atas ke bawah)")]
     public List<BarisCutscene> baris;

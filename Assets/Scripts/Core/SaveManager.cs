@@ -38,6 +38,8 @@ public class DataSimpanan
     public int cicilanNomorMingguBerikutnya;
     public int cicilanGagalBerturutTurut;
     public bool cicilanPertamaSudahLunas;
+    public int cicilanHariKeMingguPertamaDibuat; // --- dipakai buat siklus Minggu lewat sekarang ---
+    public bool cicilanSudahDicekTelatMingguPertama;
 }
 
 public class SaveManager : MonoBehaviour
@@ -79,7 +81,8 @@ public class SaveManager : MonoBehaviour
             if (CicilanManager.Instance != null) {
                 data.daftarMingguCicilan = CicilanManager.Instance.DapatkanDaftarMinggu(); // --- TAMBAHAN ---
                 data.cicilanNomorMingguBerikutnya = CicilanManager.Instance.DapatkanNomorMingguBerikutnya(); // --- TAMBAHAN ---
-                data.cicilanGagalBerturutTurut = CicilanManager.Instance.DapatkanGagalBerturutTurut(); // --- TAMBAHAN ---
+                // --- cicilanGagalBerturutTurut, cicilanHariKeMingguPertamaDibuat, cicilanSudahDicekTelatMingguPertama
+                // gak dipakai lagi (sistem disederhanain, gak ada lagi hitungan berturut-turut/toleransi Minggu 1) ---
                 data.cicilanPertamaSudahLunas = CicilanManager.Instance.DapatkanCicilanPertamaSudahLunas(); // --- TAMBAHAN ---
             }
         }
@@ -142,7 +145,7 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.utangBank = data.utangBank; // --- TAMBAHAN ---
                 GameManager.Instance.UpdateTombolUtang(); // --- TAMBAHAN: FIX bug tombol ilang ---
                 if (CicilanManager.Instance != null) {
-                    CicilanManager.Instance.MuatDaftarMinggu(data.daftarMingguCicilan, data.cicilanNomorMingguBerikutnya, data.cicilanGagalBerturutTurut, data.cicilanPertamaSudahLunas); // --- TAMBAHAN ---
+                    CicilanManager.Instance.MuatDaftarMinggu(data.daftarMingguCicilan, data.cicilanNomorMingguBerikutnya, data.cicilanPertamaSudahLunas); // --- TAMBAHAN ---
                 }
             }
 
