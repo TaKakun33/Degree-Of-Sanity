@@ -10,26 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
-  m_Name: ME2_02
+  m_Name: ME3_01
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
-  id: ME2_02
-  ruangId: DAPUR
+  id: ME3_01
+  ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 1
   baris:
   - jenis: 0
     namaTokoh: 
-    teks: Anna udah di dapur duluan. Airnya udah dingin di gelas dari tadi
+    teks: Anna naruh sesuatu di sebelah laptop. Amplop. Bentuknya sama persis kayak
+      yang datang tiap Senin.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
-    gambarPropUntukDitampilkan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 3058730461592448298, guid: 5939d070ee234500086e57fe788d5f18, type: 3}
     sembunyikanGambarProp: 0
-  - jenis: 1
-    namaTokoh: Anna
-    teks: Kakak belum tidur.
+  - jenis: 0
+    namaTokoh: 
+    teks: Cuma isinya kebalikan.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
@@ -40,7 +41,18 @@ MonoBehaviour:
     sembunyikanGambarProp: 0
   - jenis: 0
     namaTokoh: Andrew
-    teks: Kamu juga.
+    teks: Ini apa.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 1
+  - jenis: 0
+    namaTokoh: Andrew
+    teks: Ini apa.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
@@ -49,9 +61,9 @@ MonoBehaviour:
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
     sembunyikanGambarProp: 0
-  - jenis: 1
+  - jenis: 0
     namaTokoh: Anna
-    teks: Dari tadi aku denger kakak ngomong sendiri.
+    teks: Uang jajanku. Dari Maret.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
@@ -60,9 +72,20 @@ MonoBehaviour:
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
     sembunyikanGambarProp: 0
-  - jenis: 1
-    namaTokoh: Anna
-    teks: Kakak mau berhenti kuliah, ya.
+  - jenis: 0
+    namaTokoh: Andrew
+    teks: Kamu nggak jajan dari Maret?
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 2
+    namaTokoh: 
+    teks: Adikmu nabung buat nutupin kamu.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
@@ -86,14 +109,11 @@ MonoBehaviour:
     gantiHariSetelahAdegan: 0
   adaPilihan: 1
   pilihanCabang:
-  - labelTombol: Jujur
-    adeganLanjutan: {fileID: 11400000, guid: 85eefed8069c92ca8b0e9a808ee2b090, type: 2}
-    setFlag: TEKAD_KUAT
-  - labelTombol: Bohong
-    adeganLanjutan: {fileID: 11400000, guid: df2053feb44146a01a9eb8b6ecb941c4, type: 2}
-    setFlag: 
-  - labelTombol: Diam
-    adeganLanjutan: {fileID: 11400000, guid: 091617b06ef7fefe89f911140ca5faec, type: 2}
-    setFlag: 
+  - labelTombol: Ambil
+    adeganLanjutan: {fileID: 11400000, guid: 22d561df42b3195a7b31193d3ff965d8, type: 2}
+    setFlag: AMBIL_TABUNGAN
+  - labelTombol: Kembalikan
+    adeganLanjutan: {fileID: 11400000, guid: 6369a3d824cb51dd8ba493c56ddddafb, type: 2}
+    setFlag: JANJI_ANNA
   adeganBerikutnya: {fileID: 0}
   monologAkhirHari: 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ME2_02_BOHONG_2
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
   id: ME2_02_BOHONG_2
-  ruangId: LAYAR_HITAM
+  ruangId: DAPUR
   karakterAnnaHadir: 0
   baris:
   - jenis: 0
@@ -66,11 +66,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
     jamBaruSetelahAdegan: -1
     sanityMinimalSetelahEfek: 15
     paksaBukaThresholdKe: -1
     aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 11400000, guid: f9db9870aa80137cd9736596d884a427, type: 2}

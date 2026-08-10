@@ -55,11 +55,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
     jamBaruSetelahAdegan: -1
     sanityMinimalSetelahEfek: -1
     paksaBukaThresholdKe: 2
     aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 1
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 0}
