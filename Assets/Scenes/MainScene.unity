@@ -3322,7 +3322,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -380.70142}
+  m_AnchoredPosition: {x: -5.6367188, y: -474.89}
   m_SizeDelta: {x: -935.2546, y: -1031.3252}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &197356050
@@ -26454,7 +26454,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1277804359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44269,6 +44269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeskController
   namaSceneMinigame: SkripsiScene
   pesanPeringatan: Skripsi cuma bisa dikerjakan 1x per hari. Coba lagi besok!
+  pesanMentokThreshold: Belum bisa lanjut nulis. Ada yang perlu diselesaikan dulu.
 --- !u!114 &2079777296
 MonoBehaviour:
   m_ObjectHideFlags: 0
