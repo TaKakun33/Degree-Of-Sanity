@@ -541,10 +541,10 @@ MonoBehaviour:
   jumlahKataTampil: 50
   jumlahKataSesi: 150
   jumlahKataUntukProgresPenuh: 150
-  pengaliKecepatanWaktuSaatMinigame: 6
+  pengaliKecepatanWaktuSaatMinigame: 3
   sanityBerkurangPerTick: 0.005
   maxTypo: 3
-  progresMaksimalPerSesi: 10
+  progresMaksimalPerSesi: 8
   namaSceneMinigame: SkripsiScene
   bonusMaxTypoKeyboard: 2
   pengaliSanityKeyboard: 0.5

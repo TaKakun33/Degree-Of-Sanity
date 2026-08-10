@@ -67,6 +67,45 @@ public class ThresholdSkripsi : MonoBehaviour
         }
     }
 
+    // --- TAMBAHAN: dipanggil SaveManager.cs - status tiap Threshold (sudahTerbuka dkk) HARUS
+    // disimpan/dimuat, kalau enggak bakal ke-reset abis Load Game walau progresSkripsi-nya
+    // sendiri udah lanjut jauh - bikin cap ke-tarik mundur ke Threshold yang seharusnya udah lewat. ---
+    [System.Serializable]
+    public class StatusThresholdTersimpan
+    {
+        public bool sudahDitampilkanTerkunci;
+        public bool sudahTerbuka;
+        public bool syaratTambahanTerpenuhi;
+    }
+
+    public List<StatusThresholdTersimpan> DapatkanStatusSemuaThreshold()
+    {
+        var hasil = new List<StatusThresholdTersimpan>();
+        if (daftarThreshold == null) return hasil;
+
+        foreach (var th in daftarThreshold) {
+            hasil.Add(new StatusThresholdTersimpan {
+                sudahDitampilkanTerkunci = th.sudahDitampilkanTerkunci,
+                sudahTerbuka = th.sudahTerbuka,
+                syaratTambahanTerpenuhi = th.syaratTambahanTerpenuhi
+            });
+        }
+        return hasil;
+    }
+
+    public void MuatStatusSemuaThreshold(List<StatusThresholdTersimpan> daftar)
+    {
+        if (daftarThreshold == null || daftar == null) return;
+
+        // --- Cocokin berdasarkan INDEX (urutan) - daftarThreshold di Inspector JANGAN diubah
+        // urutannya setelah pemain mulai save, kalau enggak status bisa ketuker Threshold lain ---
+        for (int i = 0; i < daftarThreshold.Count && i < daftar.Count; i++) {
+            daftarThreshold[i].sudahDitampilkanTerkunci = daftar[i].sudahDitampilkanTerkunci;
+            daftarThreshold[i].sudahTerbuka = daftar[i].sudahTerbuka;
+            daftarThreshold[i].syaratTambahanTerpenuhi = daftar[i].syaratTambahanTerpenuhi;
+        }
+    }
+
     void BukaThreshold(Threshold th)
     {
         th.sudahTerbuka = true;

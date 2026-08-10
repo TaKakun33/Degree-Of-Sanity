@@ -38,6 +38,7 @@ public class DataSimpanan
     public int cicilanNomorMingguBerikutnya;
     public int cicilanGagalBerturutTurut;
     public bool cicilanPertamaSudahLunas;
+    public System.Collections.Generic.List<ThresholdSkripsi.StatusThresholdTersimpan> statusThreshold; // --- TAMBAHAN ---
     public int cicilanHariKeMingguPertamaDibuat; // --- dipakai buat siklus Minggu lewat sekarang ---
     public bool cicilanSudahDicekTelatMingguPertama;
 }
@@ -84,6 +85,7 @@ public class SaveManager : MonoBehaviour
                 // --- cicilanGagalBerturutTurut, cicilanHariKeMingguPertamaDibuat, cicilanSudahDicekTelatMingguPertama
                 // gak dipakai lagi (sistem disederhanain, gak ada lagi hitungan berturut-turut/toleransi Minggu 1) ---
                 data.cicilanPertamaSudahLunas = CicilanManager.Instance.DapatkanCicilanPertamaSudahLunas(); // --- TAMBAHAN ---
+                if (ThresholdSkripsi.Instance != null) data.statusThreshold = ThresholdSkripsi.Instance.DapatkanStatusSemuaThreshold(); // --- TAMBAHAN ---
             }
         }
 
@@ -146,6 +148,7 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.UpdateTombolUtang(); // --- TAMBAHAN: FIX bug tombol ilang ---
                 if (CicilanManager.Instance != null) {
                     CicilanManager.Instance.MuatDaftarMinggu(data.daftarMingguCicilan, data.cicilanNomorMingguBerikutnya, data.cicilanPertamaSudahLunas); // --- TAMBAHAN ---
+                    if (ThresholdSkripsi.Instance != null) ThresholdSkripsi.Instance.MuatStatusSemuaThreshold(data.statusThreshold); // --- TAMBAHAN ---
                 }
             }
 
