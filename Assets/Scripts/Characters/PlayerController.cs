@@ -254,15 +254,25 @@ public class PlayerController : MonoBehaviour
                 if (sedangTransit)
                 {
                     sedangTransit = false; 
-                    
+
+                    // --- FIX: pakai Y dari KonfigurasiLantai (yang UDAH PASTI benar buat
+                    // lantaiSaatIni yang baru), BUKAN transform.position.y - soalnya rb.position
+                    // yang baru di-set UseDoor() belum tentu udah "nular" ke transform.position
+                    // di frame yang SAMA (sync-nya belakangan), jadi transform.position.y di sini
+                    // bisa kebaca MASIH Y LAMA (sebelum teleport), bikin karakter diseret balik
+                    // ke Y yang salah abis "kelihatan" landing bener sebentar. ---
+                    float yLantaiSekarang = (KonfigurasiLantai.Instance != null)
+                        ? KonfigurasiLantai.Instance.DapatkanPosisiY(lantaiSaatIni)
+                        : transform.position.y; // fallback kalau KonfigurasiLantai belum ke-setup
+
                     if (targetInteraksiAkhir != null)
                     {
                         SetTargetInteraksi(targetInteraksiAkhir);
-                        targetPosition = new Vector2(targetInteraksiAkhir.transform.position.x, transform.position.y);
+                        targetPosition = new Vector2(targetInteraksiAkhir.transform.position.x, yLantaiSekarang);
                     }
                     else
                     {
-                        targetPosition = new Vector2(targetXAkhir, transform.position.y);
+                        targetPosition = new Vector2(targetXAkhir, yLantaiSekarang);
                     }
                     
                     targetInteraksiAkhir = null; 

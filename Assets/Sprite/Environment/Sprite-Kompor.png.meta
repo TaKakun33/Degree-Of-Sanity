@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 51f681939f7b0ad488fd0f403f80e071
+guid: 683a9f3f7e3e67f77b412efd416c4daa
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2932513457500294362
-    second: Next_0
+      213: 5975427067815678231
+    second: Sprite-Kompor_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Next_0
+      name: Sprite-Kompor_0
       rect:
         serializedVersion: 2
-        x: 123
-        y: 114
-        width: 414
-        height: 141
+        x: 0
+        y: 0
+        width: 50
+        height: 41
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 62374aa2c8e9d47d0800000000000000
-      internalID: -2932513457500294362
+      spriteID: 711586e424bfce250800000000000000
+      internalID: 5975427067815678231
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Next_0: -2932513457500294362
+      Sprite-Kompor_0: 5975427067815678231
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

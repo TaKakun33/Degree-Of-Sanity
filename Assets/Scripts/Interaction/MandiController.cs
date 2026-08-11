@@ -11,7 +11,9 @@ using UnityEngine.UI;
 public class MandiController : MonoBehaviour
 {
     [Header("TUNABLE")]
-    public float sanityBertambah = 15f;
+    public float sanityBertambah = 10f;
+    [Tooltip("TAMBAHAN: berapa jam waktu in-game yang kelewat selama mandi")]
+    public float jamYangDilewati = 1f;
     [Tooltip("Durasi fade masuk/keluar - sengaja lebih lama dari transisi cutscene (0.5 detik)")]
     public float durasiFadeMandi = 1f;
     [Tooltip("Berapa lama layar tetap gelap total sebelum fade balik")]
@@ -67,8 +69,17 @@ public class MandiController : MonoBehaviour
 
         yield return new WaitForSeconds(durasiTahanGelap);
 
-        // --- Efek: Sanity nambah, diterapkan pas layar masih gelap total ---
-        if (GameManager.Instance != null) GameManager.Instance.TambahSanity(sanityBertambah);
+        // --- Efek: Sanity nambah, TAPI cuma SEKALI per hari - mandi bisa dilakukan berkali-kali,
+        // cuma bonus pertama di hari itu yang beneran kepake, sisanya tetap "mandi" (animasi
+        // jalan normal) tapi gak nambah Sanity lagi ---
+        if (GameManager.Instance != null && !GameManager.Instance.SudahMandiHariIni) {
+            GameManager.Instance.TambahSanity(sanityBertambah);
+            GameManager.Instance.TandaiSudahMandiHariIni();
+        }
+
+        // --- TAMBAHAN: waktu tetap kelewat SETIAP kali mandi (beda dari bonus Sanity yang
+        // cuma sekali) - masuk akal, mandi tetap makan waktu walau udah gak dapet bonus lagi ---
+        if (GameManager.Instance != null) GameManager.Instance.jamSaatIni += jamYangDilewati;
 
         // --- Fade balik nampilin scene lagi ---
         if (layarMandi != null) {

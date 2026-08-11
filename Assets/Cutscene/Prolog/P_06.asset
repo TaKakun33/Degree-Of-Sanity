@@ -15,12 +15,21 @@ MonoBehaviour:
   id: P_06
   ruangId: LORONG
   karakterAnnaHadir: 0
+  balikArahAndrew: 0
+  balikArahAnna: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
   baris:
   - jenis: 0
     namaTokoh: 
     teks: Rumah ini tinggal punya empat ruang yang berarti.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -30,6 +39,10 @@ MonoBehaviour:
     teks: Kamar buat nulis dan buat berhenti. Dapur buat masak. Pintu buat cari uang.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -40,6 +53,10 @@ MonoBehaviour:
       dalam.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -49,6 +66,10 @@ MonoBehaviour:
     teks: Hari pertama.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -59,8 +80,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
-    jamBaruSetelahAdegan: 9
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 0}

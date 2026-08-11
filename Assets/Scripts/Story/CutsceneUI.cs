@@ -22,6 +22,12 @@ public class CutsceneUI : MonoBehaviour
 {
     [Header("Referensi UI")]
     public GameObject panelCutscene;
+    [Tooltip("TAMBAHAN: wadah khusus Dialog (potrait+nama+teks) - nyala CUMA pas baris Dialog")]
+    public GameObject panelDialog;
+    [Tooltip("TAMBAHAN: wadah khusus Narasi & Bisikan (teks doang, gak ada nama/potrait) - nyala CUMA pas baris Narasi/Bisikan")]
+    public GameObject panelNarasiBisikan;
+    [Tooltip("TAMBAHAN: TextMeshProUGUI di dalam Panel Narasi Bisikan")]
+    public TextMeshProUGUI textNarasiBisikan;
     public TextMeshProUGUI textNamaTokoh;
     public TextMeshProUGUI textDialog;
     public GoyangTeks goyangTeks;
@@ -80,6 +86,8 @@ public class CutsceneUI : MonoBehaviour
         if (tombolLanjut) tombolLanjut.onClick.AddListener(LanjutkanBaris);
         if (panelCutscene) panelCutscene.SetActive(false);
         if (panelPilihan) panelPilihan.SetActive(false);
+        if (panelDialog) panelDialog.SetActive(false); // --- TAMBAHAN ---
+        if (panelNarasiBisikan) panelNarasiBisikan.SetActive(false); // --- TAMBAHAN ---
 
         // --- TAMBAHAN: pastiin layar transisi GAK nge-block klik dari awal, apapun kondisinya -
         // sebelumnya ini cuma "kebetulan" ke-matiin lewat fade coroutine begitu Prolog jalan.
@@ -351,6 +359,11 @@ public class CutsceneUI : MonoBehaviour
         bool iniNarasi = b.jenis == JenisBarisCutscene.Narasi;
         bool iniBisikan = b.jenis == JenisBarisCutscene.Bisikan;
 
+        // --- TAMBAHAN: toggle 2 panel - Dialog buat karakter ngomong, Narasi/Bisikan buat sisanya ---
+        bool iniDialog = !iniNarasi && !iniBisikan;
+        if (panelDialog) panelDialog.SetActive(iniDialog);
+        if (panelNarasiBisikan) panelNarasiBisikan.SetActive(!iniDialog);
+
         if (portrait) portrait.SetActive(!iniNarasi && !iniBisikan);
         if (textNamaTokoh) textNamaTokoh.text = iniNarasi ? "" : (iniBisikan ? "" : b.namaTokoh);
 
@@ -369,12 +382,21 @@ public class CutsceneUI : MonoBehaviour
             }
         }
 
-        if (textDialog) {
-            string teksFinal = b.teks ?? "";
-            if (GameManager.Instance != null) teksFinal = teksFinal.Replace("{SKRIPSI}", Mathf.RoundToInt(GameManager.Instance.progresSkripsi).ToString());
-            teksFinal = teksFinal.Replace("{MAKANAN}", (InventoryManager.Instance != null ? InventoryManager.Instance.TotalMakananDiTas() : 0).ToString());
-            textDialog.text = teksFinal;
-            textDialog.fontStyle = iniBisikan ? FontStyles.Italic : FontStyles.Normal;
+        string teksFinal = b.teks ?? "";
+        if (GameManager.Instance != null) teksFinal = teksFinal.Replace("{SKRIPSI}", Mathf.RoundToInt(GameManager.Instance.progresSkripsi).ToString());
+        teksFinal = teksFinal.Replace("{MAKANAN}", (InventoryManager.Instance != null ? InventoryManager.Instance.TotalMakananDiTas() : 0).ToString());
+
+        // --- TAMBAHAN: teks ditulis ke text box yang SESUAI jenis barisnya ---
+        if (iniDialog) {
+            if (textDialog) {
+                textDialog.text = teksFinal;
+                textDialog.fontStyle = FontStyles.Normal;
+            }
+        } else {
+            if (textNarasiBisikan) {
+                textNarasiBisikan.text = teksFinal;
+                textNarasiBisikan.fontStyle = iniBisikan ? FontStyles.Italic : FontStyles.Normal;
+            }
         }
 
         if (iniBisikan && goyangTeks) goyangTeks.Aktifkan();

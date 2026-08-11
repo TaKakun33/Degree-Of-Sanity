@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bef2477b3a0734e47a0e6ffcf5fa4fcf
+guid: 3ed2a504feff114afb782f19032a5a08
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2570454334898144655
-    second: asset Latar belakang_0
+      213: 159254746925587373
+    second: Sprite-Tangga2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: asset Latar belakang_0
+      name: Sprite-Tangga2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2816
-        height: 1536
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 17a7809b669e35cd0800000000000000
-      internalID: -2570454334898144655
+      spriteID: dab5b4b3959c53200800000000000000
+      internalID: 159254746925587373
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      asset Latar belakang_0: -2570454334898144655
+      Sprite-Tangga2_0: 159254746925587373
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fcec855a025b64f469975e5b9bbb72f1
+guid: 04a02ceebfa455555b9c468f9cd717cf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8864788820530945603
-    second: Result_0
+      213: -825682963352103818
+    second: Sprite-Tangga_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Result_0
+      name: Sprite-Tangga_0
       rect:
         serializedVersion: 2
-        x: 20
-        y: 11
-        width: 456
-        height: 501
+        x: 0
+        y: 0
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 34ed990f67e060b70800000000000000
-      internalID: 8864788820530945603
+      spriteID: 6745e4038b59a84f0800000000000000
+      internalID: -825682963352103818
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Result_0: 8864788820530945603
+      Sprite-Tangga_0: -825682963352103818
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

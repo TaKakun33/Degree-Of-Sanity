@@ -31,6 +31,8 @@ public class DataSimpanan
     // bakal reset ke false lagi tiap kali GameManager baru dibuat, walau harusnya masih hari yang sama ---
     public bool skripsiSudahDikerjakanHariIni;
     public bool kerjaPartTimeSudahDilakukanHariIni;
+    public bool sudahMandiHariIni; // --- TAMBAHAN ---
+    public bool sudahInteraksiAnnaHariIni; // --- TAMBAHAN ---
     public bool prologSelesai;
     public System.Collections.Generic.List<string> peristiwaCeritaSudahTerjadi;
     public System.Collections.Generic.List<string> flagCeritaAktif;
@@ -74,6 +76,8 @@ public class SaveManager : MonoBehaviour
             data.jamSaatIni = GameManager.Instance.jamSaatIni;
             data.skripsiSudahDikerjakanHariIni = GameManager.Instance.SkripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
             data.kerjaPartTimeSudahDilakukanHariIni = GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
+            data.sudahMandiHariIni = GameManager.Instance.SudahMandiHariIni; // --- TAMBAHAN ---
+            data.sudahInteraksiAnnaHariIni = GameManager.Instance.SudahInteraksiAnnaHariIni; // --- TAMBAHAN ---
             data.prologSelesai = GameManager.Instance.prologSelesai; // --- TAMBAHAN ---
             if (CeritaManager.Instance != null) {
                 data.peristiwaCeritaSudahTerjadi = CeritaManager.Instance.DapatkanPeristiwaSudahTerjadi(); // --- TAMBAHAN ---
@@ -163,6 +167,8 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.jamSaatIni = data.jamSaatIni;
                 GameManager.Instance.SkripsiSudahDikerjakanHariIni = data.skripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
                 GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni = data.kerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.SudahMandiHariIni = data.sudahMandiHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.SudahInteraksiAnnaHariIni = data.sudahInteraksiAnnaHariIni; // --- TAMBAHAN ---
                 GameManager.Instance.prologSelesai = data.prologSelesai; // --- TAMBAHAN ---
                 if (CeritaManager.Instance != null) {
                     CeritaManager.Instance.MuatPeristiwaSudahTerjadi(data.peristiwaCeritaSudahTerjadi); // --- TAMBAHAN ---

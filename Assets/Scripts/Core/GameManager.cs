@@ -156,6 +156,10 @@ public class GameManager : MonoBehaviour
     [Header("Batasan Minigame Skripsi & Kerja Part Time")]
     private bool skripsiSudahDikerjakanHariIni = false;
     private bool kerjaPartTimeSudahDilakukanHariIni = false;
+    // --- TAMBAHAN: sama pola-nya - Mandi & Interaksi Anna cuma ngasih bonus Sanity SEKALI per
+    // hari, TAPI aksinya sendiri tetap bisa dilakukan berkali-kali (gak diblokir kayak Skripsi/Kerja) ---
+    private bool sudahMandiHariIni = false;
+    private bool sudahInteraksiAnnaHariIni = false;
 
     [Header("Tombol HUD")]
     public GameObject tombolBukaToko;
@@ -392,6 +396,12 @@ public class GameManager : MonoBehaviour
     public bool BisaKerjaPartTimeHariIni => !kerjaPartTimeSudahDilakukanHariIni;
     public void TandaiKerjaPartTimeSudahDilakukan() { kerjaPartTimeSudahDilakukanHariIni = true; }
     public bool KerjaPartTimeSudahDilakukanHariIni { get => kerjaPartTimeSudahDilakukanHariIni; set => kerjaPartTimeSudahDilakukanHariIni = value; }
+
+    // --- TAMBAHAN: accessor buat flag Mandi & Interaksi Anna ---
+    public bool SudahMandiHariIni { get => sudahMandiHariIni; set => sudahMandiHariIni = value; }
+    public void TandaiSudahMandiHariIni() { sudahMandiHariIni = true; }
+    public bool SudahInteraksiAnnaHariIni { get => sudahInteraksiAnnaHariIni; set => sudahInteraksiAnnaHariIni = value; }
+    public void TandaiSudahInteraksiAnnaHariIni() { sudahInteraksiAnnaHariIni = true; }
 
     public void SetTombolHUDAktif(bool aktif)
     {
@@ -734,6 +744,8 @@ public class GameManager : MonoBehaviour
         kopiDigunakanHariIni = false;
         skripsiSudahDikerjakanHariIni = false;
         kerjaPartTimeSudahDilakukanHariIni = false;
+        sudahMandiHariIni = false; // --- TAMBAHAN ---
+        sudahInteraksiAnnaHariIni = false; // --- TAMBAHAN ---
 
         KurangiLapar(penguranganLaparSaatTidur);
         // --- pemulihanSanitySaatTidur (bonus flat) DIHAPUS - diganti logic kondisional jam
@@ -812,7 +824,28 @@ public class GameManager : MonoBehaviour
         if (playerObj) {
             PlayerController pc = playerObj.GetComponent<PlayerController>();
             if (pc) pc.SetMenuStatus(false);
-            if (posisiDepanKasur) playerObj.transform.position = posisiDepanKasur.position;
+
+            if (posisiDepanKasur) {
+                // --- FIX: sama pola kayak DoorController - X dari posisiDepanKasur (posisi
+                // horizontal spesifik kasur), Y dari KonfigurasiLantai (sumber tunggal per
+                // lantai, asumsi Kasur ada di Lantai 2 - sesuaikan angkanya kalau ternyata beda).
+                // Pakai rb.position (physics-aware), BUKAN transform.position langsung - hindari
+                // desync Rigidbody2D (Gravity Scale=0, gak ada gravitasi buat "nyettle" otomatis). ---
+                float yLantaiKasur = (KonfigurasiLantai.Instance != null)
+                    ? KonfigurasiLantai.Instance.DapatkanPosisiY(2)
+                    : posisiDepanKasur.position.y; // fallback kalau KonfigurasiLantai belum ke-setup
+
+                Vector2 posisiBangun = new Vector2(posisiDepanKasur.position.x, yLantaiKasur);
+
+                Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
+                if (rb != null) {
+                    rb.position = posisiBangun;
+                } else {
+                    playerObj.transform.position = new Vector3(posisiBangun.x, posisiBangun.y, playerObj.transform.position.z);
+                }
+
+                if (pc) pc.lantaiSaatIni = 2; // --- pastiin konsisten, sama kayak DoorController nge-set lantaiTujuan ---
+            }
         }
 
         // --- TAMBAHAN: cek jam SEKARANG (SEBELUM GantiHari() reset ke jamMulai) - tidur

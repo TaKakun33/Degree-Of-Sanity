@@ -94,7 +94,7 @@ MonoBehaviour:
     tambahRoti: 0
     tambahUtang: 2000000
     aktifkanHutang: 1
-    jamBaruSetelahAdegan: 11
+    jamBaruSetelahAdegan: -1
     sanityMinimalSetelahEfek: -1
     paksaBukaThresholdKe: -1
     aktifkanBonusTekadKuat: 0

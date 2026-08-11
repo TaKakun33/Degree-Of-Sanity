@@ -94,9 +94,27 @@ public class CeritaManager : MonoBehaviour
         // ke dialog interaksi KASUAL - dipilih otomatis sesuai progres cerita saat ini ---
         if (!adaPeristiwaTerpicu) {
             CutsceneSceneSO dialogDipilih = PilihDialogAnnaKasual();
-            if (dialogDipilih != null) MulaiAdegan(dialogDipilih);
+            if (dialogDipilih != null) {
+                MulaiAdegan(dialogDipilih);
+
+                // --- TAMBAHAN: Sanity dari ngobrol sama Anna, TAPI cuma SEKALI per hari -
+                // ngobrol bisa dilakukan berkali-kali, cuma bonus pertama di hari itu yang kepake ---
+                if (GameManager.Instance != null && !GameManager.Instance.SudahInteraksiAnnaHariIni) {
+                    GameManager.Instance.TambahSanity(sanityDariInteraksiAnna);
+                    GameManager.Instance.TandaiSudahInteraksiAnnaHariIni();
+                }
+
+                // --- TAMBAHAN: waktu tetap kelewat SETIAP kali ngobrol (beda dari bonus Sanity
+                // yang cuma sekali) - masuk akal, ngobrol tetap makan waktu walau udah gak dapet bonus lagi ---
+                if (GameManager.Instance != null) GameManager.Instance.jamSaatIni += jamYangDilewatiInteraksiAnna;
+            }
         }
     }
+
+    [Tooltip("TAMBAHAN: Sanity yang didapat dari ngobrol kasual sama Anna, cuma sekali per hari")]
+    public float sanityDariInteraksiAnna = 12f;
+    [Tooltip("TAMBAHAN: berapa jam waktu in-game yang kelewat tiap kali ngobrol sama Anna (0.5 = 30 menit)")]
+    public float jamYangDilewatiInteraksiAnna = 0.5f;
 
     // --- TAMBAHAN: dialog interaksi kasual Anna - 4 varian tergantung Main Event mana yang
     // udah kejadian. Dicek dari yang PALING BARU dulu (Main Event 3 -> mundur ke awal). ---
