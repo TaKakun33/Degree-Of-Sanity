@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -116,6 +117,29 @@ public class SaveManager : MonoBehaviour
         UpdateSlotTerakhir(nomorSlot);
         PlayerPrefs.Save();
         Debug.Log("Game berhasil disimpan di Slot: " + nomorSlot);
+    }
+
+    // --- TAMBAHAN: dipanggil MinigamePauseController.cs KHUSUS kalau pemain klik "Main Menu"
+    // dari dalam minigame KERJA PART TIME (Kasir/Ojol/Tutor) tanpa menyelesaikannya. Autosave
+    // slot 0 yang kejadian pas BERANGKAT kerja itu udah kejebak: kerjaPartTimeSudahDilakukanHariIni
+    // = true (ditandai SEBELUM autosave, biar PenghalangKeluar gak ngeblok perjalanan awal) DAN
+    // posisi player = di luar rumah (Zona Stop Kerja). Kalau dibiarkan, Continue nanti muncul di
+    // luar rumah dengan jatah kerja hari itu abis padahal gak pernah beneran kerja. Method ini
+    // MENGOREKSI DUA HAL itu di slot 0, TANPA nyentuh field lain sama sekali. ---
+    public void BatalkanPartTimeHariIni(Vector2 posisiSpawn, int lantaiSpawn)
+    {
+        string key = "SaveData_Slot_0";
+        if (!PlayerPrefs.HasKey(key)) return;
+
+        DataSimpanan data = JsonUtility.FromJson<DataSimpanan>(PlayerPrefs.GetString(key));
+        data.kerjaPartTimeSudahDilakukanHariIni = false;
+        data.playerX = posisiSpawn.x;
+        data.playerY = posisiSpawn.y;
+        data.lantai = lantaiSpawn;
+
+        PlayerPrefs.SetString(key, JsonUtility.ToJson(data));
+        PlayerPrefs.Save();
+        Debug.Log("[SaveManager] Kerja Part Time hari ini DIBATALKAN - jatah kerja & posisi dikembalikan seperti sebelum berangkat.");
     }
 
     public void MuatGame(int nomorSlot)
