@@ -86,7 +86,7 @@ public class KasirManager : MonoBehaviour
     public int penaltiPerKesalahan = 20000;
 
     [Header("Efek ke Parameter (diterapkan lewat HasilKerjaPartTime setelah shift SELESAI)")]
-    public float laparBerkurangPerShift = 25f;
+    public float laparBerkurangPerShift = 50f;
     public float sanityBerkurangPerShift = 10f;
     [Tooltip("Berapa jam in-game yang dilewati sepulang shift (proposal: skip waktu)")]
     public float jamDilewatiShift = 8f;

@@ -379,7 +379,7 @@ MonoBehaviour:
   answerSheetUI: {fileID: 815482818}
   scorePanelUI: {fileID: 1850363155}
   bayaranMaksimal: 60000
-  laparBerkurangPerShift: 15
+  laparBerkurangPerShift: 20
   sanityBerkurangPerShift: 5
   jamDilewatiShift: 3
   namaSceneUtama: MainScene

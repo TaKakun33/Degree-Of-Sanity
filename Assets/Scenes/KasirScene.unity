@@ -4921,9 +4921,9 @@ MonoBehaviour:
   textWaktuTersisa: {fileID: 205071887}
   textStatusTransaksi: {fileID: 592515137}
   batasWaktuKesabaran: 15
-  komisiPerTransaksi: 1
+  komisiPerTransaksi: 0.5
   penaltiPerKesalahan: 20000
-  laparBerkurangPerShift: 25
+  laparBerkurangPerShift: 30
   sanityBerkurangPerShift: 10
   jamDilewatiShift: 8
   namaSceneUtama: MainScene

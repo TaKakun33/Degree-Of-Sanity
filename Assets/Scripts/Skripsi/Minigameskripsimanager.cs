@@ -39,6 +39,10 @@ public class MinigameSkripsiManager : MonoBehaviour
     public float pengaliKecepatanWaktuSaatMinigame = 6f;
     [Tooltip("Sanity berkurang segini tiap tick waktu selama minigame berjalan (KECIL SENGAJA, biar gak over-drop; otomatis x2 kalau lapar kritis)")]
     public float sanityBerkurangPerTick = 0.15f;
+    [Tooltip("TAMBAHAN: Lapar berkurang segini tiap tick waktu selama minigame berjalan - makin lama ngerjain, makin banyak berkurang, TAPI dibatasi total maksimal per sesi (lihat field di bawah)")]
+    public float laparBerkurangPerTick = 0.15f;
+    [Tooltip("TAMBAHAN: Lapar MAKSIMAL yang bisa berkurang dalam SATU sesi skripsi, seberapa lama pun dikerjakan")]
+    public float laparBerkurangMaksimalPerSesi = 20f;
     [Tooltip("Batas toleransi kesalahan ketik sebelum sesi dianggap gagal")]
     public int maxTypo = 3;
     [Tooltip("Progres Skripsi maksimum (%) yang bisa didapat dari satu sesi minigame")]
@@ -72,6 +76,7 @@ public class MinigameSkripsiManager : MonoBehaviour
 
     private int jumlahTypoSaatIni = 0;
     private float progresSesiIni = 0f;
+    private float totalLaparBerkurangSesiIni = 0f; // --- TAMBAHAN ---
     private bool minigameAktif = false;
 
     // --- Subscribe saat object aktif, unsubscribe saat nonaktif (WAJIB, hindari memory leak/NullReference) ---
@@ -133,6 +138,7 @@ public class MinigameSkripsiManager : MonoBehaviour
         minigameAktif = true;
         jumlahTypoSaatIni = 0;
         progresSesiIni = 0f;
+        totalLaparBerkurangSesiIni = 0f; // --- TAMBAHAN ---
         UpdateTeksTypo();
         UpdateTeksProgres();
 
@@ -247,6 +253,15 @@ public class MinigameSkripsiManager : MonoBehaviour
     {
         if (!minigameAktif) return;
         GameManager.Instance.KurangiSanity(sanityBerkurangPerTickEfektif);
+
+        // --- TAMBAHAN: Lapar berkurang seiring lamanya sesi berjalan, TAPI dibatasi total
+        // maksimal per sesi (laparBerkurangMaksimalPerSesi) - seberapa lama pun dikerjakan,
+        // gak akan berkurang lebih dari itu dalam 1 sesi ---
+        if (totalLaparBerkurangSesiIni < laparBerkurangMaksimalPerSesi) {
+            float jumlahDikurangi = Mathf.Min(laparBerkurangPerTick, laparBerkurangMaksimalPerSesi - totalLaparBerkurangSesiIni);
+            GameManager.Instance.KurangiLapar(jumlahDikurangi);
+            totalLaparBerkurangSesiIni += jumlahDikurangi;
+        }
     }
 
     public void TanganiKetikBenar(float tambahProgres)

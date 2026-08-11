@@ -155,7 +155,7 @@ public class OjolManager : MonoBehaviour
     public int penguranganPerTabrakan = 5000;
 
     [Header("Efek ke Parameter (diterapkan lewat HasilKerjaPartTime setelah shift SELESAI)")]
-    public float laparBerkurangPerShift = 20f;
+    public float laparBerkurangPerShift = 50f;
     public float sanityBerkurangPerShift = 8f;
     [Tooltip("Berapa jam in-game yang dilewati sepulang shift")]
     public float jamDilewatiShift = 6f;

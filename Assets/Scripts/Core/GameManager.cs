@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Status Saat Tidur/Ganti Hari")]
     [Tooltip("TUNABLE: lapar berkurang tiap ganti hari")]
-    public float penguranganLaparSaatTidur = 15f;
+    public float penguranganLaparSaatTidur = 30f;
     [Tooltip("TUNABLE: sanity dipulihkan tiap tidur")]
     public float pemulihanSanitySaatTidur = 10f;
 
