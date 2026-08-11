@@ -93,8 +93,14 @@ public class GameManager : MonoBehaviour
     [Header("Status Saat Tidur/Ganti Hari")]
     [Tooltip("TUNABLE: lapar berkurang tiap ganti hari")]
     public float penguranganLaparSaatTidur = 30f;
-    [Tooltip("TUNABLE: sanity dipulihkan tiap tidur")]
-    public float pemulihanSanitySaatTidur = 10f;
+    [Tooltip("TAMBAHAN: Sanity naik segini kalau tidur SEBELUM Jam Batas Tidur Awal (misal jam 20)")]
+    public float sanityNaikTidurAwal = 5f;
+    [Tooltip("TAMBAHAN: Sanity turun segini kalau tidur SETELAH/TEPAT Jam Batas Tidur Awal")]
+    public float sanityTurunTidurTerlambat = 5f;
+    [Tooltip("TAMBAHAN: jam batas buat nentuin 'tidur awal' vs 'tidur terlambat' (format 24 jam)")]
+    public float jamBatasTidurAwal = 20f;
+    [Tooltip("TAMBAHAN: Sanity turun tiap hari (di GantiHari()) kalau Progres Skripsi masih di bawah plafon Threshold aktif saat ini - tekanan belum mencapai target")]
+    public float sanityTurunBelumCapaiTargetTH = 8f;
 
     [Header("Ambang Batas Parameter")]
     public float ambangSanityDistorsi = 50f;
@@ -730,7 +736,15 @@ public class GameManager : MonoBehaviour
         kerjaPartTimeSudahDilakukanHariIni = false;
 
         KurangiLapar(penguranganLaparSaatTidur);
-        TambahSanity(pemulihanSanitySaatTidur);
+        // --- pemulihanSanitySaatTidur (bonus flat) DIHAPUS - diganti logic kondisional jam
+        // di ProsesTidur() (TambahSanity/KurangiSanity sesuai jamBatasTidurAwal) ---
+
+        // --- TAMBAHAN: penalti Sanity harian kalau Progres Skripsi masih di bawah plafon
+        // Threshold aktif saat ini (belum "mencapai target") - berhenti otomatis begitu
+        // progres nyampe/lewatin plafon itu, gak peduli Threshold-nya udah beneran "terbuka" atau belum ---
+        if (progresSkripsi < batasProgresMaksimalSaatIni) {
+            KurangiSanity(sanityTurunBelumCapaiTargetTH);
+        }
 
         // --- TAMBAHAN: hitung mundur durasi bonus TEKAD_KUAT (kalau lagi aktif) ---
         if (hariDistorsiDimatikanPaksaSisa > 0) hariDistorsiDimatikanPaksaSisa--;
@@ -799,6 +813,15 @@ public class GameManager : MonoBehaviour
             PlayerController pc = playerObj.GetComponent<PlayerController>();
             if (pc) pc.SetMenuStatus(false);
             if (posisiDepanKasur) playerObj.transform.position = posisiDepanKasur.position;
+        }
+
+        // --- TAMBAHAN: cek jam SEKARANG (SEBELUM GantiHari() reset ke jamMulai) - tidur
+        // sebelum Jam Batas Tidur Awal dapet bonus Sanity, tidur pas/lewat jam itu kena penalti.
+        // Ini juga otomatis nangkep kemaleman OTOMATIS (jam udah >= batasTidur, pasti lewat 20). ---
+        if (jamSaatIni < jamBatasTidurAwal) {
+            TambahSanity(sanityNaikTidurAwal);
+        } else {
+            KurangiSanity(sanityTurunTidurTerlambat);
         }
 
         float alpha = 0;

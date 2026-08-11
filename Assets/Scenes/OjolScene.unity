@@ -982,7 +982,7 @@ MonoBehaviour:
   pendapatanDasarPerPesanan: 25000
   penguranganPerTabrakan: 5000
   laparBerkurangPerShift: 50
-  sanityBerkurangPerShift: 8
+  sanityBerkurangPerShift: 10
   jamDilewatiShift: 6
   namaSceneUtama: MainScene
 --- !u!1 &441810612

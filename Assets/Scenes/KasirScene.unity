@@ -4924,7 +4924,7 @@ MonoBehaviour:
   komisiPerTransaksi: 0.5
   penaltiPerKesalahan: 20000
   laparBerkurangPerShift: 30
-  sanityBerkurangPerShift: 10
+  sanityBerkurangPerShift: 8
   jamDilewatiShift: 8
   namaSceneUtama: MainScene
 --- !u!4 &1936763677
