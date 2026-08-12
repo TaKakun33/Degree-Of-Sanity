@@ -4,54 +4,80 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 
+// --- Degree of Sanity v3 (Simple) - GameManager dirombak total ngikutin naskah baru.
+// SEMUA angka kecepatan/pengaruh di bawah ini TUNABLE lewat Inspector - gak ada yang di-hardcode. ---
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     [Header("Parameter Status Kelangsungan Hidup")]
-    public int waktu = 30;
-    public int uang = 5000000;
+    public int uang = 150000;
     [Range(0f, 100f)] public float progresSkripsi = 0f;
     [Range(0f, 100f)] public float lapar = 100f;
     [Range(0f, 100f)] public float sanity = 100f;
+
+    [Header("Sistem Tanggal (Kalender) - GANTI dari sistem 'sisa hari' lama")]
+    [Tooltip("Tanggal saat ini, 1-31")]
+    public int tanggal = 1;
+    [Tooltip("Bulan saat ini: 3=Maret, 4=April, 5=Mei")]
+    public int bulan = 3;
+    [Tooltip("Tanggal deadline masa studi (naskah: 1 Mei)")]
+    public int tanggalDeadline = 1;
+    public int bulanDeadline = 5;
 
     [Header("Siklus Siang & Malam")]
     public float jamMulai = 6f;
     public float jamSaatIni = 6f;
     public float batasTidur = 24f;
+    [Tooltip("TUNABLE: kecepatan waktu normal (jam in-game per detik real-time)")]
     public float kecepatanWaktuNormal = 0.5f;
     private bool waktuBerjalan = true;
 
     [Header("Sistem Tick Waktu (Event-Driven)")]
-    [Tooltip("Interval real-time (detik) antar tick waktu; UI & event hanya diproses tiap tick ini, bukan tiap frame")]
     public float intervalTick = 0.2f;
     private float akumulatorTick = 0f;
     private float akumulatorJamSejakTick = 0f;
-    private float pengaliKecepatanWaktu = 1f; // diubah minigame/sistem lain lewat SetPengaliKecepatanWaktu()
+    private float pengaliKecepatanWaktu = 1f;
     private bool prosesTidurAktif = false;
-    private bool kopiDigunakanHariIni = false; // Buff Kopi Espresso: mundurkan batas tidur ke 02.00
+    private bool kopiDigunakanHariIni = false;
 
-    // --- EVENT: sistem lain subscribe di sini, GameManager TIDAK perlu tahu siapa yang dengar ---
-    public event System.Action<float> OnTickWaktu;      // param: jumlah jam yang berlalu sejak tick terakhir
-    public event System.Action<float> OnJamBerubah;     // param: jamSaatIni terbaru (buat UI)
-    public event System.Action OnBatasWaktuTercapai;    // dipicu SEBELUM ProsesTidur mulai (buat interupsi minigame)
-    public event System.Action OnPermainanBerakhir;     // dipicu saat Bad/Good Ending muncul (buat interupsi minigame aktif)
+    public event System.Action<float> OnTickWaktu;
+    public event System.Action<float> OnJamBerubah;
+    public event System.Action OnBatasWaktuTercapai;
+    public event System.Action OnPermainanBerakhir;
+    [Tooltip("Dipicu tiap kali hari berganti - CeritaManager/ThresholdSkripsi/CicilanManager subscribe di sini")]
+    public event System.Action OnHariBerganti;
 
     [Header("Referensi UI")]
-    public TextMeshProUGUI textWaktu;
+    public TextMeshProUGUI textTanggal;
     public TextMeshProUGUI textUang;
+    public TextMeshProUGUI textUtang; // --- TAMBAHAN ---
     public TextMeshProUGUI textJamHarian;
     public Slider sliderProgresSkripsi;
     public Slider sliderLapar;
     public Slider sliderSanity;
-    [Tooltip("TAMBAHAN: teks Monolog Akhir Hari (opsional). Kalau field 'Monolog Akhir Hari Berikutnya' di bawah diisi sebelum tidur, teks ini bakal nampilinnya sesaat, lalu otomatis dikosongkan lagi.")]
     public TextMeshProUGUI textMonologAkhirHari;
-
-    [Tooltip("Isi manual (atau lewat sistem cerita nanti) SEBELUM pemain tidur, buat nampilin 1 baris Monolog Akhir Hari. Kosongkan string ini kalau gak mau nampilin apa-apa.")]
     public string monologAkhirHariBerikutnya = "";
 
-    [Tooltip("Batas progres skripsi maksimal SAAT INI - default 100 (bebas penuh). Sistem cerita nanti bisa nurunin ini sementara buat nge-cap progres sampai event tertentu terjadi (Naskah Alur: 'progres terkunci sampai event berjalan').")]
+    [Header("Reveal Parameter (Tutorial Prolog) - GameObject wadah UI tiap parameter, mati default")]
+    [Tooltip("Wadah UI Lapar (slider+label) - diaktifkan CutsceneScene P_03")]
+    public GameObject uiLapar;
+    [Tooltip("Wadah UI Progres Skripsi - diaktifkan CutsceneScene P_04")]
+    public GameObject uiProgresSkripsi;
+    [Tooltip("Wadah UI Tanggal/Waktu - diaktifkan CutsceneScene P_04")]
+    public GameObject uiTanggal;
+    [Tooltip("Wadah UI Sanity - diaktifkan CutsceneScene P_04")]
+    public GameObject uiSanity;
+    [Tooltip("Wadah UI Uang - diaktifkan CutsceneScene P_05")]
+    public GameObject uiUang;
+    [Tooltip("Panel Inventory (tombol HUD-nya) - diaktifkan CutsceneScene P_03")]
+    public GameObject uiTombolInventory;
+
+    [Tooltip("Batas progres skripsi maksimal SAAT INI - ThresholdSkripsi.cs yang ngatur nilai ini")]
     public float batasProgresMaksimalSaatIni = 100f;
+
+    [Tooltip("TAMBAHAN: true begitu Prolog udah pernah kelar (disimpan ke save) - dipakai buat mastiin semua parameter/tombol yang di-reveal Prolog TETAP aktif walau MainScene dimuat ulang (Load Game/balik kerja), gak nyandarin Prolog muter ulang")]
+    public bool prologSelesai = false;
 
     [Header("Transisi Layar")]
     public Image layarGelap;
@@ -65,86 +91,154 @@ public class GameManager : MonoBehaviour
     public Transform posisiDepanKasur;
 
     [Header("Status Saat Tidur/Ganti Hari")]
-    [Tooltip("Jumlah lapar yang berkurang tiap kali tidur/ganti hari (proposal 3.3.7: Lapar memburuk tiap hari berganti)")]
-    public float penguranganLaparSaatTidur = 20f;
-    [Tooltip("Jumlah sanity yang DIPULIHKAN tiap kali tidur (proposal 3.6.3: 'Tidur lebih awal' adalah cara memulihkan Sanity, bukan menguras)")]
-    public float pemulihanSanitySaatTidur = 15f;
+    [Tooltip("TUNABLE: lapar berkurang tiap ganti hari")]
+    public float penguranganLaparSaatTidur = 30f;
+    [Tooltip("TAMBAHAN: Sanity naik segini kalau tidur SEBELUM Jam Batas Tidur Awal (misal jam 20)")]
+    public float sanityNaikTidurAwal = 5f;
+    [Tooltip("TAMBAHAN: Sanity turun segini kalau tidur SETELAH/TEPAT Jam Batas Tidur Awal")]
+    public float sanityTurunTidurTerlambat = 5f;
+    [Tooltip("TAMBAHAN: jam batas buat nentuin 'tidur awal' vs 'tidur terlambat' (format 24 jam)")]
+    public float jamBatasTidurAwal = 20f;
+    [Tooltip("TAMBAHAN: Sanity turun tiap hari (di GantiHari()) kalau Progres Skripsi masih di bawah plafon Threshold aktif saat ini - tekanan belum mencapai target")]
+    public float sanityTurunBelumCapaiTargetTH = 8f;
 
-    [Header("Ambang Batas Parameter (sesuai Proposal 3.3.7 & 3.6.3)")]
-    [Tooltip("Sanity di bawah angka ini akan memicu efek Distorsi Visual (proposal: di bawah 50%)")]
+    [Header("Ambang Batas Parameter")]
     public float ambangSanityDistorsi = 50f;
-    [Tooltip("Lapar di bawah angka ini dianggap kondisi kritis/kelaparan")]
     public float ambangLaparKritis = 20f;
-    [Tooltip("Pengali kecepatan pengurasan Sanity saat kondisi lapar kritis (proposal: dua kali lipat lebih cepat)")]
     public float pengaliSanitySaatLaparKritis = 2f;
 
-    [Header("Kondisi Akhir Permainan (Proposal 3.6.4)")]
-    [Tooltip("Panel yang otomatis muncul saat Sanity mencapai 0% ATAU Waktu habis sebelum skripsi 100%")]
-    public GameObject panelBadEnding;
-    [Tooltip("Panel yang otomatis muncul saat Progres Skripsi mencapai 100%")]
-    public GameObject panelGoodEnding;
-    [Tooltip("TAMBAHAN: Panel True Ending - dipakai kalau nanti nambah sistem cerita/Anna, biarkan kosong (None) kalau belum ada")]
-    public GameObject panelTrueEnding;
-    [Tooltip("TAMBAHAN: Panel Bad Ending versi 'tertunda' (misal dari pilihan cerita tertentu) - biarkan kosong kalau belum ada")]
-    public GameObject panelBadEndingTertunda;
+    [Header("4 Ending (naskah v3: Happy + 3 Bad)")]
+    public GameObject panelHappyEnding;
+    [Tooltip("TAMBAHAN: adegan pertama chain cutscene Happy Ending (misal END_HAPPY_01) - dimuter DULU sebelum Panel Happy Ending (layar akhir statis) ditampilkan. Kosongkan buat perilaku lama (langsung tampil panel, gak ada cutscene).")]
+    public CutsceneSceneSO adeganHappyEndingPertama;
+    [Tooltip("Bad Ending 1 'Hari Keenam Puluh Dua' - Sanity 0%")]
+    public GameObject panelBadEndingSanity;
+    [Tooltip("TAMBAHAN: adegan pertama chain cutscene Bad Ending 1 (END_BAD1_01)")]
+    public CutsceneSceneSO adeganBadEnding1Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEndingSanity - diisi otomatis dengan {SKRIPSI} diganti persen skripsi saat ending terpicu")]
+    public TextMeshProUGUI textLayarAkhirBadEnding1;
+
+    [Tooltip("Bad Ending 2 'Nanti Kalau Kakak Inget' - lapar kritis berkepanjangan")]
+    public GameObject panelBadEndingLapar;
+    [Tooltip("TAMBAHAN: adegan pertama chain cutscene Bad Ending 2 (END_BAD2_01)")]
+    public CutsceneSceneSO adeganBadEnding2Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEndingLapar")]
+    public TextMeshProUGUI textLayarAkhirBadEnding2;
+
+    [Tooltip("Bad Ending 3 'Lemari Bawah' - kehabisan biaya (gagal bayar utang)")]
+    public GameObject panelBadEndingUang;
+    [Tooltip("TAMBAHAN: adegan pertama Bad Ending 3 (END_BAD3_01)")]
+    public CutsceneSceneSO adeganBadEnding3Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEndingUang")]
+    public TextMeshProUGUI textLayarAkhirBadEnding3;
+
+    [Tooltip("TAMBAHAN - Bad Ending 4 (dulu 'varian B' Bad Ending 3) - kehabisan waktu, sekarang ending berdiri sendiri")]
+    public GameObject panelBadEnding4Waktu;
+    [Tooltip("TAMBAHAN: adegan pertama Bad Ending 4 (END_BAD4_01)")]
+    public CutsceneSceneSO adeganBadEnding4Pertama;
+    [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEnding4Waktu")]
+    public TextMeshProUGUI textLayarAkhirBadEnding4;
+
     private bool endingSudahDipicu = false;
 
-    [Header("Syarat Ending Tambahan (opsional, siap dipakai nanti kalau ada sistem cerita/Anna)")]
-    [Tooltip("Hari ke berapa ending final dievaluasi kalau progres masih di bawah 100% (0 = fitur ini nonaktif, pakai sistem 'waktu habis' lama aja)")]
-    public int hariEpilog = 0;
-    public float sanityMinimalTrueEnding = 40f;
-    public float sanityMinimalHappyEnding = 20f;
-    [Tooltip("Placeholder tracking interaksi 'Ngobrol sama Anna' - panggil TambahInteraksiAnna() dari sistem Anna nanti")]
-    public int totalInteraksiAnna = 0;
-    public int minimalInteraksiAnnaTrueEnding = 15;
-    [Tooltip("Isi manual dari sistem cerita nanti: 'A', 'B', atau 'C' (Main Event 6 'Pilihan Dilematis'). Kosongkan (' ') kalau belum dipakai.")]
-    public char pilihanEvent6 = ' ';
+    [Header("TAMBAHAN: Status Cutscene & Bonus Sementara")]
+    [Tooltip("True selagi CutsceneUI lagi muter apapun - dipakai buat NUNDA cek Bad Ending 1 sampai kontrol balik ke pemain (naskah ME2: 'Bad Ending 1 tidak boleh terpicu selama cutscene berlangsung')")]
+    public bool sedangDalamCutscene = false;
+    private int hariDistorsiDimatikanPaksaSisa = 0;
+    private int hariSanityFloorSisa = 0;
+    private float sanityFloorNilai = 0f;
 
-    [Header("Batasan Minigame Skripsi")]
-    [Tooltip("Skripsi cuma bisa dikerjakan 1x per hari; direset otomatis tiap ganti hari")]
+    [Header("Bad Ending 2: Lapar Kritis Berkepanjangan")]
+    [Tooltip("TUNABLE: berapa hari BERTURUT-TURUT lapar kritis sebelum Bad Ending 2 terpicu")]
+    public int batasHariLaparKritisBerturutTurut = 3;
+    private int hariLaparKritisBerturutTurut = 0;
+
+    [Header("Batasan Minigame Skripsi & Kerja Part Time")]
     private bool skripsiSudahDikerjakanHariIni = false;
-
-    [Header("Batasan Kerja Part Time")]
-    [Tooltip("Kerja part time (Kasir/Ojol/Tutor) cuma bisa 1x per hari; direset otomatis tiap ganti hari")]
     private bool kerjaPartTimeSudahDilakukanHariIni = false;
+    // --- TAMBAHAN: sama pola-nya - Mandi & Interaksi Anna cuma ngasih bonus Sanity SEKALI per
+    // hari, TAPI aksinya sendiri tetap bisa dilakukan berkali-kali (gak diblokir kayak Skripsi/Kerja) ---
+    private bool sudahMandiHariIni = false;
+    private bool sudahInteraksiAnnaHariIni = false;
 
-    [Header("Sistem Hari & Cerita (siap dipakai nanti kalau nambah CeritaManager - gak wajib diisi sekarang)")]
-    [Tooltip("Hari ke berapa dari awal permainan, NAIK terus - beda dari 'waktu' yang turun (sisa masa studi)")]
-    public int hariKe = 1;
-    [Tooltip("Dipicu tiap kali hari berganti - sistem cerita/Anna nanti tinggal subscribe ke event ini")]
-    public event System.Action OnHariBerganti;
-
-    [Header("Tombol HUD (disembunyikan saat tidur ATAU minigame aktif)")]
-    [Tooltip("Tombol untuk buka Toko di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
+    [Header("Tombol HUD")]
     public GameObject tombolBukaToko;
-    [Tooltip("Tombol untuk buka Inventory di HUD, akan otomatis disembunyikan selama proses tidur/minigame")]
     public GameObject tombolBukaInventory;
 
-    void Awake() 
-    { 
-        if (Instance == null) Instance = this; 
-        else Destroy(gameObject); 
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
-    void Start() 
-    { 
+    void Start()
+    {
         if (SaveManager.Instance != null) SaveManager.Instance.MuatGame(SaveManager.slotUntukDiload);
-        TerapkanHasilKerjaPartTimeJikaAda(); // --- TAMBAHAN: terapkan hasil kerja Kasir/Ojek/Tutor kalau ada ---
+        TerapkanHasilKerjaPartTimeJikaAda();
+
+        // --- TAMBAHAN: kalau Prolog udah pernah kelar (dari save ATAU baru balik kerja),
+        // pastiin SEMUA parameter/tombol yang di-reveal Prolog TETAP aktif - gak nyandarin
+        // Prolog muter ulang (yang emang cuma muter sekali doang di Game Baru) ---
+        if (prologSelesai) {
+            TampilkanSemuaParameter();
+        }
+
         UpdateUI();
     }
 
-    // --- TAMBAHAN: dipanggil sekali tiap GameManager baru dibuat, cek titipan dari HasilKerjaPartTime ---
+    // --- TAMBAHAN: nyalain SEMUA elemen UI yang biasanya di-reveal satu-satu selama Prolog,
+    // sekaligus. Dipanggil di Start() (kalau prologSelesai true) DAN begitu Prolog beneran
+    // kelar pertama kalinya (dari CeritaManager). ---
+    public void TampilkanSemuaParameter()
+    {
+        if (uiLapar) uiLapar.SetActive(true);
+        if (uiProgresSkripsi) uiProgresSkripsi.SetActive(true);
+        if (uiTanggal) uiTanggal.SetActive(true);
+        if (uiSanity) uiSanity.SetActive(true);
+        if (uiUang) uiUang.SetActive(true);
+        if (uiTombolInventory) uiTombolInventory.SetActive(true);
+        if (tombolBukaToko) tombolBukaToko.SetActive(true);
+    }
+
+    // --- TAMBAHAN: sembunyikan/tampilkan teks jam - dipanggil CutsceneUI begitu cutscene mulai/kelar ---
+    public void SetTampilanJamAktif(bool aktif)
+    {
+        if (textJamHarian) textJamHarian.gameObject.SetActive(aktif);
+    }
+
+    // --- TAMBAHAN: sembunyikan/tampilkan tombol Toko/Inventory/Utang - dipakai Main Event & Ending
+    // (BUKAN Prolog, itu udah punya sistem reveal-nya sendiri). Pas ditampilkan lagi, Tombol Utang
+    // dicek ulang lewat UpdateTombolUtang() biar statusnya bener (gak asal nyala walau utang 0). ---
+    public void SembunyikanTombolSaatCutscene(bool sembunyikan)
+    {
+        if (sembunyikan) {
+            if (tombolBukaToko) tombolBukaToko.SetActive(false);
+            if (uiTombolInventory) uiTombolInventory.SetActive(false);
+            if (tombolUtang) tombolUtang.SetActive(false);
+        } else {
+            if (tombolBukaToko) tombolBukaToko.SetActive(true);
+            if (uiTombolInventory) uiTombolInventory.SetActive(true);
+            UpdateTombolUtang();
+        }
+    }
+
+    // --- TAMBAHAN: sembunyikan/tampilkan parameter Sanity/Lapar/Progres Skripsi - KHUSUS dipakai
+    // pas Ending (bukan Main Event biasa) ---
+    public void SembunyikanParameterSaatEnding(bool sembunyikan)
+    {
+        if (uiSanity) uiSanity.SetActive(!sembunyikan);
+        if (uiLapar) uiLapar.SetActive(!sembunyikan);
+        if (uiProgresSkripsi) uiProgresSkripsi.SetActive(!sembunyikan);
+    }
+
     void TerapkanHasilKerjaPartTimeJikaAda()
     {
         if (!HasilKerjaPartTime.adaHasilPending) return;
 
         TambahUang(HasilKerjaPartTime.uangDidapat);
         KurangiLapar(HasilKerjaPartTime.laparBerkurang);
-        KurangiSanity(HasilKerjaPartTime.sanityBerkurang); // otomatis kena pengali lapar-kritis kalau relevan
-        jamSaatIni += HasilKerjaPartTime.jamYangDilewati;  // skip waktu; kalau lewat batas tidur, Update() otomatis proses tidur
-
-        Debug.Log("Hasil kerja part time diterapkan: +Rp " + HasilKerjaPartTime.uangDidapat +
-                   ", lewat " + HasilKerjaPartTime.jamYangDilewati + " jam.");
+        KurangiSanity(HasilKerjaPartTime.sanityBerkurang);
+        jamSaatIni += HasilKerjaPartTime.jamYangDilewati;
 
         HasilKerjaPartTime.Bersihkan();
     }
@@ -153,12 +247,10 @@ public class GameManager : MonoBehaviour
     {
         if (!waktuBerjalan) return;
 
-        // Jam tetap nambah tiap frame biar gerakannya smooth, tapi TIDAK langsung broadcast event/UI tiap frame
         float deltaJam = kecepatanWaktuNormal * pengaliKecepatanWaktu * Time.deltaTime;
         jamSaatIni += deltaJam;
         akumulatorJamSejakTick += deltaJam;
 
-        // --- TICK SYSTEM: event & UI cuma diproses tiap intervalTick, bukan tiap frame ---
         akumulatorTick += Time.deltaTime;
         if (akumulatorTick >= intervalTick) {
             akumulatorTick = 0f;
@@ -166,109 +258,184 @@ public class GameManager : MonoBehaviour
             OnJamBerubah?.Invoke(jamSaatIni);
             UpdateUI();
             akumulatorJamSejakTick = 0f;
+
+            // --- TAMBAHAN: safety net - cek Bad Ending 1 (Sanity=0) SECARA INDEPENDEN tiap tick,
+            // gak cuma nyandarin ke pengecekan yang nempel di KurangiSanity(). Ini nyegah kasus
+            // Sanity nyampe 0% tapi "kesalip" sebelum sempet ke-trigger (misal race timing pas
+            // deket-deket jam mau tidur otomatis) - dengan ini, paling telat 0.2 detik terdeteksi. ---
+            CekBadEndingSanity();
+            CekBadEndingLaparInstant(); // --- TAMBAHAN: safety net yang sama buat Lapar=0 ---
         }
 
-        // --- Cek batas tidur efektif (mundur ke 02.00 kalau kopi dipakai) ---
         if (jamSaatIni >= DapatkanBatasTidurEfektif() && !prosesTidurAktif) {
-            prosesTidurAktif = true;
-            OnBatasWaktuTercapai?.Invoke(); // beri kesempatan minigame aktif buat simpan progres & berhenti dulu
-            StartCoroutine(ProsesTidur(true));
+            OnBatasWaktuTercapai?.Invoke();
+            CobaMulaiTidur(true); // --- TAMBAHAN: lewat gerbang cek dulu; pingsan=true karena ini kemaleman otomatis ---
         }
     }
 
-    // --- TAMBAHAN: batas tidur efektif hari ini, mundur ke 02.00 kalau buff Kopi Espresso dipakai ---
-    public float DapatkanBatasTidurEfektif()
+    // ================== SISTEM TANGGAL ==================
+
+    int JumlahHariDiBulan(int b)
     {
-        return kopiDigunakanHariIni ? batasTidur + 2f : batasTidur;
+        if (b == 3) return 31; // Maret
+        if (b == 4) return 30; // April
+        return 31;              // Mei (gak akan kepakai kalau deadline 1 Mei)
     }
 
-    // --- TAMBAHAN: dipanggil sistem Toko/Inventory saat item Kopi Espresso dipakai ---
-    public void GunakanBuffKopiEspresso()
+    public string NamaBulan(int b)
     {
-        kopiDigunakanHariIni = true;
+        if (b == 3) return "Maret";
+        if (b == 4) return "April";
+        if (b == 5) return "Mei";
+        return "?";
     }
 
-    // --- TAMBAHAN: titik terpusat untuk minigame/sistem lain mengubah laju waktu ---
-    // Contoh: minigame skripsi manggil SetPengaliKecepatanWaktu(6f) saat mulai, ResetPengaliKecepatanWaktu() saat selesai.
-    public void SetPengaliKecepatanWaktu(float pengali)
+    // --- TAMBAHAN: nama hari dalam minggu, digabung ke depan tanggal ---
+    public string NamaHari(int h)
     {
-        pengaliKecepatanWaktu = pengali;
+        switch (h) {
+            case 0: return "Minggu";
+            case 1: return "Senin";
+            case 2: return "Selasa";
+            case 3: return "Rabu";
+            case 4: return "Kamis";
+            case 5: return "Jumat";
+            case 6: return "Sabtu";
+            default: return "?";
+        }
     }
 
-    public void ResetPengaliKecepatanWaktu()
+    public string TanggalFormatted => $"{NamaHari(HariMingguSaatIni)}, {tanggal} {NamaBulan(bulan)}";
+
+    // --- Hari ke berapa sejak 1 Maret (1 Maret = hari 1) - dipakai internal buat perbandingan tanggal ---
+    public int HariKeDariTanggal(int t, int b)
     {
-        pengaliKecepatanWaktu = 1f;
+        int hari = t;
+        if (b >= 4) hari += 31;
+        if (b >= 5) hari += 30;
+        return hari;
     }
+
+    public int HariKeSaatIni => HariKeDariTanggal(tanggal, bulan);
+
+    // --- Dipakai CeritaManager buat ngecek apakah tanggal pemicu sebuah peristiwa udah tercapai ---
+    public bool ApakahSudahLewatTanggal(int t, int b) => HariKeSaatIni >= HariKeDariTanggal(t, b);
+    public bool ApakahTanggalPersis(int t, int b) => tanggal == t && bulan == b;
+
+    void MajukanTanggal()
+    {
+        tanggal++;
+        if (tanggal > JumlahHariDiBulan(bulan)) {
+            tanggal = 1;
+            bulan++;
+        }
+    }
+
+    // --- Dipakai CicilanManager versi lama: true kalau hari ini "Senin" relatif ke hari referensi yang dikasih ---
+    public bool ApakahKelipatan7HariDari(int hariKeReferensi)
+    {
+        int selisih = HariKeSaatIni - hariKeReferensi;
+        return selisih >= 0 && selisih % 7 == 0;
+    }
+
+    // ================== TAMBAHAN: HARI DALAM MINGGU (buat Cicilan versi baru) ==================
+
+    [Header("Hari Dalam Minggu")]
+    [Tooltip("Hari dalam minggu pas Hari 1 (1 Maret): 0=Minggu, 1=Senin, 2=Selasa, 3=Rabu, 4=Kamis, 5=Jumat, 6=Sabtu")]
+    public int hariMingguSaatHariPertama = 1;
+
+    // --- 0=Minggu, 1=Senin, ..., 6=Sabtu ---
+    public int HariMingguSaatIni => ((hariMingguSaatHariPertama + HariKeSaatIni - 1) % 7 + 7) % 7;
+    public bool ApakahHariIniSenin => HariMingguSaatIni == 1;
+    public bool ApakahHariIniSabtu => HariMingguSaatIni == 6;
+    public bool ApakahHariIniMinggu => HariMingguSaatIni == 0;
+
+    // ================== REVEAL PARAMETER (TUTORIAL PROLOG) ==================
+
+    // --- Dipanggil dari efek CutsceneScene - nama: "Lapar"/"ProgresSkripsi"/"Tanggal"/"Sanity"/"Uang"/"Inventory" ---
+    public void TampilkanParameter(string nama)
+    {
+        switch (nama) {
+            case "Lapar": if (uiLapar) uiLapar.SetActive(true); break;
+            case "ProgresSkripsi": if (uiProgresSkripsi) uiProgresSkripsi.SetActive(true); break;
+            case "Tanggal": if (uiTanggal) uiTanggal.SetActive(true); break;
+            case "Sanity": if (uiSanity) uiSanity.SetActive(true); break;
+            case "Uang": if (uiUang) uiUang.SetActive(true); break;
+            case "Inventory": if (uiTombolInventory) uiTombolInventory.SetActive(true); break;
+            case "Toko": if (tombolBukaToko) tombolBukaToko.SetActive(true); break;
+        }
+    }
+
+    // ================== SISTEM WAKTU/TIDUR ==================
+
+    public float DapatkanBatasTidurEfektif() => kopiDigunakanHariIni ? batasTidur + 2f : batasTidur;
+    public void GunakanBuffKopiEspresso() { kopiDigunakanHariIni = true; }
+    public void SetPengaliKecepatanWaktu(float pengali) { pengaliKecepatanWaktu = pengali; }
+    public void ResetPengaliKecepatanWaktu() { pengaliKecepatanWaktu = 1f; }
 
     void UpdateUI()
     {
-        if (textWaktu) textWaktu.text = waktu + " Hari";
+        if (textTanggal) textTanggal.text = TanggalFormatted;
         if (textUang) textUang.text = "Rp " + uang.ToString("N0");
+        if (textUtang) textUtang.text = "Rp " + Mathf.RoundToInt(utangBank).ToString("N0"); // --- TAMBAHAN ---
         if (textJamHarian) textJamHarian.text = string.Format("{0:00}:{1:00}", (int)jamSaatIni % 24, (int)((jamSaatIni % 1) * 60));
         if (sliderProgresSkripsi) sliderProgresSkripsi.value = progresSkripsi;
         if (sliderLapar) sliderLapar.value = lapar;
         if (sliderSanity) sliderSanity.value = sanity;
     }
 
-    // --- FUNGSI TAMBAHAN UNTUK MEMPERBAIKI ERROR ---
-    public void SetJedaWaktu(bool jeda) 
-    { 
-        waktuBerjalan = !jeda; 
-    }
+    public void SetJedaWaktu(bool jeda) { waktuBerjalan = !jeda; }
 
-    // --- TAMBAHAN: Status kondisi (dipakai UI lain, sistem distorsi, atau minigame) ---
-    public bool SedangDistorsi => sanity < ambangSanityDistorsi;
+    public bool SedangDistorsi => hariDistorsiDimatikanPaksaSisa <= 0 && sanity < ambangSanityDistorsi;
     public bool SedangKelaparan => lapar < ambangLaparKritis;
 
-    // --- TAMBAHAN: Skripsi cuma boleh dikerjakan 1x per hari ---
     public bool BisaKerjakanSkripsiHariIni => !skripsiSudahDikerjakanHariIni;
+    public void TandaiSkripsiSudahDikerjakan() { skripsiSudahDikerjakanHariIni = true; }
+    public bool SkripsiSudahDikerjakanHariIni { get => skripsiSudahDikerjakanHariIni; set => skripsiSudahDikerjakanHariIni = value; }
 
-    // --- TAMBAHAN: Dipanggil minigame skripsi begitu sesi DIMULAI (bukan saat selesai) ---
-    // supaya jatah harian tetap terpakai walau sesi berakhir cepat (force quit/gagal typo/keluar manual).
-    public void TandaiSkripsiSudahDikerjakan()
-    {
-        skripsiSudahDikerjakanHariIni = true;
-    }
-
-    // --- TAMBAHAN: dipakai SaveManager buat nyimpen/muat balik flag ini - PENTING karena KasirScene/
-    // OjolScene/TutorScene di-load SINGLE, jadi GameManager beneran hancur & dibuat ulang. Tanpa ini,
-    // flag "sudah dikerjakan hari ini" bakal balik ke false lagi tiap kali GameManager baru dibuat. ---
-    public bool SkripsiSudahDikerjakanHariIni {
-        get => skripsiSudahDikerjakanHariIni;
-        set => skripsiSudahDikerjakanHariIni = value;
-    }
-
-    // --- TAMBAHAN: sama pola persis kayak Skripsi, tapi buat kerja part time (Kasir/Ojol/Tutor) ---
     public bool BisaKerjaPartTimeHariIni => !kerjaPartTimeSudahDilakukanHariIni;
+    public void TandaiKerjaPartTimeSudahDilakukan() { kerjaPartTimeSudahDilakukanHariIni = true; }
+    public bool KerjaPartTimeSudahDilakukanHariIni { get => kerjaPartTimeSudahDilakukanHariIni; set => kerjaPartTimeSudahDilakukanHariIni = value; }
 
-    public void TandaiKerjaPartTimeSudahDilakukan()
-    {
-        kerjaPartTimeSudahDilakukanHariIni = true;
-    }
+    // --- TAMBAHAN: accessor buat flag Mandi & Interaksi Anna ---
+    public bool SudahMandiHariIni { get => sudahMandiHariIni; set => sudahMandiHariIni = value; }
+    public void TandaiSudahMandiHariIni() { sudahMandiHariIni = true; }
+    public bool SudahInteraksiAnnaHariIni { get => sudahInteraksiAnnaHariIni; set => sudahInteraksiAnnaHariIni = value; }
+    public void TandaiSudahInteraksiAnnaHariIni() { sudahInteraksiAnnaHariIni = true; }
 
-    // --- TAMBAHAN: sama alasannya kayak di atas - SaveManager perlu ini biar flag-nya gak reset
-    // sendiri tiap kali balik dari KasirScene/OjolScene/TutorScene (Single load) ---
-    public bool KerjaPartTimeSudahDilakukanHariIni {
-        get => kerjaPartTimeSudahDilakukanHariIni;
-        set => kerjaPartTimeSudahDilakukanHariIni = value;
-    }
-
-    // --- TAMBAHAN: Tombol Toko & Inventory di HUD - dipakai baik saat tidur maupun minigame aktif ---
     public void SetTombolHUDAktif(bool aktif)
     {
         if (tombolBukaToko) tombolBukaToko.SetActive(aktif);
         if (tombolBukaInventory) tombolBukaInventory.SetActive(aktif);
     }
 
-    // --- TAMBAHAN: Titik terpusat untuk mengubah Sanity ---
-    // Semua minigame/aktivitas (skripsi, kerja part time, masak, dsb) sebaiknya lewat sini,
-    // supaya penalti "lapar kritis -> sanity terkuras 2x lebih cepat" (proposal 3.6.3) otomatis berlaku.
+    // ================== PARAMETER: SANITY / LAPAR / UANG / SKRIPSI ==================
+
     public void KurangiSanity(float jumlah)
     {
         float pengali = SedangKelaparan ? pengaliSanitySaatLaparKritis : 1f;
-        sanity = Mathf.Clamp(sanity - (jumlah * pengali), 0f, 100f);
+        float floor = hariSanityFloorSisa > 0 ? sanityFloorNilai : 0f; // --- TAMBAHAN: floor sementara dari bonus TEKAD_KUAT ---
+        sanity = Mathf.Clamp(sanity - (jumlah * pengali), floor, 100f);
         UpdateUI();
-        CekKondisiGameOver();
+        CekBadEndingSanity();
+    }
+
+    // --- TAMBAHAN: paksa Sanity gak jatuh di bawah angka ini, TAPI cuma naikin (jepit ke atas) -
+    // gak narik turun kalau Sanity udah lebih tinggi. Dipakai buat "penalti ME2 gak boleh di bawah 15%". ---
+    public void TetapkanSanityMinimal(float minimal)
+    {
+        if (sanity < minimal) {
+            sanity = minimal;
+            UpdateUI();
+        }
+    }
+
+    // --- TAMBAHAN: bonus TEKAD_KUAT (ME2_03, kalau pilih "Jujur") ---
+    public void AktifkanBonusTekadKuat()
+    {
+        hariDistorsiDimatikanPaksaSisa = 1;
+        hariSanityFloorSisa = 3;
+        sanityFloorNilai = 10f;
     }
 
     public void TambahSanity(float jumlah)
@@ -277,11 +444,21 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
-    // --- TAMBAHAN: Titik terpusat untuk mengubah Lapar ---
     public void KurangiLapar(float jumlah)
     {
         lapar = Mathf.Clamp(lapar - jumlah, 0f, 100f);
         UpdateUI();
+        CekBadEndingLaparInstant(); // --- TAMBAHAN: mirip CekBadEndingSanity(), trigger instan pas Lapar=0 ---
+    }
+
+    // --- TAMBAHAN: sama polanya kayak CekBadEndingSanity() - langsung trigger begitu Lapar
+    // nyampe 0, gak perlu nunggu streak 3 hari berturut-turut lagi (itu tetap ada sebagai
+    // jaring pengaman tambahan, gak saya hapus, tapi ini yang bakal kena duluan biasanya) ---
+    void CekBadEndingLaparInstant()
+    {
+        if (endingSudahDipicu) return;
+        if (sedangDalamCutscene) return;
+        if (lapar <= 0f) TampilkanBadEndingLapar();
     }
 
     public void TambahLapar(float jumlah)
@@ -290,143 +467,231 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
-    // --- TAMBAHAN: Dipanggil sistem Masak/Makan (Proposal 3.3.3) saat pemain makan sesuatu ---
-    // Memasak sendiri secara proposal memulihkan Lapar signifikan; makan bareng/masakan enak juga ikut menenangkan Sanity dikit.
     public void Makan(float jumlahLaparDipulihkan, float jumlahSanityDipulihkan = 0f)
     {
         TambahLapar(jumlahLaparDipulihkan);
         if (jumlahSanityDipulihkan > 0f) TambahSanity(jumlahSanityDipulihkan);
     }
 
-    // --- TAMBAHAN: Titik terpusat untuk mengubah Uang ---
+    [Header("TAMBAHAN: Parameter Utang Bank (terpisah dari Uang, gak pernah bikin Uang minus)")]
+    [Tooltip("Total utang yang masih harus dibayar - naik dari efek pinjaman (CutsceneScene), berkurang dari pembayaran cicilan")]
+    public float utangBank = 0f;
+    [Tooltip("TUNABLE: bunga harian yang nambah ke Utang Bank tiap hari (0.003 = 0,3% - sesuai batas resmi OJK 2025 buat pinjol konsumtif tenor <6 bulan)")]
+    [Range(0f, 0.02f)] public float bungaHarianUtang = 0.003f;
+    [Tooltip("Tombol Utang di HUD - otomatis nyala kalau Utang Bank > 0, mati kalau lunas")]
+    public GameObject tombolUtang;
+
+    public void TambahUtang(float jumlah)
+    {
+        utangBank += jumlah;
+        UpdateUI();
+        UpdateTombolUtang();
+
+        // --- TAMBAHAN: langsung munculin "Minggu ke-1" di jadwal cicilan, gak nunggu tidur dulu ---
+        if (CicilanManager.Instance != null) CicilanManager.Instance.PastikanMingguPertamaAda();
+    }
+
+    public void KurangiUtang(float jumlah)
+    {
+        utangBank = Mathf.Max(0f, utangBank - jumlah);
+        UpdateUI();
+        UpdateTombolUtang();
+    }
+
+    public void UpdateTombolUtang()
+    {
+        if (tombolUtang) tombolUtang.SetActive(utangBank > 0f);
+    }
+
     public void KurangiUang(int jumlah)
     {
+        // --- REVISI: balik di-clamp ke 0 lagi - sekarang utang punya parameter sendiri
+        // (Utang Bank), jadi Uang gak perlu lagi merangkap jadi representasi utang minus ---
         uang = Mathf.Max(0, uang - jumlah);
         UpdateUI();
     }
 
     public void TambahUang(int jumlah)
     {
-        // --- Mathf.Max di sini penting: jumlah BISA negatif (misal gaji shift Kasir yang minus
-        // karena kebanyakan penalti), tapi total uang pemain tetap gak boleh sampai di bawah 0 ---
         uang = Mathf.Max(0, uang + jumlah);
         UpdateUI();
     }
 
-    // --- TAMBAHAN: Titik terpusat untuk menambah Progres Skripsi ---
-    // TIDAK LAGI langsung memicu Good Ending di sini - dicek terpisah lewat CekEvaluasiEndingFinal()
-    // (dipanggil dari GantiHari()), biar konsisten kalau nanti dipakai bareng sistem cerita.
     public void TambahProgresSkripsi(float jumlah)
     {
         progresSkripsi = Mathf.Clamp(progresSkripsi + jumlah, 0f, batasProgresMaksimalSaatIni);
         UpdateUI();
-        CekEvaluasiEndingFinal();
     }
 
-    // --- TAMBAHAN: Dipanggil sistem "Ngobrol sama Anna" nanti (placeholder, gak wajib dipakai sekarang) ---
-    public void TambahInteraksiAnna()
-    {
-        totalInteraksiAnna++;
-    }
+    // ================== ENDING (naskah v3: Happy + 3 Bad) ==================
 
-    // --- TAMBAHAN: Cek kondisi Bad Ending (Proposal 3.6.4): Sanity 0% ---
-    void CekKondisiGameOver()
+    void CekBadEndingSanity()
     {
         if (endingSudahDipicu) return;
-        if (sanity <= 0f) TampilkanBadEnding();
+        if (sedangDalamCutscene) return; // --- TAMBAHAN: jangan cek selama cutscene, tunda dulu ---
+        if (sanity <= 0f) TampilkanBadEndingSanity();
     }
 
-    // --- TAMBAHAN: Evaluasi ending final. Kalau "Hari Epilog" belum diisi (masih 0), sistem ini
-    // otomatis nonaktif - progres 100% cukup buat langsung munculin Happy Ending kayak sebelumnya
-    // (biar tetap jalan normal walau kamu belum punya sistem cerita/hari). Begitu "Hari Epilog"
-    // diisi manual di Inspector (misal 61), baru ending final ditunda sampai hari itu tercapai. ---
-    void CekEvaluasiEndingFinal()
+    // --- TAMBAHAN: dipanggil CeritaManager pas cutscene MULAI ---
+    public void MulaiCutscene()
+    {
+        sedangDalamCutscene = true;
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager begitu cutscene BENERAN kelar - buka gerbang lagi
+    // DAN re-cek kondisi ending yang mungkin sempet ketunda selama cutscene tadi ---
+    public void SelesaiCutscene()
+    {
+        sedangDalamCutscene = false;
+        CekBadEndingSanity();
+    }
+
+    // --- Bad Ending 3 "Lemari Bawah" - kehabisan biaya. Dipanggil CicilanManager begitu
+    // uang habis / cicilan gagal berulang. BERDIRI SENDIRI, gak ada varian lain lagi. ---
+    public void PicuBadEndingUang()
     {
         if (endingSudahDipicu) return;
+        endingSudahDipicu = true;
 
-        bool modeCeritaAktif = hariEpilog > 0;
-
-        if (!modeCeritaAktif) {
-            // --- Mode lama (tanpa sistem cerita): progres 100% langsung Happy Ending ---
-            if (progresSkripsi >= 100f) TampilkanGoodEnding();
-            return;
+        if (CeritaManager.Instance != null && adeganBadEnding3Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding3Pertama, TampilkanLayarAkhirBadEnding3);
+        } else {
+            TampilkanLayarAkhirBadEnding3();
         }
-
-        // --- Mode cerita aktif: tunda evaluasi sampai Hari Epilog tercapai ---
-        if (hariKe < hariEpilog) return;
-
-        bool syaratTrueEnding = progresSkripsi >= 100f
-            && sanity >= sanityMinimalTrueEnding
-            && pilihanEvent6 == 'C'
-            && totalInteraksiAnna >= minimalInteraksiAnnaTrueEnding;
-
-        if (syaratTrueEnding) { TampilkanTrueEnding(); return; }
-
-        bool syaratHappyEnding = progresSkripsi >= 100f && sanity > sanityMinimalHappyEnding;
-        if (syaratHappyEnding) { TampilkanGoodEnding(); return; }
-
-        TampilkanBadEnding();
     }
 
-    // --- TAMBAHAN: dipanggil manual (misal tombol pilihan cerita nanti) buat Bad Ending versi "tertunda" ---
-    public void PicuBadEndingTertunda()
+    // --- Dipanggil CeritaManager begitu chain END_BAD3_01->02 kelar ---
+    public void TampilkanLayarAkhirBadEnding3()
     {
-        pilihanEvent6 = 'B';
-        if (endingSudahDipicu) return;
-        endingSudahDipicu = true;
-        Debug.Log("Bad Ending 'Tertunda' dipicu.");
+        Debug.Log("Bad Ending 3 'Lemari Bawah' (kehabisan biaya) dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
-        if (panelBadEndingTertunda) panelBadEndingTertunda.SetActive(true);
+        if (panelBadEndingUang) panelBadEndingUang.SetActive(true);
+
+        if (textLayarAkhirBadEnding3) {
+            textLayarAkhirBadEnding3.text = "Bukan angkanya yang berat.\nTapi minggu yang terus datang, nagih, tanpa pernah nunggu.";
+        }
     }
 
-    // --- TAMBAHAN: Tampilkan panel Bad Ending & hentikan permainan ---
-    void TampilkanBadEnding()
+    // --- TAMBAHAN - Bad Ending 4, BERDIRI SENDIRI (dulu "varian B") - kehabisan waktu.
+    // Dipanggil GantiHari() begitu hari ke-61 lewat dengan Skripsi < 100%. ---
+    public void PicuBadEnding4Waktu()
     {
         if (endingSudahDipicu) return;
         endingSudahDipicu = true;
-        Debug.Log("Bad Ending dipicu.");
-        OnPermainanBerakhir?.Invoke(); // --- TAMBAHAN: paksa tutup minigame aktif (skripsi, dsb) kalau ada ---
-        Time.timeScale = 0;
-        TutupSemuaPanelGame();
-        if (panelBadEnding) panelBadEnding.SetActive(true);
+
+        if (CeritaManager.Instance != null && adeganBadEnding4Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding4Pertama, TampilkanLayarAkhirBadEnding4);
+        } else {
+            TampilkanLayarAkhirBadEnding4();
+        }
     }
 
-    // --- TAMBAHAN: Tampilkan panel Good Ending & hentikan permainan ---
-    void TampilkanGoodEnding()
+    // --- Dipanggil CeritaManager begitu chain END_BAD4_01->02 kelar ---
+    public void TampilkanLayarAkhirBadEnding4()
     {
-        if (endingSudahDipicu) return;
-        endingSudahDipicu = true;
-        Debug.Log("Good Ending dipicu.");
-        OnPermainanBerakhir?.Invoke(); // --- TAMBAHAN: paksa tutup minigame aktif (skripsi, dsb) kalau ada ---
-        Time.timeScale = 0;
-        TutupSemuaPanelGame();
-        if (panelGoodEnding) panelGoodEnding.SetActive(true);
-    }
-
-    // --- TAMBAHAN: Tampilkan panel True Ending & hentikan permainan (siap dipakai kalau ada sistem cerita) ---
-    void TampilkanTrueEnding()
-    {
-        if (endingSudahDipicu) return;
-        endingSudahDipicu = true;
-        Debug.Log("True Ending dipicu.");
+        Debug.Log("Bad Ending 4 (kehabisan waktu) dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
-        if (panelTrueEnding) panelTrueEnding.SetActive(true);
+        if (panelBadEnding4Waktu) panelBadEnding4Waktu.SetActive(true);
+
+        if (textLayarAkhirBadEnding4) {
+            textLayarAkhirBadEnding4.text = $"Skripsi Andrew berhenti di {Mathf.RoundToInt(progresSkripsi)}%.\nia nggak berhenti ngerjain melainkan waktunya aja yang berhenti duluan.";
+        }
     }
 
-    // --- TAMBAHAN: Restart permainan dari awal (dipanggil tombol "Restart" di panel Bad/Good Ending) ---
-    // Reload scene yang sama, mulai sebagai Game Baru (bukan load save lama).
+    void TampilkanBadEndingSanity()
+    {
+        if (endingSudahDipicu) return;
+        endingSudahDipicu = true;
+
+        if (CeritaManager.Instance != null && adeganBadEnding1Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding1Pertama, TampilkanLayarAkhirBadEnding1);
+        } else {
+            TampilkanLayarAkhirBadEnding1();
+        }
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager begitu chain END_BAD1_01->02 kelar ---
+    void TampilkanLayarAkhirBadEnding1()
+    {
+        Debug.Log("Bad Ending 1 'Hari Keenam Puluh Dua' dipicu.");
+        OnPermainanBerakhir?.Invoke();
+        Time.timeScale = 0;
+        TutupSemuaPanelGame();
+        if (panelBadEndingSanity) panelBadEndingSanity.SetActive(true);
+
+        if (textLayarAkhirBadEnding1) {
+            textLayarAkhirBadEnding1.text = $"Skripsi Andrew berhenti di {Mathf.RoundToInt(progresSkripsi)}%.\nBukan karena dia malas tetapi karena nggak ada yang nanya lebih awal.";
+        }
+    }
+
+    void TampilkanBadEndingLapar()
+    {
+        if (endingSudahDipicu) return;
+        endingSudahDipicu = true;
+
+        if (CeritaManager.Instance != null && adeganBadEnding2Pertama != null) {
+            CeritaManager.Instance.MulaiEndingChain(adeganBadEnding2Pertama, TampilkanLayarAkhirBadEnding2);
+        } else {
+            TampilkanLayarAkhirBadEnding2();
+        }
+    }
+
+    // --- TAMBAHAN: dipanggil CeritaManager begitu chain END_BAD2_01->02 kelar ---
+    void TampilkanLayarAkhirBadEnding2()
+    {
+        Debug.Log("Bad Ending 2 'Nanti Kalau Kakak Inget' dipicu.");
+        OnPermainanBerakhir?.Invoke();
+        Time.timeScale = 0;
+        TutupSemuaPanelGame();
+        if (panelBadEndingLapar) panelBadEndingLapar.SetActive(true);
+
+        if (textLayarAkhirBadEnding2) {
+            textLayarAkhirBadEnding2.text = "Badan nagih lebih sabar daripada bank.\nTapi tetep nagih.";
+        }
+    }
+
+    // --- TAMBAHAN: dijadiin public + diganti nama, biar bisa dipanggil CeritaManager begitu
+    // chain cutscene Happy Ending BENERAN kelar (dulu private, namanya TampilkanHappyEnding()) ---
+    public void TampilkanLayarAkhirHappyEnding()
+    {
+        Debug.Log("Happy Ending 'Pulang' dipicu.");
+        OnPermainanBerakhir?.Invoke();
+        Time.timeScale = 0;
+        TutupSemuaPanelGame();
+        if (panelHappyEnding) panelHappyEnding.SetActive(true);
+    }
+
+    // --- Evaluasi Happy Ending: skripsi 100% SEBELUM deadline, gak kena Bad Ending manapun ---
+    void CekHappyEnding()
+    {
+        if (endingSudahDipicu) return;
+        if (progresSkripsi < 100f) return;
+
+        endingSudahDipicu = true; // --- ditandai DI SINI, sebelum cutscene mulai, biar gak ke-trigger dobel ---
+
+        // --- TAMBAHAN: kalau Adegan Happy Ending Pertama udah diisi, muter cutscene-nya dulu -
+        // baru munculin layar akhir begitu chain-nya kelar. Kalau belum diisi, fallback ke
+        // perilaku lama (langsung tampil panel). ---
+        if (CeritaManager.Instance != null && adeganHappyEndingPertama != null) {
+            CeritaManager.Instance.MulaiHappyEndingChain(adeganHappyEndingPertama);
+        } else {
+            TampilkanLayarAkhirHappyEnding();
+        }
+    }
+
     public void RestartGame()
     {
         Time.timeScale = 1;
-        SaveManager.slotUntukDiload = -1; // -1 = Game Baru, sesuai konvensi SaveManager
+        SaveManager.slotUntukDiload = -1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // --- FUNGSI PANEL & PENGUNCIAN GERAKAN ---
+    // ================== PANEL & KUNCI GERAKAN ==================
+
     public void TutupSemuaPanelGame()
     {
         if (panelToko) panelToko.SetActive(false);
@@ -440,99 +705,162 @@ public class GameManager : MonoBehaviour
 
     public bool ApakahAdaPanelAktif()
     {
-        return (panelToko && panelToko.activeSelf) || 
-               (panelInventory && panelInventory.activeSelf) || 
-               (panelMenuKerja && panelMenuKerja.activeSelf) || 
+        return (panelToko && panelToko.activeSelf) ||
+               (panelInventory && panelInventory.activeSelf) ||
+               (panelMenuKerja && panelMenuKerja.activeSelf) ||
                (panelMasak && panelMasak.activeSelf);
     }
 
     public void BukaTokoAman()
     {
         if (ApakahAdaPanelAktif()) return;
-        if (panelToko) {
-            panelToko.SetActive(true);
-            PlayerController p = Object.FindFirstObjectByType<PlayerController>();
-            if (p) p.SetMenuStatus(true);
-        }
+        if (panelToko) { panelToko.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
     }
 
     public void BukaInventoryAman()
     {
         if (ApakahAdaPanelAktif()) return;
-        if (panelInventory) {
-            panelInventory.SetActive(true);
-            PlayerController p = Object.FindFirstObjectByType<PlayerController>();
-            if (p) p.SetMenuStatus(true);
-        }
+        if (panelInventory) { panelInventory.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
     }
 
     public void BukaMasakAman()
     {
         if (ApakahAdaPanelAktif()) return;
-        if (panelMasak) {
-            panelMasak.SetActive(true);
-            PlayerController p = Object.FindFirstObjectByType<PlayerController>();
-            if (p) p.SetMenuStatus(true);
-        }
+        if (panelMasak) { panelMasak.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
     }
 
     public void BukaKerjaAman()
     {
         if (ApakahAdaPanelAktif()) return;
-        if (panelMenuKerja) {
-            panelMenuKerja.SetActive(true);
-            PlayerController p = Object.FindFirstObjectByType<PlayerController>();
-            if (p) p.SetMenuStatus(true);
-        }
+        if (panelMenuKerja) { panelMenuKerja.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
     }
 
-    // --- FUNGSI SISTEM LAINNYA ---
+    // ================== GANTI HARI ==================
+
     public void GantiHari()
     {
-        waktu -= 1;
-        hariKe += 1; // --- TAMBAHAN: penanda hari-ke, naik terus (beda dari 'waktu' yang turun) ---
+        MajukanTanggal();
         jamSaatIni = jamMulai;
-        kopiDigunakanHariIni = false; // --- TAMBAHAN: buff Kopi Espresso cuma berlaku 1 hari ---
-        skripsiSudahDikerjakanHariIni = false; // --- TAMBAHAN: jatah skripsi harian direset tiap hari baru ---
-        kerjaPartTimeSudahDilakukanHariIni = false; // --- TAMBAHAN: jatah kerja part time direset tiap hari baru ---
+        kopiDigunakanHariIni = false;
+        skripsiSudahDikerjakanHariIni = false;
+        kerjaPartTimeSudahDilakukanHariIni = false;
+        sudahMandiHariIni = false; // --- TAMBAHAN ---
+        sudahInteraksiAnnaHariIni = false; // --- TAMBAHAN ---
 
-        // --- Lapar tetap memburuk tiap ganti hari, tapi Sanity DIPULIHKAN dari tidur (Proposal 3.6.3) ---
         KurangiLapar(penguranganLaparSaatTidur);
-        TambahSanity(pemulihanSanitySaatTidur);
+        // --- pemulihanSanitySaatTidur (bonus flat) DIHAPUS - diganti logic kondisional jam
+        // di ProsesTidur() (TambahSanity/KurangiSanity sesuai jamBatasTidurAwal) ---
 
-        // --- TAMBAHAN: kasih tau sistem lain (nanti CeritaManager/AnnaNPC/CicilanManager) hari udah berganti ---
+        // --- TAMBAHAN: penalti Sanity harian kalau Progres Skripsi masih di bawah plafon
+        // Threshold aktif saat ini (belum "mencapai target") - berhenti otomatis begitu
+        // progres nyampe/lewatin plafon itu, gak peduli Threshold-nya udah beneran "terbuka" atau belum ---
+        if (progresSkripsi < batasProgresMaksimalSaatIni) {
+            KurangiSanity(sanityTurunBelumCapaiTargetTH);
+        }
+
+        // --- TAMBAHAN: hitung mundur durasi bonus TEKAD_KUAT (kalau lagi aktif) ---
+        if (hariDistorsiDimatikanPaksaSisa > 0) hariDistorsiDimatikanPaksaSisa--;
+        if (hariSanityFloorSisa > 0) hariSanityFloorSisa--;
+
+        // --- TAMBAHAN: bunga harian nambah ke Utang Bank tiap hari, kalau masih ada utang ---
+        if (utangBank > 0f) {
+            utangBank += utangBank * bungaHarianUtang;
+            UpdateUI();
+            UpdateTombolUtang();
+        }
+
+        // --- Bad Ending 2: lapar kritis BERTURUT-TURUT sekian hari ---
+        if (SedangKelaparan) {
+            hariLaparKritisBerturutTurut++;
+            if (hariLaparKritisBerturutTurut >= batasHariLaparKritisBerturutTurut) {
+                TampilkanBadEndingLapar();
+            }
+        } else {
+            hariLaparKritisBerturutTurut = 0;
+        }
+
         OnHariBerganti?.Invoke();
 
-        // --- TAMBAHAN: evaluasi ending final (mode cerita, kalau Hari Epilog udah diisi) ---
-        CekEvaluasiEndingFinal();
-
-        // --- TAMBAHAN: Waktu (sisa masa studi) habis sebelum skripsi 100% -> Bad Ending (Proposal 3.3.7 & 3.6.4) ---
-        if (waktu <= 0 && progresSkripsi < 100f) {
-            TampilkanBadEnding();
+        // --- FIX: urutan prioritas sesuai naskah ("URUTAN PENGECEKAN ENDING") - Sanity=0 udah
+        // independen lewat KurangiSanity(), Lapar kritis udah dicek di atas. Sisanya: Hari ke-61
+        // Skripsi<100% (Bad Ending 3 Varian B) HARUS dicek SEBELUM Happy Ending, bukan sesudah -
+        // biar kalau dua-duanya kebetulan valid bareng di hari yang sama, yang menang Bad Ending. ---
+        if (ApakahSudahLewatTanggal(tanggalDeadline, bulanDeadline) && progresSkripsi < 100f) {
+            PicuBadEnding4Waktu();
+        } else {
+            CekHappyEnding();
         }
 
         if (SaveManager.Instance != null) SaveManager.Instance.SimpanGame(0);
+    }
+
+    // --- TAMBAHAN: gerbang TUNGGAL buat semua cara mulai tidur (otomatis kemaleman, ATAU klik
+    // Kasur manual - Kasur/BedController.cs WAJIB manggil INI, bukan langsung ProsesTidur()).
+    // Kalau ada peristiwa cerita yang wajib kejadian hari ini tapi belum, tidur DIBLOKIR,
+    // cutscene-nya dipaksa jalan dulu - coba tidur lagi abis cutscene-nya kelar. ---
+    public void CobaMulaiTidur(bool pingsan = false)
+    {
+        Debug.Log("[GameManager] CobaMulaiTidur() TERPANGGIL."); // --- SEMENTARA ---
+
+        if (prosesTidurAktif) return;
+
+        if (CeritaManager.Instance != null && CeritaManager.Instance.ApakahAdaPeristiwaWajibSebelumTidurHariIni()) {
+            Debug.Log("[GameManager] Ada peristiwa wajib - tidur DIBLOKIR, paksa trigger cutscene."); // --- SEMENTARA ---
+            CeritaManager.Instance.PaksaTriggerPeristiwaWajibSebelumTidur();
+            return;
+        }
+
+        Debug.Log("[GameManager] Gak ada peristiwa wajib yang pending - lanjut tidur normal."); // --- SEMENTARA ---
+        prosesTidurAktif = true;
+        StartCoroutine(ProsesTidur(pingsan));
     }
 
     public IEnumerator ProsesTidur(bool pingsan = false)
     {
         waktuBerjalan = false;
         TutupSemuaPanelGame();
-
-        // --- Sembunyikan tombol Toko & Inventory di HUD selama proses tidur ---
         SetTombolHUDAktif(false);
 
         if (playerObj) {
             PlayerController pc = playerObj.GetComponent<PlayerController>();
             if (pc) pc.SetMenuStatus(false);
-            if (posisiDepanKasur) playerObj.transform.position = posisiDepanKasur.position;
+
+            if (posisiDepanKasur) {
+                // --- FIX: sama pola kayak DoorController - X dari posisiDepanKasur (posisi
+                // horizontal spesifik kasur), Y dari KonfigurasiLantai (sumber tunggal per
+                // lantai, asumsi Kasur ada di Lantai 2 - sesuaikan angkanya kalau ternyata beda).
+                // Pakai rb.position (physics-aware), BUKAN transform.position langsung - hindari
+                // desync Rigidbody2D (Gravity Scale=0, gak ada gravitasi buat "nyettle" otomatis). ---
+                float yLantaiKasur = (KonfigurasiLantai.Instance != null)
+                    ? KonfigurasiLantai.Instance.DapatkanPosisiY(2)
+                    : posisiDepanKasur.position.y; // fallback kalau KonfigurasiLantai belum ke-setup
+
+                Vector2 posisiBangun = new Vector2(posisiDepanKasur.position.x, yLantaiKasur);
+
+                Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
+                if (rb != null) {
+                    rb.position = posisiBangun;
+                } else {
+                    playerObj.transform.position = new Vector3(posisiBangun.x, posisiBangun.y, playerObj.transform.position.z);
+                }
+
+                if (pc) pc.lantaiSaatIni = 2; // --- pastiin konsisten, sama kayak DoorController nge-set lantaiTujuan ---
+            }
+        }
+
+        // --- TAMBAHAN: cek jam SEKARANG (SEBELUM GantiHari() reset ke jamMulai) - tidur
+        // sebelum Jam Batas Tidur Awal dapet bonus Sanity, tidur pas/lewat jam itu kena penalti.
+        // Ini juga otomatis nangkep kemaleman OTOMATIS (jam udah >= batasTidur, pasti lewat 20). ---
+        if (jamSaatIni < jamBatasTidurAwal) {
+            TambahSanity(sanityNaikTidurAwal);
+        } else {
+            KurangiSanity(sanityTurunTidurTerlambat);
         }
 
         float alpha = 0;
         while (alpha < 1) { alpha += Time.deltaTime * 1.5f; if (layarGelap) layarGelap.color = new Color(0, 0, 0, alpha); yield return null; }
         GantiHari();
 
-        // --- TAMBAHAN: tampilkan Monolog Akhir Hari kalau ada yang dititipkan (opsional, siap dipakai sistem cerita nanti) ---
         if (!string.IsNullOrEmpty(monologAkhirHariBerikutnya) && textMonologAkhirHari != null) {
             textMonologAkhirHari.text = monologAkhirHariBerikutnya;
             textMonologAkhirHari.gameObject.SetActive(true);
@@ -541,13 +869,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
 
         if (textMonologAkhirHari != null) textMonologAkhirHari.gameObject.SetActive(false);
-        monologAkhirHariBerikutnya = ""; // reset, cuma tampil sekali per titipan
+        monologAkhirHariBerikutnya = "";
 
         while (alpha > 0) { alpha -= Time.deltaTime * 1.5f; if (layarGelap) layarGelap.color = new Color(0, 0, 0, alpha); yield return null; }
         waktuBerjalan = true;
-        prosesTidurAktif = false; // --- TAMBAHAN: izinkan trigger tidur lagi di hari berikutnya ---
+        prosesTidurAktif = false;
 
-        // --- Tampilkan kembali tombol Toko & Inventory setelah bangun ---
         SetTombolHUDAktif(true);
     }
 }

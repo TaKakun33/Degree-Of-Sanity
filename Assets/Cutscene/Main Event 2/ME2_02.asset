@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: ME2_02
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: ME2_02
+  ruangId: DAPUR
+  karakterAnnaHadir: 1
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Anna udah di dapur duluan. Airnya udah dingin di gelas dari tadi
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Kakak belum tidur.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: Andrew
+    teks: Kamu juga.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Dari tadi aku denger kakak ngomong sendiri.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Anna
+    teks: Kakak mau berhenti kuliah, ya.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  efek:
+    sanityDelta: 0
+    laparDelta: 0
+    uangDelta: 0
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    tambahUtang: 0
+    aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
+  adaPilihan: 1
+  pilihanCabang:
+  - labelTombol: Jujur
+    adeganLanjutan: {fileID: 11400000, guid: 85eefed8069c92ca8b0e9a808ee2b090, type: 2}
+    setFlag: TEKAD_KUAT
+  - labelTombol: Bohong
+    adeganLanjutan: {fileID: 11400000, guid: df2053feb44146a01a9eb8b6ecb941c4, type: 2}
+    setFlag: 
+  - labelTombol: Diam
+    adeganLanjutan: {fileID: 11400000, guid: 091617b06ef7fefe89f911140ca5faec, type: 2}
+    setFlag: 
+  adeganBerikutnya: {fileID: 0}
+  monologAkhirHari: 

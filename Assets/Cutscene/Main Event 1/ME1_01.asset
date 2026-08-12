@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: ME1_01
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: ME1_01
+  ruangId: LORONG
+  karakterAnnaHadir: 0
+  balikArahAndrew: 1
+  balikArahAnna: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Ada yang diselipin di bawah pintu semalam. Amplop putih, tanpa perangko.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 3058730461592448298, guid: 5939d070ee234500086e57fe788d5f18, type: 3}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Tunggakan SPP tiga bulan.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 1
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Batas akhir minggu depan.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Anna nggak pernah cerita.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  efek:
+    sanityDelta: 0
+    laparDelta: 0
+    uangDelta: 0
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    tambahUtang: 0
+    aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
+  adaPilihan: 0
+  pilihanCabang: []
+  adeganBerikutnya: {fileID: 11400000, guid: 26745f991665beabb855574c90bfbb42, type: 2}
+  monologAkhirHari: 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +15,7 @@ public class DaftarSlotSave
 public class DataSimpanan
 {
     // Status GameManager
-    public int waktu, uang;
+    public int tanggal, bulan, uang;
     public float progresSkripsi, lapar, sanity, jamSaatIni;
 
     // Inventory
@@ -30,6 +31,19 @@ public class DataSimpanan
     // bakal reset ke false lagi tiap kali GameManager baru dibuat, walau harusnya masih hari yang sama ---
     public bool skripsiSudahDikerjakanHariIni;
     public bool kerjaPartTimeSudahDilakukanHariIni;
+    public bool sudahMandiHariIni; // --- TAMBAHAN ---
+    public bool sudahInteraksiAnnaHariIni; // --- TAMBAHAN ---
+    public bool prologSelesai;
+    public System.Collections.Generic.List<string> peristiwaCeritaSudahTerjadi;
+    public System.Collections.Generic.List<string> flagCeritaAktif;
+    public float utangBank;
+    public System.Collections.Generic.List<MingguCicilan> daftarMingguCicilan;
+    public int cicilanNomorMingguBerikutnya;
+    public int cicilanGagalBerturutTurut;
+    public bool cicilanPertamaSudahLunas;
+    public System.Collections.Generic.List<ThresholdSkripsi.StatusThresholdTersimpan> statusThreshold; // --- TAMBAHAN ---
+    public int cicilanHariKeMingguPertamaDibuat; // --- dipakai buat siklus Minggu lewat sekarang ---
+    public bool cicilanSudahDicekTelatMingguPertama;
 }
 
 public class SaveManager : MonoBehaviour
@@ -53,7 +67,8 @@ public class SaveManager : MonoBehaviour
 
         // 1. Kumpulkan Data GameManager
         if (GameManager.Instance != null) {
-            data.waktu = GameManager.Instance.waktu;
+            data.tanggal = GameManager.Instance.tanggal;
+            data.bulan = GameManager.Instance.bulan;
             data.uang = GameManager.Instance.uang;
             data.progresSkripsi = GameManager.Instance.progresSkripsi;
             data.lapar = GameManager.Instance.lapar;
@@ -61,6 +76,22 @@ public class SaveManager : MonoBehaviour
             data.jamSaatIni = GameManager.Instance.jamSaatIni;
             data.skripsiSudahDikerjakanHariIni = GameManager.Instance.SkripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
             data.kerjaPartTimeSudahDilakukanHariIni = GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
+            data.sudahMandiHariIni = GameManager.Instance.SudahMandiHariIni; // --- TAMBAHAN ---
+            data.sudahInteraksiAnnaHariIni = GameManager.Instance.SudahInteraksiAnnaHariIni; // --- TAMBAHAN ---
+            data.prologSelesai = GameManager.Instance.prologSelesai; // --- TAMBAHAN ---
+            if (CeritaManager.Instance != null) {
+                data.peristiwaCeritaSudahTerjadi = CeritaManager.Instance.DapatkanPeristiwaSudahTerjadi(); // --- TAMBAHAN ---
+                data.flagCeritaAktif = CeritaManager.Instance.DapatkanFlagCerita(); // --- TAMBAHAN ---
+            }
+            data.utangBank = GameManager.Instance.utangBank; // --- TAMBAHAN ---
+            if (CicilanManager.Instance != null) {
+                data.daftarMingguCicilan = CicilanManager.Instance.DapatkanDaftarMinggu(); // --- TAMBAHAN ---
+                data.cicilanNomorMingguBerikutnya = CicilanManager.Instance.DapatkanNomorMingguBerikutnya(); // --- TAMBAHAN ---
+                // --- cicilanGagalBerturutTurut, cicilanHariKeMingguPertamaDibuat, cicilanSudahDicekTelatMingguPertama
+                // gak dipakai lagi (sistem disederhanain, gak ada lagi hitungan berturut-turut/toleransi Minggu 1) ---
+                data.cicilanPertamaSudahLunas = CicilanManager.Instance.DapatkanCicilanPertamaSudahLunas(); // --- TAMBAHAN ---
+                if (ThresholdSkripsi.Instance != null) data.statusThreshold = ThresholdSkripsi.Instance.DapatkanStatusSemuaThreshold(); // --- TAMBAHAN ---
+            }
         }
 
         // 2. Kumpulkan Data Inventory
@@ -92,6 +123,29 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Game berhasil disimpan di Slot: " + nomorSlot);
     }
 
+    // --- TAMBAHAN: dipanggil MinigamePauseController.cs KHUSUS kalau pemain klik "Main Menu"
+    // dari dalam minigame KERJA PART TIME (Kasir/Ojol/Tutor) tanpa menyelesaikannya. Autosave
+    // slot 0 yang kejadian pas BERANGKAT kerja itu udah kejebak: kerjaPartTimeSudahDilakukanHariIni
+    // = true (ditandai SEBELUM autosave, biar PenghalangKeluar gak ngeblok perjalanan awal) DAN
+    // posisi player = di luar rumah (Zona Stop Kerja). Kalau dibiarkan, Continue nanti muncul di
+    // luar rumah dengan jatah kerja hari itu abis padahal gak pernah beneran kerja. Method ini
+    // MENGOREKSI DUA HAL itu di slot 0, TANPA nyentuh field lain sama sekali. ---
+    public void BatalkanPartTimeHariIni(Vector2 posisiSpawn, int lantaiSpawn)
+    {
+        string key = "SaveData_Slot_0";
+        if (!PlayerPrefs.HasKey(key)) return;
+
+        DataSimpanan data = JsonUtility.FromJson<DataSimpanan>(PlayerPrefs.GetString(key));
+        data.kerjaPartTimeSudahDilakukanHariIni = false;
+        data.playerX = posisiSpawn.x;
+        data.playerY = posisiSpawn.y;
+        data.lantai = lantaiSpawn;
+
+        PlayerPrefs.SetString(key, JsonUtility.ToJson(data));
+        PlayerPrefs.Save();
+        Debug.Log("[SaveManager] Kerja Part Time hari ini DIBATALKAN - jatah kerja & posisi dikembalikan seperti sebelum berangkat.");
+    }
+
     public void MuatGame(int nomorSlot)
     {
         if (nomorSlot == -1) return; // Jika -1, berarti New Game
@@ -104,7 +158,8 @@ public class SaveManager : MonoBehaviour
 
             // 1. Restore GameManager
             if (GameManager.Instance != null) {
-                GameManager.Instance.waktu = data.waktu;
+                GameManager.Instance.tanggal = data.tanggal;
+                GameManager.Instance.bulan = data.bulan;
                 GameManager.Instance.uang = data.uang;
                 GameManager.Instance.progresSkripsi = data.progresSkripsi;
                 GameManager.Instance.lapar = data.lapar;
@@ -112,6 +167,19 @@ public class SaveManager : MonoBehaviour
                 GameManager.Instance.jamSaatIni = data.jamSaatIni;
                 GameManager.Instance.SkripsiSudahDikerjakanHariIni = data.skripsiSudahDikerjakanHariIni; // --- TAMBAHAN ---
                 GameManager.Instance.KerjaPartTimeSudahDilakukanHariIni = data.kerjaPartTimeSudahDilakukanHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.SudahMandiHariIni = data.sudahMandiHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.SudahInteraksiAnnaHariIni = data.sudahInteraksiAnnaHariIni; // --- TAMBAHAN ---
+                GameManager.Instance.prologSelesai = data.prologSelesai; // --- TAMBAHAN ---
+                if (CeritaManager.Instance != null) {
+                    CeritaManager.Instance.MuatPeristiwaSudahTerjadi(data.peristiwaCeritaSudahTerjadi); // --- TAMBAHAN ---
+                    CeritaManager.Instance.MuatFlagCerita(data.flagCeritaAktif); // --- TAMBAHAN ---
+                }
+                GameManager.Instance.utangBank = data.utangBank; // --- TAMBAHAN ---
+                GameManager.Instance.UpdateTombolUtang(); // --- TAMBAHAN: FIX bug tombol ilang ---
+                if (CicilanManager.Instance != null) {
+                    CicilanManager.Instance.MuatDaftarMinggu(data.daftarMingguCicilan, data.cicilanNomorMingguBerikutnya, data.cicilanPertamaSudahLunas); // --- TAMBAHAN ---
+                    if (ThresholdSkripsi.Instance != null) ThresholdSkripsi.Instance.MuatStatusSemuaThreshold(data.statusThreshold); // --- TAMBAHAN ---
+                }
             }
 
             // 2. Restore Inventory
@@ -130,7 +198,18 @@ public class SaveManager : MonoBehaviour
             // 3. Restore Posisi Player
             PlayerController player = Object.FindFirstObjectByType<PlayerController>();
             if (player != null) {
-                player.transform.position = new Vector3(data.playerX, data.playerY, player.transform.position.z);
+                Vector3 posisiTujuan = new Vector3(data.playerX, data.playerY, player.transform.position.z);
+
+                // --- FIX: pakai rb.position (kalau ada Rigidbody2D), BUKAN transform.position
+                // langsung - alasan sama kayak di TitikSpawnPlayer.cs, biar gak ada lompatan
+                // koreksi physics pas load game ---
+                Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+                if (rb != null) {
+                    rb.position = posisiTujuan;
+                } else {
+                    player.transform.position = posisiTujuan;
+                }
+
                 player.lantaiSaatIni = data.lantai;
             }
 
@@ -229,7 +308,8 @@ public class SaveManager : MonoBehaviour
         if (nomorSlot == 0) return PlayerPrefs.HasKey("SaveData_Slot_0") ? "AUTOSAVE" : "Autosave Kosong";
         if (CekSaveAda(nomorSlot)) {
             DataSimpanan d = JsonUtility.FromJson<DataSimpanan>(PlayerPrefs.GetString("SaveData_Slot_" + nomorSlot));
-            return "Slot " + nomorSlot + " | Hari " + d.waktu + " | Rp " + d.uang;
+            string namaBulan = d.bulan == 3 ? "Maret" : (d.bulan == 4 ? "April" : "Mei");
+            return "Slot " + nomorSlot + " | " + d.tanggal + " " + namaBulan + " | Rp " + d.uang;
         }
         return "Slot " + nomorSlot + " (Empty)";
     }

@@ -27,7 +27,7 @@ public class GradingGameManager : MonoBehaviour
     [Header("Pengaturan Bayaran & Efek Parameter (proposal: makin banyak benar, makin tinggi bayaran)")]
     [Tooltip("Bayaran PENUH kalau skor koreksi 100%; bayaran aktual = ini x (skorPercent/100)")]
     [SerializeField] private int bayaranMaksimal = 60000;
-    [SerializeField] private float laparBerkurangPerShift = 15f;
+    [SerializeField] private float laparBerkurangPerShift = 50f;
     [SerializeField] private float sanityBerkurangPerShift = 5f;
     [Tooltip("Berapa jam in-game yang dilewati sepulang sesi tutor")]
     [SerializeField] private float jamDilewatiShift = 3f;

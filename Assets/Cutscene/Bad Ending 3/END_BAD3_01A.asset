@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c11092c9f141ce59da92cdcb5c9842, type: 3}
+  m_Name: END_BAD3_01A
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneSceneSO
+  id: END_BAD3_01
+  ruangId: LAYAR_HITAM
+  karakterAnnaHadir: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
+  baris:
+  - jenis: 0
+    namaTokoh: 
+    teks: Notifikasi itu nongol jam sepuluh malam. "Pembayaran ke-3 gagal diproses."
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Andrew udah liat kalimat itu dua kali sebelumnya. Kali ini ada garis merah
+      di bawahnya.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: ...
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Dia buka aplikasinya. Total tagihan sekarang lebih gede dari yang dia pinjam.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 2
+    namaTokoh: 
+    teks: Kamu tau ini bakal kejadian.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 1
+    namaTokoh: Andrew
+    teks: Aku tau.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  - jenis: 0
+    namaTokoh: 
+    teks: Anna ketuk pintu, nggak nunggu jawaban, langsung masuk.
+    parameterUntukDitampilkan: 
+    munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
+    objekTampilkan: {fileID: 0}
+    objekSembunyikan: {fileID: 0}
+    gambarPropUntukDitampilkan: {fileID: 0}
+    sembunyikanGambarProp: 0
+  efek:
+    sanityDelta: 0
+    laparDelta: 0
+    uangDelta: 0
+    progresSkripsiDelta: 0
+    tambahRoti: 0
+    tambahUtang: 0
+    aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
+  adaPilihan: 0
+  pilihanCabang: []
+  adeganBerikutnya: {fileID: 11400000, guid: a7c34a018fa49fd4c9297c23123839ec, type: 2}
+  monologAkhirHari: 

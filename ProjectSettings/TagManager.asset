@@ -9,6 +9,10 @@ TagManager:
   - Desk
   - ExitDoor
   - Kompor
+  - Mandi
+  - ObjekCerita
+  - Anna
+  - Langit
   layers:
   - Default
   - TransparentFX
@@ -16,8 +20,8 @@ TagManager:
   - PintuKlik
   - Water
   - UI
-  - 
-  - 
+  - ObjekCerita
+  - Langit
   - 
   - 
   - 
@@ -45,6 +49,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Langit
+    uniqueID: 563940087
     locked: 0
   m_RenderingLayers:
   - Default
