@@ -85,7 +85,10 @@ public class ShopController : MonoBehaviour
         if (cartBuku) rincian += "- Buku Referensi\n";
 
         if (rincian == "") rincian = "Keranjang kosong...";
-        if (textRincianKeranjang != null) textRincianKeranjang.text = rincian;
+        if (textRincianKeranjang != null) {
+            textRincianKeranjang.text = rincian;
+            textRincianKeranjang.color = Color.white; // --- TAMBAHAN: warna FFFFFF ---
+        }
     }
 
     public void CheckoutBelanjaan()

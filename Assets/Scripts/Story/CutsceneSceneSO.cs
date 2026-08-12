@@ -1,6 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// --- TAMBAHAN: pilih Panel Pilihan mana yang dipakai adegan ini - 2 panel yang BENERAN
+// terpisah total di CutsceneUI (bukan referensi objek scene di asset ini, biar aman gak
+// gampang null kalau scene lagi gak kebuka pas ngedit) ---
+public enum PilihanPanelMana { Panel1, Panel2 }
+
 // --- Jenis baris dalam satu CutsceneScene ---
 public enum JenisBarisCutscene { Narasi, Dialog, Bisikan }
 
@@ -104,6 +109,8 @@ public class CutsceneSceneSO : ScriptableObject
     [Header("Pilihan (JembatanCerita) - opsional")]
     public bool adaPilihan;
     public List<PilihanCabang> pilihanCabang;
+    [Tooltip("TAMBAHAN: pilih Panel Pilihan mana (dari 2 yang ada di CutsceneUI) yang dipakai buat adegan ini - misal Panel1 buat ME3 (2 opsi), Panel2 buat ME2 (3 opsi)")]
+    public PilihanPanelMana panelPilihanDipakai = PilihanPanelMana.Panel1;
 
     [Header("Rantai Adegan")]
     [Tooltip("Adegan berikutnya OTOMATIS setelah ini selesai. Kosongkan (None) kalau ini akhir chain ATAU adaPilihan dicentang (pilihan yang nentuin lanjutannya, bukan field ini)")]

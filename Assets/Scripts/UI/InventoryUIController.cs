@@ -122,12 +122,17 @@ public class InventoryUIController : MonoBehaviour
         panelDetail.SetActive(true); 
         if (textNamaItem != null) textNamaItem.text = nama;
         if (textDeskripsiItem != null) textDeskripsiItem.text = deskripsi;
-        if (textHargaJual != null) textHargaJual.text = hargaJual.ToString();
+        if (textHargaJual != null) {
+            textHargaJual.text = "Rp " + hargaJual.ToString("N0"); // --- format "Rp X.XXX", samain pola OjolManager ---
+            textHargaJual.alignment = TextAlignmentOptions.MidlineLeft; // --- TAMBAHAN: rata kiri (tetap center vertikal) ---
+        }
 
-        btnGunakan.gameObject.SetActive(bisaDigunakan);
+        btnGunakan.gameObject.SetActive(true); // --- TAMBAHAN: SELALU kelihatan sekarang, gak lagi hilang total ---
+        btnGunakan.interactable = bisaDigunakan; // --- TAMBAHAN: tapi dinonaktifkan (abu-abu, gak bisa diklik) kalau item ini gak bisa dipakai langsung ---
         btnGunakan.onClick.RemoveAllListeners();
         btnGunakan.onClick.AddListener(EksekusiGunakan);
 
+        btnJual.interactable = hargaJual > 0; // --- TAMBAHAN: tetap kelihatan, tapi gak bisa diklik kalau emang gak bisa dijual (misal Roti dari Anna, hargaJual=0) ---
         btnJual.onClick.RemoveAllListeners();
         btnJual.onClick.AddListener(EksekusiJual);
     }

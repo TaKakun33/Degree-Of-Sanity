@@ -62,10 +62,13 @@ public class CutsceneUI : MonoBehaviour
     [Header("Gambar Prop (ilustrasi close-up di depan layar - misal Laci/Amplop)")]
     public Image gambarProp;
 
-    [Header("Panel Pilihan (JembatanCerita)")]
-    public GameObject panelPilihan;
-    public Transform wadahTombolPilihan;
-    public GameObject prefabTombolPilihan;
+    [Header("Panel Pilihan 1 (misal ME3 - 2 opsi) - dipisah total dari Panel Pilihan 2")]
+    public GameObject panelPilihan1;
+    public List<Button> tombolPilihan1;
+
+    [Header("Panel Pilihan 2 (misal ME2 - 3 opsi) - dipisah total dari Panel Pilihan 1")]
+    public GameObject panelPilihan2;
+    public List<Button> tombolPilihan2;
 
     private CutsceneSceneSO adeganAktif;
     private int indexBaris;
@@ -85,8 +88,9 @@ public class CutsceneUI : MonoBehaviour
     {
         if (tombolLanjut) tombolLanjut.onClick.AddListener(LanjutkanBaris);
         if (panelCutscene) panelCutscene.SetActive(false);
-        if (panelPilihan) panelPilihan.SetActive(false);
         if (panelDialog) panelDialog.SetActive(false); // --- TAMBAHAN ---
+        if (panelPilihan1) panelPilihan1.SetActive(false); // --- TAMBAHAN ---
+        if (panelPilihan2) panelPilihan2.SetActive(false); // --- TAMBAHAN ---
         if (panelNarasiBisikan) panelNarasiBisikan.SetActive(false); // --- TAMBAHAN ---
 
         // --- TAMBAHAN: pastiin layar transisi GAK nge-block klik dari awal, apapun kondisinya -
@@ -606,32 +610,53 @@ public class CutsceneUI : MonoBehaviour
 
     void TampilkanPilihan()
     {
-        if (panelPilihan == null || wadahTombolPilihan == null || prefabTombolPilihan == null) {
-            Debug.LogError($"[CutsceneUI] TampilkanPilihan() GAGAL - ada field kosong: Panel Pilihan={(panelPilihan == null ? "NULL" : "OK")}, Wadah Tombol Pilihan={(wadahTombolPilihan == null ? "NULL" : "OK")}, Prefab Tombol Pilihan={(prefabTombolPilihan == null ? "NULL" : "OK")}"); // --- SEMENTARA ---
+        // --- TAMBAHAN: pilih SALAH SATU dari 2 panel yang beneran terpisah total, sesuai
+        // yang dipilih di asset adegan ini (Panel Pilihan Dipakai) ---
+        GameObject panelDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? panelPilihan1 : panelPilihan2;
+        List<Button> tombolDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? tombolPilihan1 : tombolPilihan2;
+
+        if (panelDipakai == null || tombolDipakai == null || tombolDipakai.Count == 0) {
+            Debug.LogError($"[CutsceneUI] TampilkanPilihan() GAGAL - Panel Pilihan {adeganAktif.panelPilihanDipakai} atau tombol-tombolnya belum diisi di CutsceneUI."); // --- SEMENTARA ---
             SelesaikanChain();
             return;
         }
 
-        foreach (Transform anak in wadahTombolPilihan) Destroy(anak.gameObject);
-
-        foreach (var cabang in adeganAktif.pilihanCabang) {
-            GameObject tombolObj = Instantiate(prefabTombolPilihan, wadahTombolPilihan);
-            TextMeshProUGUI label = tombolObj.GetComponentInChildren<TextMeshProUGUI>();
-            if (label) label.text = cabang.labelTombol;
-
-            Button tombol = tombolObj.GetComponent<Button>();
-            PilihanCabang cabangLokal = cabang;
-            tombol.onClick.AddListener(() => PilihCabang(cabangLokal));
+        if (adeganAktif.pilihanCabang.Count > tombolDipakai.Count) {
+            Debug.LogError($"[CutsceneUI] Adegan '{adeganAktif.id}' punya {adeganAktif.pilihanCabang.Count} pilihan, tapi Panel Pilihan {adeganAktif.panelPilihanDipakai} cuma ada {tombolDipakai.Count} tombol - tambah tombol lagi di panel itu!"); // --- SEMENTARA ---
         }
 
-        panelPilihan.SetActive(true);
+        for (int i = 0; i < tombolDipakai.Count; i++) {
+            Button tombol = tombolDipakai[i];
+            if (tombol == null) continue;
+
+            tombol.onClick.RemoveAllListeners(); // --- bersihin listener lama, biar gak numpuk tiap kali panel ini dibuka ulang ---
+
+            if (i < adeganAktif.pilihanCabang.Count) {
+                var cabang = adeganAktif.pilihanCabang[i];
+                TextMeshProUGUI label = tombol.GetComponentInChildren<TextMeshProUGUI>();
+                if (label) label.text = cabang.labelTombol;
+
+                PilihanCabang cabangLokal = cabang;
+                tombol.onClick.AddListener(() => PilihCabang(cabangLokal));
+                tombol.gameObject.SetActive(true);
+            } else {
+                tombol.gameObject.SetActive(false); // --- jaga-jaga kalau Panel 2 kebetulan punya lebih banyak tombol dari yang dibutuhin adegan ini ---
+            }
+        }
+
+        panelDipakai.SetActive(true);
     }
 
     void PilihCabang(PilihanCabang cabang)
     {
         if (!string.IsNullOrEmpty(cabang.setFlag)) flagCerita.Add(cabang.setFlag);
 
-        if (panelPilihan) panelPilihan.SetActive(false);
+        // --- TAMBAHAN: tutup panel yang SESUAI (adeganAktif masih adegan pilihan ini, belum
+        // pindah ke adegan lanjutan) ---
+        if (adeganAktif != null) {
+            GameObject panelDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? panelPilihan1 : panelPilihan2;
+            if (panelDipakai) panelDipakai.SetActive(false);
+        }
 
         if (cabang.adeganLanjutan != null) {
             MulaiSatuAdegan(cabang.adeganLanjutan);
