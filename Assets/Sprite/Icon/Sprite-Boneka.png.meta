@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a18e6d1ca8846120a8a607fab3d54b89
+guid: a89b8ebaec5073b87a6dd060ea80e441
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8380244588131867991
-    second: "\u2014Pngtree\u2014pixel art game supplies cute_6460041_0"
+      213: -5889037604490834071
+    second: Sprite-Boneka_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u2014Pngtree\u2014pixel art game supplies cute_6460041_0"
+      name: Sprite-Boneka_0
       rect:
         serializedVersion: 2
-        x: 95
-        y: 333
-        width: 995
-        height: 503
+        x: 9
+        y: 0
+        width: 49
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 75d5d7e6d0c9c4470800000000000000
-      internalID: 8380244588131867991
+      spriteID: 96f086b008fe54ea0800000000000000
+      internalID: -5889037604490834071
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u2014Pngtree\u2014pixel art game supplies cute_6460041_0": 8380244588131867991
+      Sprite-Boneka_0: -5889037604490834071
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

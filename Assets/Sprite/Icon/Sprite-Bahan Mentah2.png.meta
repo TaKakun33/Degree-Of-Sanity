@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1e38c931933a3f83aa779b6d47a394d2
+guid: 5762ad608e75aa6078497cc39db9c91c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8811889839026898965
-    second: keyboard_no_background_0
+      213: 7927322213772561105
+    second: Sprite-Bahan Mentah2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: keyboard_no_background_0
+      name: Sprite-Bahan Mentah2_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 1
         y: 0
-        width: 980
-        height: 980
+        width: 63
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: be77de8f0e0e5b580800000000000000
-      internalID: -8811889839026898965
+      spriteID: 1da0afb7d81830e60800000000000000
+      internalID: 7927322213772561105
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      keyboard_no_background_0: -8811889839026898965
+      Sprite-Bahan Mentah2_0: 7927322213772561105
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

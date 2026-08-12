@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: be8389436ab00ffacbb771ffa4c6972c
+guid: ba9d77916ed10c5aaaee633de6cef8ab
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7669502186461490479
-    second: kerajang_sayur_pixel_native_0
+      213: -339961577133883032
+    second: Sprite-Keyboard_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: kerajang_sayur_pixel_native_0
+      name: Sprite-Keyboard_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 36
-        height: 39
+        y: 16
+        width: 63
+        height: 31
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1d291eb6564709590800000000000000
-      internalID: -7669502186461490479
+      spriteID: 86147ad2fb6384bf0800000000000000
+      internalID: -339961577133883032
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      kerajang_sayur_pixel_native_0: -7669502186461490479
+      Sprite-Keyboard_0: -339961577133883032
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
