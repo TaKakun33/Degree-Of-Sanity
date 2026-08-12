@@ -15,6 +15,11 @@ MonoBehaviour:
   id: P_05
   ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 0
+  balikArahAndrew: 0
+  balikArahAnna: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
   baris:
   - jenis: 0
     namaTokoh: 
@@ -22,15 +27,23 @@ MonoBehaviour:
       diganti sejak dikasih ke Andrew.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
-    gambarPropUntukDitampilkan: {fileID: 1813628816210538444, guid: 3d5df7b17bf7874249ac774d15f4d1ed, type: 3}
+    gambarPropUntukDitampilkan: {fileID: 21300000, guid: 3d5df7b17bf7874249ac774d15f4d1ed, type: 3}
     sembunyikanGambarProp: 0
   - jenis: 1
     namaTokoh: Andrew
     teks: Segini.
     parameterUntukDitampilkan: Uang
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 3058730461592448298, guid: 5939d070ee234500086e57fe788d5f18, type: 3}
@@ -40,6 +53,10 @@ MonoBehaviour:
     teks: Cukup buat makan. Nggak cukup buat SPP Anna.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -49,6 +66,10 @@ MonoBehaviour:
     teks: Berarti aku harus kerja. Sambil nulis. Sambil ngurus Anna.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -58,6 +79,10 @@ MonoBehaviour:
     teks: ...bisa.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -67,6 +92,10 @@ MonoBehaviour:
     teks: Bilang lagi.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -76,6 +105,10 @@ MonoBehaviour:
     teks: Bisa.
     parameterUntukDitampilkan: 
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -86,6 +119,10 @@ MonoBehaviour:
       keluar rumah. Sekarang harus beneran kepake.
     parameterUntukDitampilkan: Toko
     munculKalauSanityDiBawah: 0
+    munculKalauFlagAktif: 
+    munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -96,7 +133,13 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
+    jamBaruSetelahAdegan: -1
+    sanityMinimalSetelahEfek: -1
+    paksaBukaThresholdKe: -1
+    aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
   adeganBerikutnya: {fileID: 11400000, guid: b14843c835b8be8058181058db6b21c9, type: 2}

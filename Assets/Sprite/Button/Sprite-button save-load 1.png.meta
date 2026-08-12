@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: da65144f1f16b184aa91b4c739a8265c
+guid: 1905376c3a18c31a6a8c724fb8dc834a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3128165015508839209
-    second: asset kertas_0
+      213: -2489720929917375217
+    second: Sprite-button save-load 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: asset kertas_0
+      name: Sprite-button save-load 1_0
       rect:
         serializedVersion: 2
-        x: 5
+        x: 0
         y: 0
-        width: 440
-        height: 560
+        width: 1280
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7d49acbfd768694d0800000000000000
-      internalID: -3128165015508839209
+      spriteID: f0d6b6e510cb27dd0800000000000000
+      internalID: -2489720929917375217
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      asset kertas_0: -3128165015508839209
+      Sprite-button save-load 1_0: -2489720929917375217
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

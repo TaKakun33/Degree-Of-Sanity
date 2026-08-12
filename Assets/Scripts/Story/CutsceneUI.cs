@@ -407,10 +407,16 @@ public class CutsceneUI : MonoBehaviour
         // --- TAMBAHAN: tampilkan/sembunyikan gambar prop DI DEPAN LAYAR (bukan di world) ---
         if (gambarProp != null) {
             if (b.gambarPropUntukDitampilkan != null) {
+                Debug.Log($"[CutsceneUI] Gambar Prop diterapkan: '{b.gambarPropUntukDitampilkan.name}' (baris ini)"); // --- SEMENTARA ---
                 gambarProp.sprite = b.gambarPropUntukDitampilkan;
                 gambarProp.gameObject.SetActive(true);
             } else if (b.sembunyikanGambarProp) {
                 gambarProp.gameObject.SetActive(false);
+            } else if (gambarProp.gameObject.activeSelf) {
+                // --- SEMENTARA: peringatan - baris ini gak isi Gambar Prop DAN gak centang
+                // Sembunyikan, tapi Gambar Prop LAGI KELIATAN dari baris sebelumnya - sprite yang
+                // nongol sekarang itu SISA baris lama, bukan buat baris ini ---
+                Debug.LogWarning($"[CutsceneUI] Baris ini ('{(b.teks?.Length > 30 ? b.teks.Substring(0, 30) : b.teks)}...') gak isi Gambar Prop Untuk Ditampilkan DAN gak centang Sembunyikan Gambar Prop - sprite '{gambarProp.sprite?.name}' yang keliatan sekarang itu SISA dari baris sebelumnya!");
             }
         }
 

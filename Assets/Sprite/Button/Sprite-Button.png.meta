@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3d5df7b17bf7874249ac774d15f4d1ed
+guid: 01865cdbf7b1101c98f0046afb4cb788
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1813628816210538444
-    second: Sprite-Laci_0
+      213: -1288131591317259210
+    second: Sprite-Button_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sprite-Laci_0
+      name: Sprite-Button_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 64
+        width: 512
+        height: 124
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ccf24a0accd4b2910800000000000000
-      internalID: 1813628816210538444
+      spriteID: 63c739b7423af1ee0800000000000000
+      internalID: -1288131591317259210
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Sprite-Laci_0: 1813628816210538444
+      Sprite-Button_0: -1288131591317259210
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

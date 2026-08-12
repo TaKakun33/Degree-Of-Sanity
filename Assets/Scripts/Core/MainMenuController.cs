@@ -9,7 +9,6 @@ public class MainMenuController : MonoBehaviour
     [Header("Referensi Panel UI")]
     public GameObject panelUtama;
     public GameObject panelLoadGame;
-    public GameObject panelPengaturan;
 
     [Header("Tombol Continue")]
     [Tooltip("Tombol 'Continue' di menu utama - otomatis dinonaktifkan kalau belum ada save sama sekali")]
@@ -58,7 +57,6 @@ public class MainMenuController : MonoBehaviour
     { 
         panelUtama.SetActive(false); 
         panelLoadGame.SetActive(true);
-        panelPengaturan.SetActive(false);
         ResetModeHapus(); // --- TAMBAHAN: tiap kali panel Load Game dibuka dari Main Menu, mulai dari mode Load biasa ---
         RefreshDaftarLoad();
     }
@@ -96,19 +94,11 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    public void BukaMenuPengaturan()
-    {
-        panelUtama.SetActive(false);
-        panelLoadGame.SetActive(false);
-        panelPengaturan.SetActive(true);
-    }
-
     // --- FUNGSI KEMBALI (BACK) ---
     public void KembaliKeMenuUtama()
     {
         panelUtama.SetActive(true);
         panelLoadGame.SetActive(false);
-        panelPengaturan.SetActive(false);
         ResetModeHapus(); // --- TAMBAHAN: pastikan lain kali dibuka, mulai dari mode Load biasa ---
         UpdateTombolLanjutkan(); // --- TAMBAHAN: refresh status tombol Continue tiap balik ke menu utama ---
     }
