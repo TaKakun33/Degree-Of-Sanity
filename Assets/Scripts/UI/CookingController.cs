@@ -24,6 +24,10 @@ public class CookingController : MonoBehaviour
     private JenisItem bahanTerpilih = JenisItem.Kosong;
     private bool sedangMemasak = false;
 
+    [Header("TAMBAHAN")]
+    [Tooltip("Berapa jam waktu in-game yang kelewat tiap kali selesai masak")]
+    public float jamYangDilewatiSaatMasak = 1f;
+
     void OnEnable()
     {
         ResetDetail();
@@ -106,7 +110,10 @@ public class CookingController : MonoBehaviour
         }
 
         Debug.Log("Memasak selesai! Makanan disimpan di Inventory.");
-        
+
+        // --- TAMBAHAN: masak beneran makan waktu in-game ~1 jam ---
+        if (GameManager.Instance != null) GameManager.Instance.jamSaatIni += jamYangDilewatiSaatMasak;
+
         sedangMemasak = false;
         UpdateTampilanBahan();
         ResetDetail();

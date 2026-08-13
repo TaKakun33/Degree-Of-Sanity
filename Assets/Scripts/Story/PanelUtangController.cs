@@ -27,10 +27,17 @@ public class PanelUtangController : MonoBehaviour
 
     public void Buka()
     {
-        if (panelUtang) panelUtang.SetActive(true);
-
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null) player.SetMenuStatus(true);
+        // --- FIX: pakai GameManager.BukaUtangAman() - satu sumber kebenaran yang sama dipakai
+        // sistem ApakahAdaPanelAktif()/UpdateInteractableTombolPanel(), biar gak ada 2 field
+        // panelUtang yang beda-beda kayak sebelumnya (rawan gak sinkron) ---
+        if (GameManager.Instance != null) {
+            if (GameManager.Instance.ApakahAdaPanelAktif()) return; // udah ada panel lain aktif
+            GameManager.Instance.BukaUtangAman();
+        } else if (panelUtang) {
+            panelUtang.SetActive(true);
+            PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+            if (player != null) player.SetMenuStatus(true);
+        }
 
         BuatDaftarMinggu();
         UpdateSisaUtang();
@@ -42,6 +49,8 @@ public class PanelUtangController : MonoBehaviour
 
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(false);
+
+        if (GameManager.Instance != null) GameManager.Instance.UpdateInteractableTombolPanel(); // --- TAMBAHAN ---
     }
 
     void BuatDaftarMinggu()

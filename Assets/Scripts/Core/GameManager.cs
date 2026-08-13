@@ -56,6 +56,13 @@ public class GameManager : MonoBehaviour
     public Slider sliderProgresSkripsi;
     public Slider sliderLapar;
     public Slider sliderSanity;
+    [Header("TAMBAHAN: Teks di DALAM tiap slider (opsional)")]
+    [Tooltip("TMP Text yang ditaruh SEBAGAI CHILD di dalam Slider Progres Skripsi, nampilin angkanya")]
+    public TextMeshProUGUI textDalamSliderSkripsi;
+    [Tooltip("TMP Text yang ditaruh SEBAGAI CHILD di dalam Slider Lapar, nampilin angkanya")]
+    public TextMeshProUGUI textDalamSliderLapar;
+    [Tooltip("TMP Text yang ditaruh SEBAGAI CHILD di dalam Slider Sanity, nampilin angkanya")]
+    public TextMeshProUGUI textDalamSliderSanity;
     public TextMeshProUGUI textMonologAkhirHari;
     public string monologAkhirHariBerikutnya = "";
 
@@ -85,14 +92,18 @@ public class GameManager : MonoBehaviour
     [Header("Panel Game")]
     public GameObject panelToko;
     public GameObject panelInventory;
+    [Tooltip("TAMBAHAN: sama kayak Toko/Inventory/Masak/Kerja - satu sumber kebenaran tunggal buat Panel Utang")]
+    public GameObject panelUtang;
     public GameObject panelMenuKerja;
     public GameObject panelMasak;
     public GameObject playerObj;
     public Transform posisiDepanKasur;
 
     [Header("Status Saat Tidur/Ganti Hari")]
-    [Tooltip("TUNABLE: lapar berkurang tiap ganti hari")]
-    public float penguranganLaparSaatTidur = 30f;
+    [Tooltip("TAMBAHAN: Lapar berkurang segini pas tidur - dikalibrasi biar dari 100 turun ke ~20. BOLEH turun di bawah itu kalau Lapar sebelum tidur emang udah rendah (gak ada proteksi floor lagi).")]
+    public float penguranganLaparSaatTidur = 80f;
+    [Tooltip("TAMBAHAN: pengurangan TAMBAHAN (di atas yang normal) kalau hari itu abis kerja part-time - lebih cape, jadi lebih parah")]
+    public float penguranganTambahanLaparJikaKerja = 20f;
     [Tooltip("TAMBAHAN: Sanity naik segini kalau tidur SEBELUM Jam Batas Tidur Awal (misal jam 20)")]
     public float sanityNaikTidurAwal = 5f;
     [Tooltip("TAMBAHAN: Sanity turun segini kalau tidur SETELAH/TEPAT Jam Batas Tidur Awal")]
@@ -160,6 +171,12 @@ public class GameManager : MonoBehaviour
     // hari, TAPI aksinya sendiri tetap bisa dilakukan berkali-kali (gak diblokir kayak Skripsi/Kerja) ---
     private bool sudahMandiHariIni = false;
     private bool sudahInteraksiAnnaHariIni = false;
+    // --- TAMBAHAN: bonus toleransi typo HARIAN dari Kopi Espresso (reset tiap GantiHari) ---
+    private int bonusTypoDariKopiHariIni = 0;
+    // --- TAMBAHAN: penanda PERMANEN - boneka udah dikasih ke Anna (gak di-reset harian) ---
+    private bool sudahKasihBonekaKeAnna = false;
+    [Tooltip("TUNABLE: pengali bonus Sanity dari Interaksi Anna, berlaku SETERUSNYA begitu Boneka pernah dikasih ke Anna")]
+    public float pengaliSanityDariBonekaDiberikan = 1.5f;
 
     [Header("Tombol HUD")]
     public GameObject tombolBukaToko;
@@ -382,6 +399,11 @@ public class GameManager : MonoBehaviour
         if (sliderProgresSkripsi) sliderProgresSkripsi.value = progresSkripsi;
         if (sliderLapar) sliderLapar.value = lapar;
         if (sliderSanity) sliderSanity.value = sanity;
+
+        // --- TAMBAHAN: teks angka DI DALAM tiap slider ---
+        if (textDalamSliderSkripsi) textDalamSliderSkripsi.text = Mathf.RoundToInt(progresSkripsi) + "%";
+        if (textDalamSliderLapar) textDalamSliderLapar.text = Mathf.RoundToInt(lapar) + "%";
+        if (textDalamSliderSanity) textDalamSliderSanity.text = Mathf.RoundToInt(sanity) + "%";
     }
 
     public void SetJedaWaktu(bool jeda) { waktuBerjalan = !jeda; }
@@ -399,6 +421,12 @@ public class GameManager : MonoBehaviour
 
     // --- TAMBAHAN: accessor buat flag Mandi & Interaksi Anna ---
     public bool SudahMandiHariIni { get => sudahMandiHariIni; set => sudahMandiHariIni = value; }
+
+    // --- TAMBAHAN: accessor buat bonus typo Kopi & penanda Boneka ---
+    public int BonusTypoDariKopiHariIni => bonusTypoDariKopiHariIni;
+    public void TambahBonusTypoDariKopi(int jumlah) { bonusTypoDariKopiHariIni += jumlah; }
+    public bool SudahKasihBonekaKeAnna { get => sudahKasihBonekaKeAnna; set => sudahKasihBonekaKeAnna = value; }
+    public void TandaiSudahKasihBonekaKeAnna() { sudahKasihBonekaKeAnna = true; }
     public void TandaiSudahMandiHariIni() { sudahMandiHariIni = true; }
     public bool SudahInteraksiAnnaHariIni { get => sudahInteraksiAnnaHariIni; set => sudahInteraksiAnnaHariIni = value; }
     public void TandaiSudahInteraksiAnnaHariIni() { sudahInteraksiAnnaHariIni = true; }
@@ -407,6 +435,17 @@ public class GameManager : MonoBehaviour
     {
         if (tombolBukaToko) tombolBukaToko.SetActive(aktif);
         if (tombolBukaInventory) tombolBukaInventory.SetActive(aktif);
+
+        // --- TAMBAHAN: Tombol Utang ikut hilang sementara (misal pas tidur), TAPI pas nyala
+        // lagi HARUS lewat UpdateTombolUtang() (bukan SetActive(true) langsung) - biar tetap
+        // respect aturan "cuma kelihatan kalau utangBank > 0", gak asal nongol lagi. ---
+        if (aktif) {
+            UpdateTombolUtang();
+        } else {
+            if (tombolUtang) tombolUtang.SetActive(false);
+        }
+
+        UpdateInteractableTombolPanel(); // --- sinkronin status interactable begitu tombol nyala/mati ---
     }
 
     // ================== PARAMETER: SANITY / LAPAR / UANG / SKRIPSI ==================
@@ -698,9 +737,12 @@ public class GameManager : MonoBehaviour
         if (panelInventory) panelInventory.SetActive(false);
         if (panelMenuKerja) panelMenuKerja.SetActive(false);
         if (panelMasak) panelMasak.SetActive(false);
+        if (panelUtang) panelUtang.SetActive(false); // --- TAMBAHAN ---
 
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(false);
+
+        UpdateInteractableTombolPanel(); // --- TAMBAHAN ---
     }
 
     public bool ApakahAdaPanelAktif()
@@ -708,19 +750,50 @@ public class GameManager : MonoBehaviour
         return (panelToko && panelToko.activeSelf) ||
                (panelInventory && panelInventory.activeSelf) ||
                (panelMenuKerja && panelMenuKerja.activeSelf) ||
-               (panelMasak && panelMasak.activeSelf);
+               (panelMasak && panelMasak.activeSelf) ||
+               (panelUtang && panelUtang.activeSelf); // --- TAMBAHAN ---
+    }
+
+    // --- TAMBAHAN: Toko/Inventory/Utang saling ngunci tombol masing-masing - kalau salah satu
+    // lagi kebuka, 2 tombol lainnya jadi gak bisa diklik (tetap KELIHATAN, cuma abu-abu),
+    // biar gak bisa numpuk 2 panel sekaligus lewat celah manapun. Dijadiin PUBLIC biar bisa
+    // dipanggil ShopController/InventoryUIController pas mereka nutup panel-nya sendiri. ---
+    public void UpdateInteractableTombolPanel()
+    {
+        bool tokoAktif = panelToko && panelToko.activeSelf;
+        bool inventoryAktif = panelInventory && panelInventory.activeSelf;
+        bool utangAktif = panelUtang && panelUtang.activeSelf;
+        bool adaYangAktif = tokoAktif || inventoryAktif || utangAktif;
+
+        if (tombolBukaToko != null) {
+            // --- FIX: GetComponentInChildren, BUKAN GetComponent - kalau komponen Button ada
+            // di CHILD (bukan langsung di GameObject yang di-drag ke field ini), GetComponent()
+            // gagal nemu diam-diam, bikin interactable gak pernah kesetel balik ---
+            Button btn = tombolBukaToko.GetComponentInChildren<Button>();
+            if (btn != null) btn.interactable = !adaYangAktif || tokoAktif;
+        }
+        if (uiTombolInventory != null) {
+            Button btn = uiTombolInventory.GetComponentInChildren<Button>();
+            if (btn != null) btn.interactable = !adaYangAktif || inventoryAktif;
+        }
+        if (tombolUtang != null) {
+            Button btn = tombolUtang.GetComponentInChildren<Button>();
+            if (btn != null) btn.interactable = !adaYangAktif || utangAktif;
+        }
     }
 
     public void BukaTokoAman()
     {
         if (ApakahAdaPanelAktif()) return;
         if (panelToko) { panelToko.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
+        UpdateInteractableTombolPanel(); // --- TAMBAHAN ---
     }
 
     public void BukaInventoryAman()
     {
         if (ApakahAdaPanelAktif()) return;
         if (panelInventory) { panelInventory.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
+        UpdateInteractableTombolPanel(); // --- TAMBAHAN ---
     }
 
     public void BukaMasakAman()
@@ -735,19 +808,36 @@ public class GameManager : MonoBehaviour
         if (panelMenuKerja) { panelMenuKerja.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
     }
 
+    // --- TAMBAHAN: sama pola-nya kayak BukaTokoAman/BukaInventoryAman, dipakai PanelUtangController ---
+    public void BukaUtangAman()
+    {
+        if (ApakahAdaPanelAktif()) return;
+        if (panelUtang) { panelUtang.SetActive(true); PlayerController p = Object.FindFirstObjectByType<PlayerController>(); if (p) p.SetMenuStatus(true); }
+        UpdateInteractableTombolPanel();
+    }
+
     // ================== GANTI HARI ==================
 
     public void GantiHari()
     {
         MajukanTanggal();
+        // --- TAMBAHAN: tangkep status "udah kerja part-time hari ini" SEBELUM di-reset ke false
+        // di bawah - dipakai buat nentuin pengurangan Lapar TAMBAHAN abis tidur (lebih parah kalau kerja) ---
+        bool sudahKerjaPartTimeHariIniSebelumReset = kerjaPartTimeSudahDilakukanHariIni;
+
         jamSaatIni = jamMulai;
         kopiDigunakanHariIni = false;
         skripsiSudahDikerjakanHariIni = false;
         kerjaPartTimeSudahDilakukanHariIni = false;
         sudahMandiHariIni = false; // --- TAMBAHAN ---
+        bonusTypoDariKopiHariIni = 0; // --- TAMBAHAN: reset harian, Kopi cuma berlaku 1 hari ---
         sudahInteraksiAnnaHariIni = false; // --- TAMBAHAN ---
 
-        KurangiLapar(penguranganLaparSaatTidur);
+        // --- TAMBAHAN: Lapar berkurang pas tidur, dikalibrasi biar dari 100 turun ke ~20 -
+        // BOLEH turun di bawah itu (gak ada proteksi floor lagi) kalau Lapar sebelum tidur
+        // emang udah rendah. Kalau abis kerja part-time hari itu, pengurangannya lebih besar. ---
+        float totalPengurangan = penguranganLaparSaatTidur + (sudahKerjaPartTimeHariIniSebelumReset ? penguranganTambahanLaparJikaKerja : 0f);
+        KurangiLapar(totalPengurangan);
         // --- pemulihanSanitySaatTidur (bonus flat) DIHAPUS - diganti logic kondisional jam
         // di ProsesTidur() (TambahSanity/KurangiSanity sesuai jamBatasTidurAwal) ---
 

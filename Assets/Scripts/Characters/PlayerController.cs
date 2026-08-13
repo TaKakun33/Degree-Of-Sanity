@@ -185,6 +185,10 @@ public class PlayerController : MonoBehaviour
     // Fungsi deteksi objek dengan tag
     bool CekApakahBarangInteraktif(GameObject obj)
     {
+        // --- TAMBAHAN: gak ada objek yang dianggap "interaktif" sama sekali selama cutscene
+        // aktif - Kasur/Kompor/dll gak bisa diklik walau kliknya "tembus" sampai ke situ ---
+        if (GameManager.Instance != null && GameManager.Instance.sedangDalamCutscene) return false;
+
         return obj.CompareTag("Door") || obj.CompareTag("Bed") || 
                obj.CompareTag("Desk") || obj.CompareTag("ExitDoor") || 
                obj.CompareTag("Kompor") || obj.CompareTag("Mandi") ||

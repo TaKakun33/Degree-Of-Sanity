@@ -135,6 +135,9 @@ public class MinigameSkripsiManager : MonoBehaviour
             }
         }
 
+        // --- TAMBAHAN: bonus toleransi typo HARIAN dari Kopi Espresso (terpisah dari Keyboard yang permanen) ---
+        maxTypoEfektif += GameManager.Instance.BonusTypoDariKopiHariIni;
+
         minigameAktif = true;
         jumlahTypoSaatIni = 0;
         progresSesiIni = 0f;

@@ -100,7 +100,13 @@ public class CeritaManager : MonoBehaviour
                 // --- TAMBAHAN: Sanity dari ngobrol sama Anna, TAPI cuma SEKALI per hari -
                 // ngobrol bisa dilakukan berkali-kali, cuma bonus pertama di hari itu yang kepake ---
                 if (GameManager.Instance != null && !GameManager.Instance.SudahInteraksiAnnaHariIni) {
-                    GameManager.Instance.TambahSanity(sanityDariInteraksiAnna);
+                    // --- TAMBAHAN: kalau Boneka udah pernah dikasih ke Anna, EFEKTIVITAS pemulihan
+                    // ini dikali lebih besar (sesuai proposal item Boneka) ---
+                    float sanityFinal = sanityDariInteraksiAnna;
+                    if (GameManager.Instance.SudahKasihBonekaKeAnna) {
+                        sanityFinal *= GameManager.Instance.pengaliSanityDariBonekaDiberikan;
+                    }
+                    GameManager.Instance.TambahSanity(sanityFinal);
                     GameManager.Instance.TandaiSudahInteraksiAnnaHariIni();
                 }
 
