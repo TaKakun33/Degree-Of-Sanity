@@ -63,32 +63,34 @@ public class SanityDistortionEffect : MonoBehaviour
 
     void LateUpdate()
     {
-        // --- FIX: pindah ke LateUpdate() (bukan Update()), biar prosesnya sefase sama CameraController
-        // yang juga jalan di LateUpdate() - ngurangin kemungkinan tabrakan urutan eksekusi antar script. ---
         if (GameManager.Instance == null) return;
 
         float sanity = GameManager.Instance.sanity;
         float ambang = GameManager.Instance.ambangSanityDistorsi;
         float lapar = GameManager.Instance.lapar;
 
-        // --- TAMBAHAN: kalau lagi di-paksa aktif (dari CutsceneUI), pakai intensitas paksa itu,
-        // abaikan Sanity/Lapar beneran buat sementara ---
         float targetIntensitas;
-        if (paksaAktif) {
+
+        // --- LOGIKA BARU: Prioritas matikan distorsi ---
+        // 1. Jika Good Ending, MATIKAN total (abaikan semua perintah lain)
+        // 2. Jika Cutscene biasa (Main Event) DAN BUKAN Bad Ending, MATIKAN
+        // 3. Jika sedang dipaksa aktif oleh sistem (paksaAktif), NYALAKAN
+        // 4. Jika tidak ada kondisi di atas, gunakan kalkulasi normal (Sanity/Lapar)
+        
+        bool sedangDalamCutsceneBiasa = GameManager.Instance.sedangDalamCutscene && !GameManager.Instance.endingSudahDipicu;
+        
+        if (GameManager.Instance.sedangDalamGoodEnding) {
+            targetIntensitas = 0f;
+        } 
+        else if (sedangDalamCutsceneBiasa) {
+            targetIntensitas = 0f;
+        }
+        else if (paksaAktif) {
             targetIntensitas = intensitasPaksa;
-        } else {
-            float dariSanity = 0f;
-            if (sanity < ambang) {
-                dariSanity = Mathf.InverseLerp(ambang, 0f, sanity);
-            }
-
-            // --- TAMBAHAN: distorsi dari Lapar, pola sama persis kayak Sanity ---
-            float dariLapar = 0f;
-            if (lapar < ambangLaparDistorsi) {
-                dariLapar = Mathf.InverseLerp(ambangLaparDistorsi, 0f, lapar);
-            }
-
-            // --- Ambil yang PALING PARAH dari dua-duanya, biar efeknya reaktif ke krisis manapun yang lebih berat ---
+        } 
+        else {
+            float dariSanity = (sanity < ambang) ? Mathf.InverseLerp(ambang, 0f, sanity) : 0f;
+            float dariLapar = (lapar < GameManager.Instance.ambangLaparKritis) ? Mathf.InverseLerp(GameManager.Instance.ambangLaparKritis, 0f, lapar) : 0f;
             targetIntensitas = Mathf.Max(dariSanity, dariLapar);
         }
 

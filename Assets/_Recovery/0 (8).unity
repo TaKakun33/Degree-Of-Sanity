@@ -8707,135 +8707,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1622870732}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &505686412
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 505686414}
-  - component: {fileID: 505686413}
-  m_Layer: 0
-  m_Name: Sound
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!82 &505686413
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 505686412}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!4 &505686414
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 505686412}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.46371, y: -0.69232, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &518501086
 GameObject:
   m_ObjectHideFlags: 0
@@ -12228,10 +12099,6 @@ MonoBehaviour:
   objekPintuTerbuka: {fileID: 1193509420}
   objekPintuTertutup: {fileID: 2094839337}
   mulaiTerbuka: 0
-  audioSourcePintu: {fileID: 505686413}
-  klipPintuTerbuka: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  klipPintuTertutup: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  volumePintu: 0.8
 --- !u!4 &725336641
 Transform:
   m_ObjectHideFlags: 0
@@ -14653,8 +14520,6 @@ MonoBehaviour:
   player: {fileID: 384426250}
   pintuExit: {fileID: 1878991560}
   zonaStopKerja: {fileID: 1266313849}
-  layarTransisi: {fileID: 1929499850}
-  durasiFade: 0.5
 --- !u!114 &841803070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14741,10 +14606,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
   destination: {fileID: 1135979390}
   lantaiTujuan: 1
-  audioSourcePintu: {fileID: 505686413}
-  klipNaik: {fileID: 8300000, guid: ab648bca0f43145d0863fd11a4d2828a, type: 3}
-  klipTurun: {fileID: 8300000, guid: ab648bca0f43145d0863fd11a4d2828a, type: 3}
-  volumeAudio: 0.8
 --- !u!61 &846486971
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15420,7 +15281,6 @@ MonoBehaviour:
   posisiDepanKasur: {fileID: 338105787}
   penguranganLaparSaatTidur: 80
   penguranganTambahanLaparJikaKerja: 20
-  laparMinimumSetelahTidur: 10
   sanityNaikTidurAwal: 5
   sanityTurunTidurTerlambat: 10
   jamBatasTidurAwal: 20
@@ -15442,13 +15302,11 @@ MonoBehaviour:
   panelBadEnding4Waktu: {fileID: 537008489}
   adeganBadEnding4Pertama: {fileID: 11400000, guid: 63b20030ef48009bb8f3031641e09cb6, type: 2}
   textLayarAkhirBadEnding4: {fileID: 129763309}
-  endingSudahDipicu: 0
   sedangDalamCutscene: 0
   batasHariLaparKritisBerturutTurut: 3
   pengaliSanityDariBonekaDiberikan: 1.5
   tombolBukaToko: {fileID: 1921724287}
   tombolBukaInventory: {fileID: 986832646}
-  sedangDalamGoodEnding: 0
   hariMingguSaatHariPertama: 1
   utangBank: 0
   bungaHarianUtang: 0.003
@@ -20852,10 +20710,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
   destination: {fileID: 846486973}
   lantaiTujuan: 2
-  audioSourcePintu: {fileID: 505686413}
-  klipNaik: {fileID: 8300000, guid: ab648bca0f43145d0863fd11a4d2828a, type: 3}
-  klipTurun: {fileID: 8300000, guid: ab648bca0f43145d0863fd11a4d2828a, type: 3}
-  volumeAudio: 0.8
 --- !u!61 &1135979392
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -21282,10 +21136,6 @@ MonoBehaviour:
   objekPintuTerbuka: {fileID: 953581779}
   objekPintuTertutup: {fileID: 2133617728}
   mulaiTerbuka: 0
-  audioSourcePintu: {fileID: 505686413}
-  klipPintuTerbuka: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  klipPintuTertutup: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  volumePintu: 0.8
 --- !u!4 &1145075448
 Transform:
   m_ObjectHideFlags: 0
@@ -25758,10 +25608,6 @@ MonoBehaviour:
   objekPintuTerbuka: {fileID: 1498791033}
   objekPintuTertutup: {fileID: 915587624}
   mulaiTerbuka: 0
-  audioSourcePintu: {fileID: 505686413}
-  klipPintuTerbuka: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  klipPintuTertutup: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  volumePintu: 0.8
 --- !u!4 &1366149767
 Transform:
   m_ObjectHideFlags: 0
@@ -35883,10 +35729,6 @@ MonoBehaviour:
   objekPintuTerbuka: {fileID: 2138448447}
   objekPintuTertutup: {fileID: 1741143317}
   mulaiTerbuka: 0
-  audioSourcePintu: {fileID: 505686413}
-  klipPintuTerbuka: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  klipPintuTertutup: {fileID: 8300000, guid: a54a6e2e7bee2d0fabe19e6dfe12488f, type: 3}
-  volumePintu: 0.8
 --- !u!1 &1883442025
 GameObject:
   m_ObjectHideFlags: 0
@@ -40563,9 +40405,6 @@ MonoBehaviour:
   btnMasak: {fileID: 1738613912}
   textTombolMasak: {fileID: 2064752754}
   jamYangDilewatiSaatMasak: 1
-  audioSourceMasak: {fileID: 505686413}
-  klipSuaraMemasak: {fileID: 8300000, guid: 00eacc2d0065b0963ad068a9734684e5, type: 3}
-  volumeMasak: 0.8
 --- !u!114 &2035119744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43930,4 +43769,3 @@ SceneRoots:
   - {fileID: 631609807}
   - {fileID: 1699113849}
   - {fileID: 1552548921}
-  - {fileID: 505686414}

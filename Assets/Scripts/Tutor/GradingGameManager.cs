@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections;
 
 // Nama sengaja dibuat "GradingGameManager" (bukan "GameManager") supaya tidak
 // bentrok dengan GameManager utama yang sudah ada di project (sistem hari/uang/sanity).
@@ -33,6 +35,10 @@ public class GradingGameManager : MonoBehaviour
     [SerializeField] private float jamDilewatiShift = 3f;
     [SerializeField] private string namaSceneUtama = "MainScene";
 
+    [Header("Transisi Layar")]
+    public Image layarTransisi;
+    public float durasiFade = 0.5f;
+
     private List<List<QuestionData>> allSheets = new List<List<QuestionData>>();
     private int currentSheetIndex = 0;
     private int totalCorrectGradings = 0;
@@ -45,6 +51,7 @@ public class GradingGameManager : MonoBehaviour
 
     private void Start()
     {
+        if (layarTransisi != null) StartCoroutine(FadeMasuk());
         GenerateAllSheets();
         LoadCurrentSheet();
     }
@@ -102,6 +109,40 @@ public class GradingGameManager : MonoBehaviour
         }
     }
 
+    private IEnumerator FadeMasuk()
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(1f, 0f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+            layarTransisi.raycastTarget = false;
+        }
+    }
+
+    private IEnumerator FadeKeluar(string namaScene)
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(0f, 1f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+        }
+        SceneManager.LoadScene(namaScene, LoadSceneMode.Single);
+    }
+
     // Dipanggil tombol "Pulang Lebih Awal" (opsional) kalau ada, sudahi sesi tanpa nilai kertas yang belum selesai
     public void PulangLebihAwal()
     {
@@ -130,6 +171,6 @@ public class GradingGameManager : MonoBehaviour
     // Dipanggil tombol di ScorePanel (misal "Pulang"/"Selesai") setelah pemain baca skornya
     public void KembaliKeMainScene()
     {
-        SceneManager.LoadScene(namaSceneUtama, LoadSceneMode.Single);
+        StartCoroutine(FadeKeluar(namaSceneUtama));
     }
 }

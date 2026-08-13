@@ -23,15 +23,45 @@ public class CookingController : MonoBehaviour
 
     private JenisItem bahanTerpilih = JenisItem.Kosong;
     private bool sedangMemasak = false;
+    private Coroutine coroutineMasak; // --- TAMBAHAN: disimpan biar bisa distop manual (lihat OnDisable) ---
 
     [Header("TAMBAHAN")]
     [Tooltip("Berapa jam waktu in-game yang kelewat tiap kali selesai masak")]
     public float jamYangDilewatiSaatMasak = 1f;
 
+    [Header("Audio Efek Masak")]
+    [Tooltip("Drag AudioSource ke sini (bisa dari GameObject ini)")]
+    public AudioSource audioSourceMasak;
+    [Tooltip("Drag file suara masak (durasi 3 detik atau loop) ke sini")]
+    public AudioClip klipSuaraMemasak;
+    [Range(0f, 1f)]
+    public float volumeMasak = 0.8f;
+
     void OnEnable()
     {
         ResetDetail();
         UpdateTampilanBahan();
+    }
+
+    // --- TAMBAHAN: kepanggil OTOMATIS begitu panelMasak di-SetActive(false) - termasuk saat
+    // GameManager.TutupSemuaPanelGame() matiin paksa panel ini gara-gara BukaPause(). Sebelumnya,
+    // coroutine ProsesMasak() ikut kestop paksa (bawaan Unity kalau GameObject-nya nonaktif) TAPI
+    // sedangMemasak keburu nyangkut true selamanya - tombol jadi ke-lock permanen di "Memasak...".
+    // Bahan belum kepotong (baru dikurangi di baris PALING AKHIR ProsesMasak), jadi aman dibatalkan
+    // di tengah jalan tanpa bahan ilang percuma. ---
+    void OnDisable()
+    {
+        if (!sedangMemasak) return;
+
+        if (coroutineMasak != null) StopCoroutine(coroutineMasak);
+        
+        // --- TAMBAHAN: Pastikan suara berhenti jika dibatalkan paksa ---
+        if (audioSourceMasak != null) audioSourceMasak.Stop();
+
+        coroutineMasak = null;
+        sedangMemasak = false;
+
+        Debug.Log("[CookingController] Proses masak dibatalkan karena panel ditutup paksa.");
     }
 
     public void UpdateTampilanBahan()
@@ -80,7 +110,7 @@ public class CookingController : MonoBehaviour
 
     public void MulaiMasak()
     {
-        StartCoroutine(ProsesMasak());
+        coroutineMasak = StartCoroutine(ProsesMasak());
     }
 
     private IEnumerator ProsesMasak()
@@ -89,8 +119,21 @@ public class CookingController : MonoBehaviour
         btnMasak.interactable = false;
         textTombolMasak.text = "Memasak...";
 
+        // --- TAMBAHAN: Mulai mainkan suara masak ---
+        if (audioSourceMasak != null && klipSuaraMemasak != null) {
+            audioSourceMasak.clip = klipSuaraMemasak;
+            audioSourceMasak.loop = true; // Supaya suaranya berulang selama durasi
+            audioSourceMasak.volume = volumeMasak;
+            audioSourceMasak.Play();
+        }
+
         // Jeda waktu memasak (misal: 3 detik)
         yield return new WaitForSeconds(3f);
+
+        // --- TAMBAHAN: Berhentikan suara masak setelah 3 detik ---
+        if (audioSourceMasak != null) {
+            audioSourceMasak.Stop();
+        }
 
         // Eksekusi penambahan makanan
         switch (bahanTerpilih)
@@ -111,10 +154,10 @@ public class CookingController : MonoBehaviour
 
         Debug.Log("Memasak selesai! Makanan disimpan di Inventory.");
 
-        // --- TAMBAHAN: masak beneran makan waktu in-game ~1 jam ---
         if (GameManager.Instance != null) GameManager.Instance.jamSaatIni += jamYangDilewatiSaatMasak;
 
         sedangMemasak = false;
+        coroutineMasak = null;
         UpdateTampilanBahan();
         ResetDetail();
     }

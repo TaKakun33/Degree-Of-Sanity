@@ -100,10 +100,12 @@ public class GameManager : MonoBehaviour
     public Transform posisiDepanKasur;
 
     [Header("Status Saat Tidur/Ganti Hari")]
-    [Tooltip("TAMBAHAN: Lapar berkurang segini pas tidur - dikalibrasi biar dari 100 turun ke ~20. BOLEH turun di bawah itu kalau Lapar sebelum tidur emang udah rendah (gak ada proteksi floor lagi).")]
+    [Tooltip("TAMBAHAN: Lapar berkurang segini pas tidur - dikalibrasi biar dari 100 turun ke ~20.")]
     public float penguranganLaparSaatTidur = 80f;
     [Tooltip("TAMBAHAN: pengurangan TAMBAHAN (di atas yang normal) kalau hari itu abis kerja part-time - lebih cape, jadi lebih parah")]
     public float penguranganTambahanLaparJikaKerja = 20f;
+    [Tooltip("TAMBAHAN: begitu bangun tidur, Lapar DIJAMIN gak bakal di bawah angka ini - floor ini SELALU berlaku (walau Lapar sebelum tidur udah di bawah angka ini juga), jadi tidur gak akan pernah bikin Lapar makin parah dari ini")]
+    public float laparMinimumSetelahTidur = 10f;
     [Tooltip("TAMBAHAN: Sanity naik segini kalau tidur SEBELUM Jam Batas Tidur Awal (misal jam 20)")]
     public float sanityNaikTidurAwal = 5f;
     [Tooltip("TAMBAHAN: Sanity turun segini kalau tidur SETELAH/TEPAT Jam Batas Tidur Awal")]
@@ -150,7 +152,7 @@ public class GameManager : MonoBehaviour
     [Tooltip("TAMBAHAN: teks LAYAR AKHIR di panelBadEnding4Waktu")]
     public TextMeshProUGUI textLayarAkhirBadEnding4;
 
-    private bool endingSudahDipicu = false;
+    public bool endingSudahDipicu = false;
 
     [Header("TAMBAHAN: Status Cutscene & Bonus Sementara")]
     [Tooltip("True selagi CutsceneUI lagi muter apapun - dipakai buat NUNDA cek Bad Ending 1 sampai kontrol balik ke pemain (naskah ME2: 'Bad Ending 1 tidak boleh terpicu selama cutscene berlangsung')")]
@@ -181,6 +183,8 @@ public class GameManager : MonoBehaviour
     [Header("Tombol HUD")]
     public GameObject tombolBukaToko;
     public GameObject tombolBukaInventory;
+
+    [HideInInspector] public bool sedangDalamGoodEnding = false;
 
     void Awake()
     {
@@ -248,7 +252,7 @@ public class GameManager : MonoBehaviour
         if (uiProgresSkripsi) uiProgresSkripsi.SetActive(!sembunyikan);
     }
 
-    void TerapkanHasilKerjaPartTimeJikaAda()
+void TerapkanHasilKerjaPartTimeJikaAda()
     {
         if (!HasilKerjaPartTime.adaHasilPending) return;
 
@@ -258,8 +262,23 @@ public class GameManager : MonoBehaviour
         jamSaatIni += HasilKerjaPartTime.jamYangDilewati;
 
         HasilKerjaPartTime.Bersihkan();
+
+        // --- TAMBAHAN: Fade masuk karena baru pulang kerja ---
+        StartCoroutine(FadeMasukPulangKerja());
     }
 
+    IEnumerator FadeMasukPulangKerja()
+    {
+        if (layarGelap != null) {
+            layarGelap.gameObject.SetActive(true);
+            float alpha = 1f;
+            while (alpha > 0) {
+                alpha -= Time.deltaTime * 2f; // Kecepatan fade
+                layarGelap.color = new Color(0, 0, 0, alpha);
+                yield return null;
+            }
+        }
+    }
     void Update()
     {
         if (!waktuBerjalan) return;
@@ -697,6 +716,7 @@ public class GameManager : MonoBehaviour
     // chain cutscene Happy Ending BENERAN kelar (dulu private, namanya TampilkanHappyEnding()) ---
     public void TampilkanLayarAkhirHappyEnding()
     {
+        sedangDalamGoodEnding = true; // --- TAMBAHAN: Matikan distorsi saat good ending
         Debug.Log("Happy Ending 'Pulang' dipicu.");
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
@@ -837,7 +857,15 @@ public class GameManager : MonoBehaviour
         // BOLEH turun di bawah itu (gak ada proteksi floor lagi) kalau Lapar sebelum tidur
         // emang udah rendah. Kalau abis kerja part-time hari itu, pengurangannya lebih besar. ---
         float totalPengurangan = penguranganLaparSaatTidur + (sudahKerjaPartTimeHariIniSebelumReset ? penguranganTambahanLaparJikaKerja : 0f);
-        KurangiLapar(totalPengurangan);
+
+        // --- TAMBAHAN: floor khusus abis tidur - begitu bangun, Lapar gak boleh di bawah
+        // laparMinimumSetelahTidur, BERAPAPUN totalPengurangan-nya. Sengaja HITUNG LANGSUNG
+        // (bukan panggil KurangiLapar() biasa) biar CekBadEndingLaparInstant() gak sempet
+        // kepicu sama nilai TRANSISI di bawah floor - floor ini cuma berlaku buat pengurangan
+        // akibat tidur, pengurangan Lapar dari sumber lain (kerja part time, dll) TETAP bisa
+        // sampai 0 seperti biasa. ---
+        lapar = Mathf.Clamp(Mathf.Max(lapar - totalPengurangan, laparMinimumSetelahTidur), 0f, 100f);
+        UpdateUI();
         // --- pemulihanSanitySaatTidur (bonus flat) DIHAPUS - diganti logic kondisional jam
         // di ProsesTidur() (TambahSanity/KurangiSanity sesuai jamBatasTidurAwal) ---
 

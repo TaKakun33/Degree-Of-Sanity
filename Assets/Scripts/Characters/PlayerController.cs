@@ -64,7 +64,17 @@ public class PlayerController : MonoBehaviour
     public void SetMenuStatus(bool status)
     {
         isMenuOpen = status;
-        if (isMenuOpen) isMoving = false; 
+        if (isMenuOpen)
+        {
+            isMoving = false;
+
+            // --- TAMBAHAN: paksa animator balik ke idle (Andrew_Diam) SEKARANG JUGA.
+            // Update() bakal langsung "return" begitu isMenuOpen true, jadi baris
+            // animator.SetBool("IsWalking", isMoving) di bawah situ gak akan pernah kesentuh
+            // lagi selama menu masih kebuka - kalau gak dipaksa di sini, animasi bisa nyangkut
+            // di walk kalau player kebetulan lagi jalan pas panel kerja muncul. ---
+            if (animator != null) animator.SetBool("IsWalking", false);
+        }
     }
 
     // --- Dipakai script lain (CutsceneUI, dll) buat ngecek udah nyampe tujuan belum ---

@@ -37,6 +37,10 @@ public class OjolManager : MonoBehaviour
     public TextMeshProUGUI textGajiTerkumpul;
     public TextMeshProUGUI textPesananKe;
 
+    [Header("Transisi Layar")]
+    public Image layarTransisi;
+    public float durasiFade = 0.5f;
+
     [Header("Fase Menunggu Pesanan")]
     public GameObject panelMenunggu;
     public TextMeshProUGUI textStatusMenunggu;
@@ -247,7 +251,9 @@ public class OjolManager : MonoBehaviour
     }
 
     void Start()
-    {
+    {   
+        if (layarTransisi != null) StartCoroutine(FadeMasuk());
+        
         if (posisiLane == null || posisiLane.Length != 3) {
             Debug.LogError("[OjolManager] Posisi Lane harus diisi TEPAT 3 elemen (kiri, tengah, kanan)!");
         }
@@ -331,6 +337,40 @@ public class OjolManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private IEnumerator FadeMasuk()
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(1f, 0f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+            layarTransisi.raycastTarget = false;
+        }
+    }
+
+    private IEnumerator FadeKeluar(string namaScene)
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(0f, 1f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+        }
+        SceneManager.LoadScene(namaScene, LoadSceneMode.Single);
     }
 
     public void MulaiShift()
@@ -621,8 +661,11 @@ public class OjolManager : MonoBehaviour
 
     void SelesaikanShift()
     {
+        // Gunakan gajiTerkumpul, bukan gajiBersih
         HasilKerjaPartTime.SimpanHasil(gajiTerkumpul, laparBerkurangPerShift, sanityBerkurangPerShift, jamDilewatiShift);
-        SceneManager.LoadScene(namaSceneUtama, LoadSceneMode.Single);
+        
+        // Panggil Coroutine untuk transisi ke Main Scene
+        StartCoroutine(FadeKeluar(namaSceneUtama));
     }
 
     void UpdateTeksGaji()
