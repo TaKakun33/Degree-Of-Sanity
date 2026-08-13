@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
     private bool isMenuOpen = false; 
     private SpriteRenderer spriteRenderer;
+    private Animator animator; // --- TAMBAHAN ---
     private Rigidbody2D rb;
 
     // --- Beda dari isMenuOpen - ini cuma blokir KLIK BARU, MovePlayer() TETAP jalan.
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         targetPosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>(); // --- TAMBAHAN ---
         rb = GetComponent<Rigidbody2D>();
         isMenuOpen = false;
         isMoving = false;
@@ -54,6 +56,9 @@ public class PlayerController : MonoBehaviour
         }
 
         if (isMoving) MovePlayer();
+
+        // --- TAMBAHAN: sinkronin parameter Animator "IsWalking" sama status gerak sekarang ---
+        if (animator != null) animator.SetBool("IsWalking", isMoving);
     }
 
     public void SetMenuStatus(bool status)

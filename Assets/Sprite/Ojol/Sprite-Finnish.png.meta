@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 02e72d79870e27c3c8162b00ed6b5bbf
+guid: b791066a1dca20346ac7d8c8594eaac5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6989597736918504861
-    second: Anna Idle new1_0
+      213: 5365855710866211445
+    second: Sprite-Finnish_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Anna Idle new1_0
+      name: Sprite-Finnish_0
       rect:
         serializedVersion: 2
-        x: 18
+        x: 0
         y: 0
-        width: 30
-        height: 108
+        width: 1100
+        height: 125
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 36a291804e5fffe90800000000000000
-      internalID: -6989597736918504861
+      spriteID: 5728e2ae659577a40800000000000000
+      internalID: 5365855710866211445
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7fddd25f00d4facce94eefee5d3c2c0b
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Anna Idle new1_0: -6989597736918504861
+      Sprite-Finnish_0: 5365855710866211445
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
