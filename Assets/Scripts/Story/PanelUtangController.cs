@@ -78,6 +78,11 @@ public class PanelUtangController : MonoBehaviour
 
             Button tombolBayar = baris.GetComponentInChildren<Button>();
             if (tombolBayar != null) {
+                // --- TAMBAHAN: tombol ini dibuat runtime (Instantiate), gak bisa ditempelin
+                // TombolSfx.cs lewat Editor - jadi ditempel lewat kode di sini, sistemnya tetap
+                // sama (UISfxManager, terpisah dari AudioManager) ---
+                if (tombolBayar.GetComponent<TombolSfx>() == null) tombolBayar.gameObject.AddComponent<TombolSfx>();
+
                 tombolBayar.interactable = !entri.sudahDibayar && GameManager.Instance.uang >= entri.nominal;
                 tombolBayar.onClick.AddListener(() => {
                     CicilanManager.Instance.BayarMinggu(indexLokal);

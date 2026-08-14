@@ -15,7 +15,12 @@ MonoBehaviour:
   id: END_BAD1_01
   ruangId: LAYAR_HITAM
   karakterAnnaHadir: 0
+  balikArahAndrew: 0
+  balikArahAnna: 0
   lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
+  musikKhusus: {fileID: 8300000, guid: fb77fbca738c98f8cb85bc91058cc671, type: 3}
   baris:
   - jenis: 0
     namaTokoh: 
@@ -136,5 +141,6 @@ MonoBehaviour:
     gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
+  panelPilihanDipakai: 0
   adeganBerikutnya: {fileID: 11400000, guid: c1db2954f4853ad2d83e20c2c29e2407, type: 2}
   monologAkhirHari: 

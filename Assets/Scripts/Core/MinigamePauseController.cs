@@ -43,6 +43,7 @@ public class MinigamePauseController : MonoBehaviour
     {
         sedangPause = true;
         Time.timeScale = 0f;
+        AudioListener.pause = true; // --- TAMBAHAN: matiin SEMUA audio (BGM/SFX) sementara - otomatis nginget posisi playback-nya ---
         if (panelPause) {
             panelPause.SetActive(true);
             panelPause.transform.SetAsLastSibling(); // --- biar gak ketiban item yang di-spawn dinamis (misal conveyor Kasir) ---
@@ -53,6 +54,7 @@ public class MinigamePauseController : MonoBehaviour
     {
         sedangPause = false;
         Time.timeScale = 1f;
+        AudioListener.pause = false; // --- TAMBAHAN: nyalain lagi audio - lanjut dari posisi terakhir sebelum di-pause ---
         if (panelPause) panelPause.SetActive(false);
     }
 
@@ -69,6 +71,7 @@ public class MinigamePauseController : MonoBehaviour
         }
 
         Time.timeScale = 1f;
+        AudioListener.pause = false; // --- TAMBAHAN: jaga-jaga - AudioListener.pause itu setting GLOBAL, gak otomatis kereset pas ganti scene, jadi Main Menu bisa nyangkut ke-mute kalau gak direset di sini ---
         SceneManager.LoadScene(namaSceneMainMenu, LoadSceneMode.Single);
     }
 

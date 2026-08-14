@@ -284,7 +284,7 @@ public class CeritaManager : MonoBehaviour
                 GameManager.Instance.SembunyikanParameterSaatEnding(false); // --- TAMBAHAN ---
             }
             onChainSelesai?.Invoke();
-        });
+        }, true); // --- TAMBAHAN: true = ini chain Ending, lihat CutsceneUI.chainAdalahEnding ---
     }
 
     // --- Happy Ending sekarang cuma pembungkus tipis di atas MulaiEndingChain() - perilaku

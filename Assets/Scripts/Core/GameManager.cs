@@ -197,6 +197,10 @@ public class GameManager : MonoBehaviour
         if (SaveManager.Instance != null) SaveManager.Instance.MuatGame(SaveManager.slotUntukDiload);
         TerapkanHasilKerjaPartTimeJikaAda();
 
+        // --- TAMBAHAN: mulai Musik Utama - jalan BAIK pas GAME BARU maupun LOAD GAME (dua-duanya
+        // lewat Start() yang sama ini), Prolog & Main Game sengaja pakai musik yang SAMA. ---
+        if (AudioManager.Instance != null) AudioManager.Instance.MainkanMusikUtama();
+
         // --- TAMBAHAN: kalau Prolog udah pernah kelar (dari save ATAU baru balik kerja),
         // pastiin SEMUA parameter/tombol yang di-reveal Prolog TETAP aktif - gak nyandarin
         // Prolog muter ulang (yang emang cuma muter sekali doang di Game Baru) ---
@@ -259,7 +263,7 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         TambahUang(HasilKerjaPartTime.uangDidapat);
         KurangiLapar(HasilKerjaPartTime.laparBerkurang);
         KurangiSanity(HasilKerjaPartTime.sanityBerkurang);
-        jamSaatIni += HasilKerjaPartTime.jamYangDilewati;
+        TambahJamLangsung(HasilKerjaPartTime.jamYangDilewati); // --- FIX: biar OnJamBerubah langsung invoke, background siklus siang-malam ikut update seketika ---
 
         HasilKerjaPartTime.Bersihkan();
 
@@ -409,7 +413,28 @@ void TerapkanHasilKerjaPartTimeJikaAda()
     public void SetPengaliKecepatanWaktu(float pengali) { pengaliKecepatanWaktu = pengali; }
     public void ResetPengaliKecepatanWaktu() { pengaliKecepatanWaktu = 1f; }
 
-    void UpdateUI()
+        // --- TAMBAHAN: dipakai KAPANPUN jam diubah SECARA INSTAN/LANGSUNG (bukan lewat waktu yang
+    // ngalir normal di Update()) - misal efek cutscene 'Jam Baru Setelah Adegan', abis masak,
+    // abis kerja part-time, abis GantiHari(). Update() cuma invoke OnJamBerubah tiap
+    // intervalTick detik (buat waktu normal), jadi kalau jam diubah instan lewat penulisan
+    // langsung ke field jamSaatIni, listener kayak SiklusSiangMalam (background siang-malam)
+    // gak akan tau sampai tick berikutnya - background jadi nyangkut/telat berubah warnanya.
+    // Selalu pakai 2 fungsi ini (bukan "jamSaatIni = ..." / "jamSaatIni += ..." langsung) tiap
+    // kali ngubah jam di LUAR Update(), biar semua listener (termasuk background) update SAAT
+    // ITU JUGA. ---
+    public void SetJamLangsung(float jamBaru)
+    {
+        jamSaatIni = jamBaru;
+        OnJamBerubah?.Invoke(jamSaatIni);
+        UpdateUI();
+    }
+
+    public void TambahJamLangsung(float deltaJam)
+    {
+        SetJamLangsung(jamSaatIni + deltaJam);
+    }
+
+void UpdateUI()
     {
         if (textTanggal) textTanggal.text = TanggalFormatted;
         if (textUang) textUang.text = "Rp " + uang.ToString("N0");
@@ -625,6 +650,7 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
+        SembunyikanTombolSaatCutscene(true); // --- TAMBAHAN: game udah tamat, tombol Toko/Inventory/Utang gak relevan lagi - hilangkan beneran (bukan cuma abu-abu) ---
         if (panelBadEndingUang) panelBadEndingUang.SetActive(true);
 
         if (textLayarAkhirBadEnding3) {
@@ -653,6 +679,7 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
+        SembunyikanTombolSaatCutscene(true); // --- TAMBAHAN: game udah tamat, tombol Toko/Inventory/Utang gak relevan lagi - hilangkan beneran (bukan cuma abu-abu) ---
         if (panelBadEnding4Waktu) panelBadEnding4Waktu.SetActive(true);
 
         if (textLayarAkhirBadEnding4) {
@@ -679,6 +706,7 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
+        SembunyikanTombolSaatCutscene(true); // --- TAMBAHAN: game udah tamat, tombol Toko/Inventory/Utang gak relevan lagi - hilangkan beneran (bukan cuma abu-abu) ---
         if (panelBadEndingSanity) panelBadEndingSanity.SetActive(true);
 
         if (textLayarAkhirBadEnding1) {
@@ -705,6 +733,7 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         OnPermainanBerakhir?.Invoke();
         Time.timeScale = 0;
         TutupSemuaPanelGame();
+        SembunyikanTombolSaatCutscene(true); // --- TAMBAHAN: game udah tamat, tombol Toko/Inventory/Utang gak relevan lagi - hilangkan beneran (bukan cuma abu-abu) ---
         if (panelBadEndingLapar) panelBadEndingLapar.SetActive(true);
 
         if (textLayarAkhirBadEnding2) {
@@ -742,7 +771,22 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         }
     }
 
+    // --- TAMBAHAN: dipanggil tombol "Main Lagi"/dst di panel Layar Akhir Ending (dan bisa juga
+    // dipanggil dari tempat lain). Musik Ending yang lagi bunyi DIFADE OUT DULU lewat AudioManager,
+    // BARU scene di-reload - kalau scene langsung di-reload di frame yang sama, coroutine fade-nya
+    // gak akan sempet jalan sama sekali (GameObject AudioManager ikut hancur). Kalau kamu punya
+    // tombol LAIN di panel Ending (misal "Kembali ke Menu" yang manggil scene lain), terapin pola
+    // yang sama: AudioManager.Instance.HentikanMusikLaluJalankan(() => { ...load scene di sini... }); ---
     public void RestartGame()
+    {
+        if (AudioManager.Instance != null) {
+            AudioManager.Instance.HentikanMusikLaluJalankan(LanjutkanRestartGame);
+        } else {
+            LanjutkanRestartGame();
+        }
+    }
+
+    void LanjutkanRestartGame()
     {
         Time.timeScale = 1;
         SaveManager.slotUntukDiload = -1;
@@ -845,7 +889,7 @@ void TerapkanHasilKerjaPartTimeJikaAda()
         // di bawah - dipakai buat nentuin pengurangan Lapar TAMBAHAN abis tidur (lebih parah kalau kerja) ---
         bool sudahKerjaPartTimeHariIniSebelumReset = kerjaPartTimeSudahDilakukanHariIni;
 
-        jamSaatIni = jamMulai;
+        SetJamLangsung(jamMulai); // --- FIX: biar OnJamBerubah langsung invoke, background siklus siang-malam ikut reset warna seketika (bukan nunggu tick) ---
         kopiDigunakanHariIni = false;
         skripsiSudahDikerjakanHariIni = false;
         kerjaPartTimeSudahDilakukanHariIni = false;

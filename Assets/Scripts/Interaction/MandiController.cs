@@ -23,6 +23,15 @@ public class MandiController : MonoBehaviour
     [Tooltip("Image full-screen KHUSUS buat efek mandi (Image baru, TERPISAH dari Layar Transisi Cutscene)")]
     public Image layarMandi;
 
+    // --- TAMBAHAN: Variabel untuk Audio Efek Mandi ---
+    [Header("Audio Efek Mandi")]
+    [Tooltip("Drag AudioSource ke sini (bisa dari GameObject ini)")]
+    public AudioSource audioSourceMandi;
+    [Tooltip("Drag file suara mandi (seperti air mengalir/shower) ke sini")]
+    public AudioClip klipSuaraMandi;
+    [Range(0f, 1f)]
+    public float volumeMandi = 0.8f;
+
     private bool sedangMandi = false;
 
     void Awake()
@@ -33,6 +42,12 @@ public class MandiController : MonoBehaviour
             c.a = 0f;
             layarMandi.color = c;
         }
+    }
+
+    // --- TAMBAHAN: Pastikan suara berhenti jika objek mendadak mati (seperti di panel masak) ---
+    void OnDisable()
+    {
+        if (audioSourceMandi != null) audioSourceMandi.Stop();
     }
 
     // --- Dipanggil PlayerController.MovePlayer() saat karakter sudah tiba di objek Mandi ini ---
@@ -46,12 +61,19 @@ public class MandiController : MonoBehaviour
     {
         sedangMandi = true;
 
-        // --- Kunci kontrol player selama proses fade berlangsung (karakter udah sampai,
-        // tinggal diem di tempat sampai efeknya kelar) ---
+        // --- Kunci kontrol player selama proses fade berlangsung ---
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(true);
 
         if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(true);
+
+        // --- TAMBAHAN: Mulai mainkan suara mandi secara berulang (loop) ---
+        if (audioSourceMandi != null && klipSuaraMandi != null) {
+            audioSourceMandi.clip = klipSuaraMandi;
+            audioSourceMandi.loop = true; // Supaya suaranya berulang selama layar gelap
+            audioSourceMandi.volume = volumeMandi;
+            audioSourceMandi.Play();
+        }
 
         // --- Fade ke gelap ---
         if (layarMandi != null) {
@@ -69,16 +91,13 @@ public class MandiController : MonoBehaviour
 
         yield return new WaitForSeconds(durasiTahanGelap);
 
-        // --- Efek: Sanity nambah, TAPI cuma SEKALI per hari - mandi bisa dilakukan berkali-kali,
-        // cuma bonus pertama di hari itu yang beneran kepake, sisanya tetap "mandi" (animasi
-        // jalan normal) tapi gak nambah Sanity lagi ---
+        // --- Efek: Sanity nambah, TAPI cuma SEKALI per hari ---
         if (GameManager.Instance != null && !GameManager.Instance.SudahMandiHariIni) {
             GameManager.Instance.TambahSanity(sanityBertambah);
             GameManager.Instance.TandaiSudahMandiHariIni();
         }
 
-        // --- TAMBAHAN: waktu tetap kelewat SETIAP kali mandi (beda dari bonus Sanity yang
-        // cuma sekali) - masuk akal, mandi tetap makan waktu walau udah gak dapet bonus lagi ---
+        // --- TAMBAHAN: waktu tetap kelewat SETIAP kali mandi ---
         if (GameManager.Instance != null) GameManager.Instance.jamSaatIni += jamYangDilewati;
 
         // --- Fade balik nampilin scene lagi ---
@@ -97,6 +116,11 @@ public class MandiController : MonoBehaviour
 
         if (GameManager.Instance != null) GameManager.Instance.SetJedaWaktu(false);
         if (player != null) player.SetMenuStatus(false);
+
+        // --- TAMBAHAN: Berhentikan suara mandi begitu adegan/fade selesai ---
+        if (audioSourceMandi != null) {
+            audioSourceMandi.Stop();
+        }
 
         sedangMandi = false;
     }

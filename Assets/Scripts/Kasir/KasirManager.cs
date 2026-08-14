@@ -183,8 +183,38 @@ public class KasirManager : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeKeluar(string namaScene)
+    // --- TAMBAHAN: Fungsi Coroutine khusus untuk efek fade-in barang ---
+    private IEnumerator FadeMasukItem(GameObject objekItem)
     {
+        // Coba ambil komponen CanvasGroup. Jika tidak ada, pasang secara otomatis melalui script.
+        CanvasGroup cg = objekItem.GetComponent<CanvasGroup>();
+        if (cg == null) {
+            cg = objekItem.AddComponent<CanvasGroup>();
+        }
+
+        cg.alpha = 0f; // Mulai dari 100% transparan
+        float durasiFadeItem = 0.5f; // Durasi fade masuk (0.5 detik)
+        float t = 0f;
+
+        // Looping untuk menaikkan alpha secara perlahan
+        while (t < durasiFadeItem && objekItem != null) {
+            t += Time.deltaTime;
+            cg.alpha = Mathf.Lerp(0f, 1f, t / durasiFadeItem);
+            yield return null; // Tunggu ke frame berikutnya
+        }
+
+        // Pastikan alpha menjadi 1 (pekat sempurna) di akhir proses, 
+        // asalkan objeknya belum dihancurkan / masuk kantong
+        if (objekItem != null) {
+            cg.alpha = 1f;
+        }
+    }
+
+private IEnumerator FadeKeluar(string namaScene)
+    {
+        // --- TAMBAHAN: Panggil MinigameAudioManager untuk fade-out musik BGM ---
+        if (MinigameAudioManager.Instance != null) MinigameAudioManager.Instance.HentikanMusik();
+
         if (layarTransisi != null) {
             layarTransisi.gameObject.SetActive(true);
             layarTransisi.raycastTarget = true;
@@ -230,7 +260,7 @@ public class KasirManager : MonoBehaviour
         StartCoroutine(SpawnItemBelanjaan(jumlahItem));
     }
 
-    IEnumerator SpawnItemBelanjaan(int jumlah)
+IEnumerator SpawnItemBelanjaan(int jumlah)
     {
         for (int i = 0; i < jumlah; i++) {
             ItemBelanjaan dataItem = katalogItem[Random.Range(0, katalogItem.Length)];
@@ -242,6 +272,9 @@ public class KasirManager : MonoBehaviour
 
             BarangBelanjaan barang = objekBaru.GetComponent<BarangBelanjaan>();
             barang.Setup(dataItem.namaItem, dataItem.harga, kecepatanConveyor, xBatasKiriConveyor, xMulaiConveyor, dataItem.sprite, dataItem.ukuranCustom);
+
+            // --- TAMBAHAN: Panggil coroutine untuk membuat efek fade-in barang ---
+            StartCoroutine(FadeMasukItem(objekBaru));
 
             itemPelangganAktif.Add(barang);
             yield return new WaitForSeconds(0.4f); // spawn satu-satu, gak numpuk di titik yang sama

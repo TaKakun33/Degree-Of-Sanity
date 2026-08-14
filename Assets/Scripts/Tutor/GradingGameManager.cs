@@ -39,6 +39,16 @@ public class GradingGameManager : MonoBehaviour
     public Image layarTransisi;
     public float durasiFade = 0.5f;
 
+    // --- TAMBAHAN: Variabel Audio untuk Tombol Next ---
+    [Header("Audio Efek Tombol Next")]
+    [Tooltip("Komponen AudioSource untuk suara tombol Next")]
+    public AudioSource audioSourceTombol;
+    [Tooltip("Sound effect saat tombol Next ditekan")]
+    public AudioClip klipSuaraNext;
+    [Range(0f, 1f)]
+    public float volumeNext = 0.8f;
+    
+
     private List<List<QuestionData>> allSheets = new List<List<QuestionData>>();
     private int currentSheetIndex = 0;
     private int totalCorrectGradings = 0;
@@ -94,6 +104,12 @@ public class GradingGameManager : MonoBehaviour
     public void GoToNextSheet()
     {
         if (currentSheetIndex >= allSheets.Count) return; // --- TAMBAHAN: sudah selesai, abaikan klik lanjutan ---
+
+        // --- TAMBAHAN: Mainkan sound effect tombol Next di sini ---
+        if (audioSourceTombol != null && klipSuaraNext != null) {
+            audioSourceTombol.PlayOneShot(klipSuaraNext, volumeNext);
+        }
+
         TallyCurrentSheetScore();
         currentSheetIndex++;
         LoadCurrentSheet();
@@ -128,6 +144,9 @@ public class GradingGameManager : MonoBehaviour
 
     private IEnumerator FadeKeluar(string namaScene)
     {
+        // --- TAMBAHAN: Panggil MinigameAudioManager untuk fade-out musik BGM ---
+        if (MinigameAudioManager.Instance != null) MinigameAudioManager.Instance.HentikanMusik();
+
         if (layarTransisi != null) {
             layarTransisi.gameObject.SetActive(true);
             layarTransisi.raycastTarget = true;

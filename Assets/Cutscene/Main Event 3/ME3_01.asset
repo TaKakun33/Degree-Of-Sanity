@@ -20,6 +20,7 @@ MonoBehaviour:
   lewatiTransisiAwal: 1
   geterSepanjangAdegan: 0
   fadeKePutihDiAkhir: 0
+  musikKhusus: {fileID: 8300000, guid: 031133ee1ff9846a8af6f8dfb424add3, type: 3}
   baris:
   - jenis: 0
     namaTokoh: 
@@ -134,5 +135,6 @@ MonoBehaviour:
   - labelTombol: Kembalikan
     adeganLanjutan: {fileID: 11400000, guid: 6369a3d824cb51dd8ba493c56ddddafb, type: 2}
     setFlag: JANJI_ANNA
+  panelPilihanDipakai: 0
   adeganBerikutnya: {fileID: 0}
   monologAkhirHari: 

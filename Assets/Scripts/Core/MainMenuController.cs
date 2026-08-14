@@ -124,6 +124,12 @@ public class MainMenuController : MonoBehaviour
         GameObject btnObj = Instantiate(prefabTombolSlot, wadahContentLoad);
         TextMeshProUGUI label = btnObj.GetComponentInChildren<TextMeshProUGUI>();
 
+        // --- TAMBAHAN: tombol ini dibuat runtime (Instantiate), gak kejaring UISfxAutoHook
+        // (yang cuma jalan sekali di Awake sebelum tombol ini ada) - tempel manual di sini,
+        // sistemnya tetap sama (UISfxManager, terpisah dari AudioManager) ---
+        Button btnUntukSfx = btnObj.GetComponent<Button>();
+        if (btnUntukSfx != null && btnUntukSfx.GetComponent<TombolSfx>() == null) btnUntukSfx.gameObject.AddComponent<TombolSfx>();
+
         if (modeHapusAktif) {
             // --- MODE HAPUS: klik tombol slot ini akan menghapus save-nya ---
             label.text = "[HAPUS] " + teks;

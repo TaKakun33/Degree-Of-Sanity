@@ -154,7 +154,7 @@ public class CookingController : MonoBehaviour
 
         Debug.Log("Memasak selesai! Makanan disimpan di Inventory.");
 
-        if (GameManager.Instance != null) GameManager.Instance.jamSaatIni += jamYangDilewatiSaatMasak;
+        if (GameManager.Instance != null) GameManager.Instance.TambahJamLangsung(jamYangDilewatiSaatMasak); // --- FIX: biar background siklus siang-malam ikut update seketika, bukan nunggu tick ---
 
         sedangMemasak = false;
         coroutineMasak = null;

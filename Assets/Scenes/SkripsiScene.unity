@@ -555,7 +555,7 @@ MonoBehaviour:
   audioSourceKetik: {fileID: 73851212}
   klipSuaraKetik: {fileID: 8300000, guid: 4362359e09d3e1498a6c613529043234, type: 3}
   klipSuaraSalah: {fileID: 8300000, guid: b1b3a76393cb4f863af93980260992fc, type: 3}
-  volumeKetik: 0.8
+  volumeKetik: 0.5
 --- !u!4 &73851211
 Transform:
   m_ObjectHideFlags: 0
@@ -1379,6 +1379,7 @@ GameObject:
   - component: {fileID: 1332127484}
   - component: {fileID: 1332127483}
   - component: {fileID: 1332127482}
+  - component: {fileID: 1332127485}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -1500,6 +1501,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1332127480}
   m_CullTransparentMesh: 1
+--- !u!114 &1332127485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332127480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a090ad2fc8246806596d3c635049201d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TombolSfx
 --- !u!1 &1370103536
 GameObject:
   m_ObjectHideFlags: 0
@@ -1835,6 +1848,7 @@ GameObject:
   - component: {fileID: 1619464711}
   - component: {fileID: 1619464710}
   - component: {fileID: 1619464709}
+  - component: {fileID: 1619464712}
   m_Layer: 5
   m_Name: Btn_Main_Menu
   m_TagString: Untagged
@@ -1956,6 +1970,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1619464707}
   m_CullTransparentMesh: 1
+--- !u!114 &1619464712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619464707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a090ad2fc8246806596d3c635049201d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TombolSfx
 --- !u!1 &1641794941
 GameObject:
   m_ObjectHideFlags: 0
@@ -2322,6 +2348,7 @@ GameObject:
   - component: {fileID: 1878031452}
   - component: {fileID: 1878031451}
   - component: {fileID: 1878031450}
+  - component: {fileID: 1878031453}
   m_Layer: 5
   m_Name: Btn_Continue
   m_TagString: Untagged
@@ -2443,6 +2470,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1878031448}
   m_CullTransparentMesh: 1
+--- !u!114 &1878031453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878031448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a090ad2fc8246806596d3c635049201d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TombolSfx
 --- !u!1 &2061862934
 GameObject:
   m_ObjectHideFlags: 0
@@ -2456,6 +2495,7 @@ GameObject:
   - component: {fileID: 2061862936}
   - component: {fileID: 2061862935}
   - component: {fileID: 2061862940}
+  - component: {fileID: 2061862941}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2554,6 +2594,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2061862934}
   m_CullTransparentMesh: 1
+--- !u!114 &2061862941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061862934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba4c8f5d1819bac5799393cf6594241c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UISfxAutoHook
+  pengecualian: []
+  intervalScan: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

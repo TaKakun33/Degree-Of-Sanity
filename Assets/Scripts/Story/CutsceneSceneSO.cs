@@ -100,6 +100,10 @@ public class CutsceneSceneSO : ScriptableObject
     [Tooltip("TAMBAHAN: centang buat fade ke PUTIH (bukan hitam) tepat SEBELUM lanjut ke adegan berikutnya - dipakai buat momen 'blackout'/pingsan (naskah Bad Ending 2: '[Putih]'). SARAN: adegan BERIKUTNYA sebaiknya centang 'Lewati Transisi Awal' juga, biar gak dobel fade item hitam+putih.")]
     public bool fadeKePutihDiAkhir = false;
 
+    [Header("TAMBAHAN: Musik Adegan (opsional)")]
+    [Tooltip("KOSONGKAN buat adegan LANJUTAN dalam Main Event/Ending yang SAMA (biar musik gak restart tiap ganti baris). ISI HANYA di adegan yang BENERAN memulai pergantian musik - biasanya adegan PERTAMA suatu Main Event atau adegan PERTAMA suatu Ending. Musik yang lagi kedengeran (Musik Utama, dll) bakal meredup dulu baru klip ini muncul. Untuk Ending: drag klip 'Good Ending' atau 'Bad Ending' di sini sesuai jenisnya - beda klip di adegan pertama Happy Ending vs Bad Ending 1-4 itulah yang bikin sound-nya beda.")]
+    public AudioClip musikKhusus;
+
     [Header("Baris-baris (urut dari atas ke bawah)")]
     public List<BarisCutscene> baris;
 

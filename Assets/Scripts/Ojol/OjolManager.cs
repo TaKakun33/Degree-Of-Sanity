@@ -231,6 +231,28 @@ public class OjolManager : MonoBehaviour
     [Tooltip("Berapa jam in-game yang dilewati sepulang shift")]
     public float jamDilewatiShift = 6f;
 
+    [Header("Audio Efek Ojol")]
+    [Tooltip("Komponen AudioSource untuk memutar sound effect ojol")]
+    public AudioSource audioSourceOjol;
+    [Tooltip("Sound effect saat pesanan baru masuk")]
+    public AudioClip klipPesananMasuk;
+    [Range(0f, 1f)]
+    public float volumePesananMasuk = 0.8f;
+
+    // --- TAMBAHAN: Variabel untuk suara nabrak ---
+    [Tooltip("Sound effect saat menabrak rintangan")]
+    public AudioClip klipTabrak;
+    [Range(0f, 1f)]
+    public float volumeTabrak = 0.8f;
+
+    [Header("Audio Efek Mengantar (Loop)")]
+    [Tooltip("Komponen AudioSource KHUSUS untuk suara mesin/jalan (biar gak nabrak suara lain)")]
+    public AudioSource audioSourceMesin;
+    [Tooltip("Sound effect saat mengantar pesanan (seperti suara motor/angin)")]
+    public AudioClip klipSuaraJalan;
+    [Range(0f, 1f)]
+    public float volumeJalan = 0.8f;
+
     [Header("Scene")]
     public string namaSceneUtama = "MainScene";
 
@@ -358,6 +380,9 @@ public class OjolManager : MonoBehaviour
 
     private IEnumerator FadeKeluar(string namaScene)
     {
+        // --- TAMBAHAN: Panggil MinigameAudioManager untuk fade-out musik BGM ---
+        if (MinigameAudioManager.Instance != null) MinigameAudioManager.Instance.HentikanMusik();
+
         if (layarTransisi != null) {
             layarTransisi.gameObject.SetActive(true);
             layarTransisi.raycastTarget = true;
@@ -406,6 +431,11 @@ public class OjolManager : MonoBehaviour
         if (panelPesananMasuk) panelPesananMasuk.SetActive(true);
         if (textInfoPesanan) textInfoPesanan.text = "Pesanan masuk! Geser buat terima.";
 
+        // --- TAMBAHAN: Mainkan sound effect saat pesanan masuk ---
+        if (audioSourceOjol != null && klipPesananMasuk != null) {
+            audioSourceOjol.PlayOneShot(klipPesananMasuk, volumePesananMasuk);
+        }
+
         // --- TAMBAHAN: reset tombol geser & mulai batas waktu terima pesanan ---
         pesananDiterima = false;
         if (tombolGeserTerima != null) tombolGeserTerima.ResetHandle();
@@ -448,6 +478,14 @@ public class OjolManager : MonoBehaviour
 
         if (panelPesananMasuk) panelPesananMasuk.SetActive(false);
         if (panelMengantar) panelMengantar.SetActive(true);
+
+        // --- TAMBAHAN: Mulai mainkan sound effect jalan (looping) ---
+        if (audioSourceMesin != null && klipSuaraJalan != null) {
+            audioSourceMesin.clip = klipSuaraJalan;
+            audioSourceMesin.loop = true;
+            audioSourceMesin.volume = volumeJalan;
+            audioSourceMesin.Play();
+        }
 
         laneSaatIni = 1;
         jumlahTabrakanSaatIni = 0;
@@ -598,6 +636,11 @@ public class OjolManager : MonoBehaviour
     {
         jumlahTabrakanSaatIni++;
         UpdateTeksTabrakan();
+
+        // --- TAMBAHAN: Mainkan sound effect tabrakan di sini ---
+        if (audioSourceOjol != null && klipTabrak != null) {
+            audioSourceOjol.PlayOneShot(klipTabrak, volumeTabrak);
+        }
     }
 
     public void RintanganDihindari()
@@ -610,6 +653,9 @@ public class OjolManager : MonoBehaviour
     {
         if (!sedangMengantar) return; // guard: cegah dobel-trigger
         sedangMengantar = false;
+
+        // --- TAMBAHAN: Hentikan suara jalan karena sudah sampai ---
+        if (audioSourceMesin != null) audioSourceMesin.Stop();
 
         int pendapatan = Mathf.Max(0, pendapatanDasarPerPesanan - (jumlahTabrakanSaatIni * penguranganPerTabrakan));
         gajiTerkumpul += pendapatan;
@@ -649,6 +695,9 @@ public class OjolManager : MonoBehaviour
     {
         sedangMengantar = false;
         StopAllCoroutines();
+
+        // --- TAMBAHAN: Hentikan suara jalan jika dibatalkan paksa ---
+        if (audioSourceMesin != null) audioSourceMesin.Stop();
 
         // --- TAMBAHAN: bersihin sisa rintangan & garis finish yang masih ada di layar (mereka jalan lewat Update(),
         // bukan Coroutine, jadi StopAllCoroutines() di atas gak otomatis nyetop mereka) ---

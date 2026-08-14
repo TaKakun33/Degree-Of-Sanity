@@ -43,6 +43,7 @@ public class PauseMenuController : MonoBehaviour
         }
 
         Time.timeScale = 0; 
+        AudioListener.pause = true; // --- TAMBAHAN: matiin SEMUA audio (BGM/SFX) sementara - Unity otomatis nginget posisi playback-nya, jadi begitu di-unpause lanjut dari titik yang sama, gak restart ---
         TutupSemuaPanel(); 
         panelPause.SetActive(true); 
         ResetModeHapus(); // --- TAMBAHAN: pastikan panel Load selalu mulai dari mode Load biasa ---
@@ -51,6 +52,7 @@ public class PauseMenuController : MonoBehaviour
     public void LanjutkanGame() 
     { 
         Time.timeScale = 1; 
+        AudioListener.pause = false; // --- TAMBAHAN: nyalain lagi audio - otomatis lanjut dari posisi terakhir sebelum di-pause ---
         TutupSemuaPanel(); 
     }
 
@@ -145,6 +147,7 @@ public class PauseMenuController : MonoBehaviour
                 SaveManager.Instance.UpdateSlotTerakhir(slot);
                 SaveManager.slotUntukDiload = slot;
                 Time.timeScale = 1;
+                AudioListener.pause = false; // --- TAMBAHAN: jaga-jaga - kalau gak direset di sini, audio scene baru bisa nyangkut ke-pause terus (AudioListener.pause itu setting GLOBAL, gak otomatis kereset pas ganti scene) ---
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             });
         }
@@ -158,6 +161,6 @@ public class PauseMenuController : MonoBehaviour
         panelSettings.SetActive(false);
     }
 
-    public void KembaliKeMainMenu() { Time.timeScale = 1; SceneManager.LoadScene(namaSceneMainMenu); }
+    public void KembaliKeMainMenu() { Time.timeScale = 1; AudioListener.pause = false; SceneManager.LoadScene(namaSceneMainMenu); }
     public void KeluarKeDesktop() { Application.Quit(); }
 }
