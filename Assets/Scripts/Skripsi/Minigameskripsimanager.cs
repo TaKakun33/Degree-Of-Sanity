@@ -63,6 +63,16 @@ public class MinigameSkripsiManager : MonoBehaviour
     [Tooltip("Kalau pemain punya Buku Referensi, plafon Progres Skripsi per sesi dikali segini")]
     public float pengaliProgresBuku = 1.5f;
 
+    [Header("Audio Efek Ketik")]
+    [Tooltip("Drag komponen AudioSource yang ada di GameObject ini")]
+    public AudioSource audioSourceKetik;
+    [Tooltip("Drag file suara/sound effect klik keyboard kamu ke sini")]
+    public AudioClip klipSuaraKetik;
+    [Tooltip("TAMBAHAN: Drag file suara/sound effect saat salah ketik (typo) ke sini")]
+    public AudioClip klipSuaraSalah;
+    [Range(0f, 1f)]
+    public float volumeKetik = 0.8f;
+
     // --- Nilai EFEKTIF yang dipakai selama sesi berjalan, dihitung sekali di MulaiMinigame()
     // berdasarkan upgrade permanen yang dipunyai pemain (InventoryManager) ---
     private int maxTypoEfektif;
@@ -134,6 +144,9 @@ public class MinigameSkripsiManager : MonoBehaviour
                 progresMaksimalPerSesiEfektif *= pengaliProgresBuku;
             }
         }
+
+        // --- TAMBAHAN: bonus toleransi typo HARIAN dari Kopi Espresso (terpisah dari Keyboard yang permanen) ---
+        maxTypoEfektif += GameManager.Instance.BonusTypoDariKopiHariIni;
 
         minigameAktif = true;
         jumlahTypoSaatIni = 0;
@@ -218,10 +231,20 @@ public class MinigameSkripsiManager : MonoBehaviour
             indexKarakterBenar++;
             TampilkanJendelaKata();
 
+            // --- TAMBAHAN: Mainkan sound effect klik keyboard di sini ---
+            if (audioSourceKetik != null && klipSuaraKetik != null) {
+                audioSourceKetik.PlayOneShot(klipSuaraKetik, volumeKetik);
+            }
+
             if (indexKarakterBenar >= kataSaatIni.Length) {
                 SelesaikanSatuKata();
             }
         } else {
+            // --- TAMBAHAN: Mainkan sound effect salah ketik di sini ---
+            if (audioSourceKetik != null && klipSuaraSalah != null) {
+                audioSourceKetik.PlayOneShot(klipSuaraSalah, volumeKetik);
+            }
+
             TanganiTypo();
             // Hapus karakter yang salah biar pemain gak numpuk ketikan di atas kesalahan
             if (inputKetikan) inputKetikan.SetTextWithoutNotify(teksBaru.Substring(0, teksBaru.Length - 1));

@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -35,6 +37,10 @@ public class OjolManager : MonoBehaviour
     public TextMeshProUGUI textGajiTerkumpul;
     public TextMeshProUGUI textPesananKe;
 
+    [Header("Transisi Layar")]
+    public Image layarTransisi;
+    public float durasiFade = 0.5f;
+
     [Header("Fase Menunggu Pesanan")]
     public GameObject panelMenunggu;
     public TextMeshProUGUI textStatusMenunggu;
@@ -55,7 +61,8 @@ public class OjolManager : MonoBehaviour
     [Tooltip("HARUS diisi tepat 3 elemen: posisi X jalur Kiri, Tengah, Kanan (urut)")]
     public RectTransform[] posisiLane;
     public float kecepatanPindahLane = 10f;
-    public GameObject prefabRintangan;
+    [Tooltip("TAMBAHAN: isi 6 prefab rintangan yang BEDA-BEDA (sprite/tampilan beda) - tiap kali spawn, sistem pilih SATU secara ACAK dari array ini")]
+    public GameObject[] prefabRintanganArray = new GameObject[6];
     [Tooltip("Wadah/parent untuk rintangan yang di-spawn - Canvas langsung atau child kosong di bawahnya")]
     public Transform wadahRintangan;
     public float yMulaiSpawnRintangan = 400f;
@@ -128,6 +135,68 @@ public class OjolManager : MonoBehaviour
             new BarisPola { kiri = true,  tengah = false, kanan = false },
             new BarisPola { kiri = false, tengah = false, kanan = true  },
         }},
+
+        // === TAMBAHAN: pola-pola LEBIH RUMIT - dominan pakai DOUBLE-BLOCK (2 lane keblok sekaligus,
+        // cuma 1 jalur sempit yang aman), jadi maksa pemain pindah SAMPAI UJUNG tiap baris, bukan cuma geser dikit ===
+
+        new PolaRintangan { namaPola = "Gelombang Tiga Fase", baris = new BarisPola[] {
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // jalur aman: kanan
+            new BarisPola { kiri = false, tengah = true,  kanan = true  }, // jalur aman: kiri
+            new BarisPola { kiri = true,  tengah = false, kanan = true  }, // jalur aman: tengah
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // jalur aman: kanan
+            new BarisPola { kiri = false, tengah = true,  kanan = true  }, // jalur aman: kiri
+            new BarisPola { kiri = true,  tengah = false, kanan = true  }, // jalur aman: tengah
+        }},
+
+        new PolaRintangan { namaPola = "Labirin Berliku", baris = new BarisPola[] {
+            new BarisPola { kiri = true,  tengah = false, kanan = false }, // single
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // double, jalur aman kanan
+            new BarisPola { kiri = false, tengah = false, kanan = true  }, // single
+            new BarisPola { kiri = false, tengah = true,  kanan = true  }, // double, jalur aman kiri
+            new BarisPola { kiri = false, tengah = true,  kanan = false }, // single
+            new BarisPola { kiri = true,  tengah = false, kanan = true  }, // double, jalur aman tengah
+            new BarisPola { kiri = false, tengah = false, kanan = true  }, // single
+            new BarisPola { kiri = true,  tengah = false, kanan = false }, // single
+        }},
+
+        new PolaRintangan { namaPola = "Jebakan Kejutan", baris = new BarisPola[] {
+            new BarisPola { kiri = false, tengah = false, kanan = true  }, // bikin pemain terbiasa di kiri/tengah
+            new BarisPola { kiri = false, tengah = false, kanan = true  },
+            new BarisPola { kiri = false, tengah = false, kanan = true  },
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // TIBA-TIBA flip - maksa lompat jauh ke kanan
+            new BarisPola { kiri = true,  tengah = true,  kanan = false },
+        }},
+
+        new PolaRintangan { namaPola = "Ular Panjang", baris = new BarisPola[] {
+            new BarisPola { kiri = true,  tengah = false, kanan = false },
+            new BarisPola { kiri = false, tengah = false, kanan = true  },
+            new BarisPola { kiri = false, tengah = true,  kanan = false },
+            new BarisPola { kiri = true,  tengah = false, kanan = false },
+            new BarisPola { kiri = false, tengah = false, kanan = true  },
+            new BarisPola { kiri = false, tengah = true,  kanan = false },
+            new BarisPola { kiri = false, tengah = false, kanan = true  },
+            new BarisPola { kiri = true,  tengah = false, kanan = false },
+            new BarisPola { kiri = false, tengah = true,  kanan = false },
+        }},
+
+        new PolaRintangan { namaPola = "Sempit Bergantian Cepat", baris = new BarisPola[] {
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // aman kanan
+            new BarisPola { kiri = false, tengah = true,  kanan = true  }, // aman kiri
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // aman kanan
+            new BarisPola { kiri = false, tengah = true,  kanan = true  }, // aman kiri
+            new BarisPola { kiri = true,  tengah = false, kanan = true  }, // aman tengah (napas sebentar)
+        }},
+
+        new PolaRintangan { namaPola = "Maraton Kombinasi", baris = new BarisPola[] {
+            new BarisPola { kiri = false, tengah = true,  kanan = false }, // single tengah
+            new BarisPola { kiri = true,  tengah = true,  kanan = false }, // double, aman kanan
+            new BarisPola { kiri = true,  tengah = false, kanan = false }, // single kiri
+            new BarisPola { kiri = false, tengah = false, kanan = false }, // jeda kosong (istirahat sejenak)
+            new BarisPola { kiri = false, tengah = true,  kanan = true  }, // double, aman kiri
+            new BarisPola { kiri = false, tengah = false, kanan = true  }, // single kanan
+            new BarisPola { kiri = true,  tengah = false, kanan = true  }, // double, aman tengah
+            new BarisPola { kiri = false, tengah = true,  kanan = false }, // single tengah
+        }},
     };
     public TextMeshProUGUI textJumlahTabrakan;
     public TextMeshProUGUI textWaktuPengantaran;
@@ -140,6 +209,8 @@ public class OjolManager : MonoBehaviour
     public float jarakTujuanPengantaran = 4000f;
     [Tooltip("Kalau sisa jarak beneran udah di bawah angka ini (misal karena collider udah nyentuh duluan sebelum jarak pas 0), tampilan dipaksa jadi '0m' biar kelihatan lebih masuk akal/pas 'sampai'")]
     public float ambangJarakDekat = 100f;
+    [Tooltip("TAMBAHAN: padding kiri-kanan (pixel) di luar lane paling kiri/kanan, biar garis finish keliatan lebih 'penuh' / gak mepet pas-pasan sama lane")]
+    public float paddingLebarGarisFinish = 150f;
 
     [Header("Panel Hasil Pesanan (muncul begitu sampai tujuan)")]
     public GameObject panelHasilPesanan;
@@ -159,6 +230,28 @@ public class OjolManager : MonoBehaviour
     public float sanityBerkurangPerShift = 8f;
     [Tooltip("Berapa jam in-game yang dilewati sepulang shift")]
     public float jamDilewatiShift = 6f;
+
+    [Header("Audio Efek Ojol")]
+    [Tooltip("Komponen AudioSource untuk memutar sound effect ojol")]
+    public AudioSource audioSourceOjol;
+    [Tooltip("Sound effect saat pesanan baru masuk")]
+    public AudioClip klipPesananMasuk;
+    [Range(0f, 1f)]
+    public float volumePesananMasuk = 0.8f;
+
+    // --- TAMBAHAN: Variabel untuk suara nabrak ---
+    [Tooltip("Sound effect saat menabrak rintangan")]
+    public AudioClip klipTabrak;
+    [Range(0f, 1f)]
+    public float volumeTabrak = 0.8f;
+
+    [Header("Audio Efek Mengantar (Loop)")]
+    [Tooltip("Komponen AudioSource KHUSUS untuk suara mesin/jalan (biar gak nabrak suara lain)")]
+    public AudioSource audioSourceMesin;
+    [Tooltip("Sound effect saat mengantar pesanan (seperti suara motor/angin)")]
+    public AudioClip klipSuaraJalan;
+    [Range(0f, 1f)]
+    public float volumeJalan = 0.8f;
 
     [Header("Scene")]
     public string namaSceneUtama = "MainScene";
@@ -180,7 +273,9 @@ public class OjolManager : MonoBehaviour
     }
 
     void Start()
-    {
+    {   
+        if (layarTransisi != null) StartCoroutine(FadeMasuk());
+        
         if (posisiLane == null || posisiLane.Length != 3) {
             Debug.LogError("[OjolManager] Posisi Lane harus diisi TEPAT 3 elemen (kiri, tengah, kanan)!");
         }
@@ -220,6 +315,12 @@ public class OjolManager : MonoBehaviour
             if (Keyboard.current.dKey.wasPressedThisFrame || Keyboard.current.rightArrowKey.wasPressedThisFrame) PindahLane(1);
         }
 
+        // --- TAMBAHAN: pindah lane pakai KLIK/TAP KURSOR - klik di lane manapun (kiri/tengah/kanan),
+        // karakter langsung lompat ke lane yang diklik itu (bukan geser satu-satu kayak WASD) ---
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) {
+            DeteksiKlikLane(Mouse.current.position.ReadValue());
+        }
+
         if (karakterPemain != null && posisiLane != null && posisiLane.Length == 3) {
             Vector2 posisiTarget = new Vector2(posisiLane[laneSaatIni].anchoredPosition.x, karakterPemain.anchoredPosition.y);
             karakterPemain.anchoredPosition = Vector2.Lerp(karakterPemain.anchoredPosition, posisiTarget, Time.deltaTime * kecepatanPindahLane);
@@ -229,6 +330,72 @@ public class OjolManager : MonoBehaviour
     void PindahLane(int arah)
     {
         laneSaatIni = Mathf.Clamp(laneSaatIni + arah, 0, 2);
+    }
+
+    void DeteksiKlikLane(Vector2 posisiKlikLayar)
+    {
+        if (EventSystem.current != null) {
+            PointerEventData dataPointer = new PointerEventData(EventSystem.current);
+            dataPointer.position = posisiKlikLayar;
+            
+            // Lakukan raycast khusus untuk elemen UI Overlay
+            List<RaycastResult> hasilRaycastUI = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(dataPointer, hasilRaycastUI);
+
+            foreach (RaycastResult hasil in hasilRaycastUI) {
+                // Cari apakah objek UI yang diklik memiliki script ZonaLaneOjol
+                ZonaLaneOjol zona = hasil.gameObject.GetComponent<ZonaLaneOjol>();
+                
+                if (zona != null) {
+                    // Jika kena zona, pindahkan karakter dan langsung keluar dari fungsi
+                    laneSaatIni = Mathf.Clamp(zona.laneIndex, 0, 2);
+                    return; 
+                }
+
+                // Opsional: Jika klik mengenai UI interaktif lain (misal tombol Pause), 
+                // abaikan klik agar tidak tembus ke zona di bawahnya.
+                if (hasil.gameObject.GetComponent<Selectable>() != null) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private IEnumerator FadeMasuk()
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(1f, 0f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+            layarTransisi.raycastTarget = false;
+        }
+    }
+
+    private IEnumerator FadeKeluar(string namaScene)
+    {
+        // --- TAMBAHAN: Panggil MinigameAudioManager untuk fade-out musik BGM ---
+        if (MinigameAudioManager.Instance != null) MinigameAudioManager.Instance.HentikanMusik();
+
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(0f, 1f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+        }
+        SceneManager.LoadScene(namaScene, LoadSceneMode.Single);
     }
 
     public void MulaiShift()
@@ -263,6 +430,11 @@ public class OjolManager : MonoBehaviour
         if (panelMenunggu) panelMenunggu.SetActive(false);
         if (panelPesananMasuk) panelPesananMasuk.SetActive(true);
         if (textInfoPesanan) textInfoPesanan.text = "Pesanan masuk! Geser buat terima.";
+
+        // --- TAMBAHAN: Mainkan sound effect saat pesanan masuk ---
+        if (audioSourceOjol != null && klipPesananMasuk != null) {
+            audioSourceOjol.PlayOneShot(klipPesananMasuk, volumePesananMasuk);
+        }
 
         // --- TAMBAHAN: reset tombol geser & mulai batas waktu terima pesanan ---
         pesananDiterima = false;
@@ -307,6 +479,14 @@ public class OjolManager : MonoBehaviour
         if (panelPesananMasuk) panelPesananMasuk.SetActive(false);
         if (panelMengantar) panelMengantar.SetActive(true);
 
+        // --- TAMBAHAN: Mulai mainkan sound effect jalan (looping) ---
+        if (audioSourceMesin != null && klipSuaraJalan != null) {
+            audioSourceMesin.clip = klipSuaraJalan;
+            audioSourceMesin.loop = true;
+            audioSourceMesin.volume = volumeJalan;
+            audioSourceMesin.Play();
+        }
+
         laneSaatIni = 1;
         jumlahTabrakanSaatIni = 0;
         jumlahDihindariSaatIni = 0;
@@ -335,7 +515,25 @@ public class OjolManager : MonoBehaviour
         float posisiYPemain = karakterPemain != null ? karakterPemain.anchoredPosition.y : 0f;
         float posisiAwalGarisFinish = posisiYPemain + jarakTujuanPengantaran;
 
-        GameObject objek = Instantiate(prefabGarisFinish, wadahRintangan);
+        GameObject objek = Instantiate(prefabGarisFinish, wadahRintangan, false); // --- FIX: worldPositionStays = false, biar sizeDelta/scale prefab TIDAK ikut direcalculate/kekecilan gara-gara skala wadahRintangan ---
+
+        // --- FIX: paksa lebar garis finish selalu PAS nutupin ketiga lane (kiri sampai kanan) + padding,
+        // gak gantung ke sizeDelta prefab yang gampang keliatan kekecilan tergantung anchor/parent ---
+        RectTransform rectFinish = objek.GetComponent<RectTransform>();
+        if (rectFinish != null && posisiLane != null && posisiLane.Length == 3) {
+            float xKiri = posisiLane[0].anchoredPosition.x;
+            float xKanan = posisiLane[2].anchoredPosition.x;
+            float lebarTarget = Mathf.Abs(xKanan - xKiri) + paddingLebarGarisFinish * 2f;
+
+            rectFinish.localScale = Vector3.one; // --- FIX: pastikan scale gak ikut ke-inherit aneh dari prefab/parent ---
+            Vector2 ukuran = rectFinish.sizeDelta;
+            ukuran.x = lebarTarget;
+            rectFinish.sizeDelta = ukuran;
+            // --- CATATAN: posisi X sengaja gak diatur di sini, karena GarisFinishOjol.Setup() di bawah
+            // bakal override anchoredPosition.x jadi 0 - itu udah benar SELAMA posisiLane[0] & posisiLane[2]
+            // simetris di kiri-kanan angka 0. Kalau lane kamu TIDAK simetris, kasih tau aku biar disesuaikan. ---
+        }
+
         GarisFinishOjol garis = objek.GetComponent<GarisFinishOjol>();
         if (garis != null) {
             garis.Setup(posisiAwalGarisFinish, kecepatanRintangan);
@@ -389,7 +587,7 @@ public class OjolManager : MonoBehaviour
     // (bukan nunggu delay tiap baris), biar spacing antar barisnya PERSIS sesuai desain pola, bukan hasil timing acak ---
     void SpawnSatuPola(PolaRintangan pola)
     {
-        if (prefabRintangan == null || wadahRintangan == null || posisiLane == null || posisiLane.Length != 3) return;
+        if (prefabRintanganArray == null || prefabRintanganArray.Length == 0 || wadahRintangan == null || posisiLane == null || posisiLane.Length != 3) return;
         if (pola.baris == null) return;
 
         for (int i = 0; i < pola.baris.Length; i++) {
@@ -402,9 +600,25 @@ public class OjolManager : MonoBehaviour
         }
     }
 
+    // --- TAMBAHAN: pilih SATU prefab rintangan secara acak dari 6 tipe yang ada di prefabRintanganArray,
+    // biar tiap rintangan yang muncul di layar tampilannya bervariasi (gak monoton itu-itu aja) ---
+    GameObject PilihPrefabRintanganAcak()
+    {
+        // --- Filter slot kosong di Inspector dulu, biar gak error kalau ternyata belum keisi 6-6nya ---
+        List<GameObject> validPrefab = new List<GameObject>();
+        for (int i = 0; i < prefabRintanganArray.Length; i++) {
+            if (prefabRintanganArray[i] != null) validPrefab.Add(prefabRintanganArray[i]);
+        }
+        if (validPrefab.Count == 0) return null;
+        return validPrefab[Random.Range(0, validPrefab.Count)];
+    }
+
     void SpawnSatuRintanganDiLane(int lane, float posisiY)
     {
-        GameObject objek = Instantiate(prefabRintangan, wadahRintangan);
+        GameObject prefabTerpilih = PilihPrefabRintanganAcak();
+        if (prefabTerpilih == null) return;
+
+        GameObject objek = Instantiate(prefabTerpilih, wadahRintangan, false);
         RintanganOjol rintangan = objek.GetComponent<RintanganOjol>();
         if (rintangan != null) {
             rintangan.Setup(lane, posisiLane[lane].anchoredPosition.x, posisiY, kecepatanRintangan);
@@ -422,6 +636,11 @@ public class OjolManager : MonoBehaviour
     {
         jumlahTabrakanSaatIni++;
         UpdateTeksTabrakan();
+
+        // --- TAMBAHAN: Mainkan sound effect tabrakan di sini ---
+        if (audioSourceOjol != null && klipTabrak != null) {
+            audioSourceOjol.PlayOneShot(klipTabrak, volumeTabrak);
+        }
     }
 
     public void RintanganDihindari()
@@ -434,6 +653,9 @@ public class OjolManager : MonoBehaviour
     {
         if (!sedangMengantar) return; // guard: cegah dobel-trigger
         sedangMengantar = false;
+
+        // --- TAMBAHAN: Hentikan suara jalan karena sudah sampai ---
+        if (audioSourceMesin != null) audioSourceMesin.Stop();
 
         int pendapatan = Mathf.Max(0, pendapatanDasarPerPesanan - (jumlahTabrakanSaatIni * penguranganPerTabrakan));
         gajiTerkumpul += pendapatan;
@@ -474,6 +696,9 @@ public class OjolManager : MonoBehaviour
         sedangMengantar = false;
         StopAllCoroutines();
 
+        // --- TAMBAHAN: Hentikan suara jalan jika dibatalkan paksa ---
+        if (audioSourceMesin != null) audioSourceMesin.Stop();
+
         // --- TAMBAHAN: bersihin sisa rintangan & garis finish yang masih ada di layar (mereka jalan lewat Update(),
         // bukan Coroutine, jadi StopAllCoroutines() di atas gak otomatis nyetop mereka) ---
         if (wadahRintangan != null) {
@@ -485,8 +710,11 @@ public class OjolManager : MonoBehaviour
 
     void SelesaikanShift()
     {
+        // Gunakan gajiTerkumpul, bukan gajiBersih
         HasilKerjaPartTime.SimpanHasil(gajiTerkumpul, laparBerkurangPerShift, sanityBerkurangPerShift, jamDilewatiShift);
-        SceneManager.LoadScene(namaSceneUtama, LoadSceneMode.Single);
+        
+        // Panggil Coroutine untuk transisi ke Main Scene
+        StartCoroutine(FadeKeluar(namaSceneUtama));
     }
 
     void UpdateTeksGaji()

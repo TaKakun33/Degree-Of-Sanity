@@ -62,10 +62,13 @@ public class CutsceneUI : MonoBehaviour
     [Header("Gambar Prop (ilustrasi close-up di depan layar - misal Laci/Amplop)")]
     public Image gambarProp;
 
-    [Header("Panel Pilihan (JembatanCerita)")]
-    public GameObject panelPilihan;
-    public Transform wadahTombolPilihan;
-    public GameObject prefabTombolPilihan;
+    [Header("Panel Pilihan 1 (misal ME3 - 2 opsi) - dipisah total dari Panel Pilihan 2")]
+    public GameObject panelPilihan1;
+    public List<Button> tombolPilihan1;
+
+    [Header("Panel Pilihan 2 (misal ME2 - 3 opsi) - dipisah total dari Panel Pilihan 1")]
+    public GameObject panelPilihan2;
+    public List<Button> tombolPilihan2;
 
     private CutsceneSceneSO adeganAktif;
     private int indexBaris;
@@ -80,13 +83,21 @@ public class CutsceneUI : MonoBehaviour
     private readonly Dictionary<GameObject, bool> flipXAsliSprite = new Dictionary<GameObject, bool>();
     private RuangTrigger ruangTerakhirDipakai; // --- TAMBAHAN: dipakai buat teleport Andrew asli ke ruangan terakhir begitu chain kelar ---
     private bool gantiHariPendingSetelahChain = false; // --- TAMBAHAN ---
+    // --- TAMBAHAN: true kalau chain yang lagi diputar ini adalah chain ENDING (Happy/Bad) -
+    // dipasang lewat parameter 'adalahEndingChain' di MainkanAdegan(). Dipakai buat 2 hal:
+    // (1) musikKhusus adegan ini dipindah lewat AudioManager.PindahKeMusikEnding() (bukan
+    // PindahKeMusikEvent()) biar pakai durasi fade/volume Ending yang beda dari Main Event,
+    // (2) begitu chain kelar, musik TIDAK otomatis balik ke Musik Utama (beda dari Main Event) -
+    // biar tetep bunyi sampai player pilih tombol di panel Layar Akhir. ---
+    private bool chainAdalahEnding = false;
 
     void Awake()
     {
         if (tombolLanjut) tombolLanjut.onClick.AddListener(LanjutkanBaris);
         if (panelCutscene) panelCutscene.SetActive(false);
-        if (panelPilihan) panelPilihan.SetActive(false);
         if (panelDialog) panelDialog.SetActive(false); // --- TAMBAHAN ---
+        if (panelPilihan1) panelPilihan1.SetActive(false); // --- TAMBAHAN ---
+        if (panelPilihan2) panelPilihan2.SetActive(false); // --- TAMBAHAN ---
         if (panelNarasiBisikan) panelNarasiBisikan.SetActive(false); // --- TAMBAHAN ---
 
         // --- TAMBAHAN: pastiin layar transisi GAK nge-block klik dari awal, apapun kondisinya -
@@ -141,9 +152,10 @@ public class CutsceneUI : MonoBehaviour
         sedangHitam = true;
     }
 
-    public void MainkanAdegan(CutsceneSceneSO adegan, Action onSemuaChainSelesai)
+    public void MainkanAdegan(CutsceneSceneSO adegan, Action onSemuaChainSelesai, bool adalahEndingChain = false)
     {
         selesaiCallback = onSemuaChainSelesai;
+        chainAdalahEnding = adalahEndingChain; // --- TAMBAHAN ---
         if (GameManager.Instance != null) GameManager.Instance.SetTampilanJamAktif(false); // TAMBAHAN: sembunyiin jam selama cutscene
         MulaiSatuAdegan(adegan);
     }
@@ -170,6 +182,17 @@ public class CutsceneUI : MonoBehaviour
         if (panelCutscene) panelCutscene.SetActive(true);
         if (goyangTeks) goyangTeks.Matikan();
         if (gambarProp) gambarProp.gameObject.SetActive(false);
+
+        // --- TAMBAHAN: kalau adegan ini punya Musik Khusus (biasanya cuma diisi di adegan
+        // PERTAMA suatu Main Event/Ending), pindahin BGM ke situ - route-nya beda tergantung
+        // ini chain Ending atau bukan, biar durasi fade & volume yang dipakai sesuai (lihat
+        // AudioManager.PindahKeMusikEvent vs PindahKeMusikEnding). Kalau musikKhusus kosong
+        // (adegan LANJUTAN dalam Main Event/Ending yang sama), gak ada apa-apa yang kepanggil -
+        // musik yang lagi jalan TETAP lanjut, gak restart tiap ganti baris. ---
+        if (adegan.musikKhusus != null && AudioManager.Instance != null) {
+            if (chainAdalahEnding) AudioManager.Instance.PindahKeMusikEnding(adegan.musikKhusus);
+            else AudioManager.Instance.PindahKeMusikEvent(adegan.musikKhusus);
+        }
 
         // --- TAMBAHAN: goyang KAMERA (bukan panel) sepanjang adegan kalau dicentang, lewat
         // SanityDistortionEffect yang udah ada - pakai sistem shake yang sama kayak Sanity rendah ---
@@ -472,7 +495,11 @@ public class CutsceneUI : MonoBehaviour
             if (e.gantiHariSetelahAdegan) {
                 gantiHariPendingSetelahChain = true;
             } else if (e.jamBaruSetelahAdegan >= 0f) {
-                GameManager.Instance.jamSaatIni = e.jamBaruSetelahAdegan;
+                // --- FIX: pakai SetJamLangsung() (bukan nulis field jamSaatIni langsung) -
+                // biar OnJamBerubah langsung ke-invoke SAAT ITU JUGA, jadi background siklus
+                // siang-malam (SiklusSiangMalam) langsung ikut nyesuain warna pas cutscene ini
+                // ngelompatin jam, gak nunggu tick Update() berikutnya ---
+                GameManager.Instance.SetJamLangsung(e.jamBaruSetelahAdegan);
             }
 
             if (!string.IsNullOrEmpty(adeganAktif.monologAkhirHari)) {
@@ -552,6 +579,15 @@ public class CutsceneUI : MonoBehaviour
         adeganAktif = null;
         if (GameManager.Instance != null) GameManager.Instance.SetTampilanJamAktif(true);
 
+        // --- TAMBAHAN: Main Event (BUKAN Ending) - begitu chain BENERAN kelar, balik lagi ke
+        // Musik Utama. Ending SENGAJA gak disentuh di sini - musiknya tetap bunyi terus sampai
+        // player pilih tombol di panel Layar Akhir (lihat GameManager.RestartGame() dkk). Aman
+        // dipanggil walau musiknya emang udah Musik Utama (misal chain Prolog) - no-op otomatis. ---
+        if (!chainAdalahEnding && AudioManager.Instance != null) {
+            AudioManager.Instance.KembaliKeMusikUtama();
+        }
+        chainAdalahEnding = false; // --- reset, siap buat chain berikutnya ---
+
         // --- TAMBAHAN: begitu chain BENERAN kelar, matiin sprite Andrew Cerita ruangan yang
         // lagi aktif, balikin render Andrew asli ke normal (nyala lagi) ---
         if (andrewCeritaAktifSaatIni != null) {
@@ -606,32 +642,65 @@ public class CutsceneUI : MonoBehaviour
 
     void TampilkanPilihan()
     {
-        if (panelPilihan == null || wadahTombolPilihan == null || prefabTombolPilihan == null) {
-            Debug.LogError($"[CutsceneUI] TampilkanPilihan() GAGAL - ada field kosong: Panel Pilihan={(panelPilihan == null ? "NULL" : "OK")}, Wadah Tombol Pilihan={(wadahTombolPilihan == null ? "NULL" : "OK")}, Prefab Tombol Pilihan={(prefabTombolPilihan == null ? "NULL" : "OK")}"); // --- SEMENTARA ---
+        // --- TAMBAHAN: pilih SALAH SATU dari 2 panel yang beneran terpisah total, sesuai
+        // yang dipilih di asset adegan ini (Panel Pilihan Dipakai) ---
+        GameObject panelDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? panelPilihan1 : panelPilihan2;
+        GameObject panelTidakDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? panelPilihan2 : panelPilihan1;
+        List<Button> tombolDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? tombolPilihan1 : tombolPilihan2;
+
+        // --- TAMBAHAN (debug): kalau panel yang aktif kelihatannya kebalik, cek log ini -
+        // ketauan persis adegan mana yang minta panel mana. Kalau adeganAktif.id di log ini
+        // ternyata adegan yang harusnya Panel2 tapi panelPilihanDipakai kebaca Panel1, berarti
+        // asset CutsceneSceneSO-nya lupa di-set ke Panel2 di Inspector (defaultnya Panel1). ---
+        Debug.Log($"[CutsceneUI] TampilkanPilihan() - adegan '{adeganAktif.id}' minta {adeganAktif.panelPilihanDipakai}");
+
+        // --- TAMBAHAN: paksa tutup panel yang TIDAK dipakai adegan ini, jaga-jaga kalau
+        // sebelumnya ada panel yang gak sempet ketutup dengan benar (misal chain lompat adegan
+        // tanpa lewat PilihCabang) - biar gak numpuk 2 panel aktif bareng ---
+        if (panelTidakDipakai) panelTidakDipakai.SetActive(false);
+
+        if (panelDipakai == null || tombolDipakai == null || tombolDipakai.Count == 0) {
+            Debug.LogError($"[CutsceneUI] TampilkanPilihan() GAGAL - Panel Pilihan {adeganAktif.panelPilihanDipakai} atau tombol-tombolnya belum diisi di CutsceneUI."); // --- SEMENTARA ---
             SelesaikanChain();
             return;
         }
 
-        foreach (Transform anak in wadahTombolPilihan) Destroy(anak.gameObject);
-
-        foreach (var cabang in adeganAktif.pilihanCabang) {
-            GameObject tombolObj = Instantiate(prefabTombolPilihan, wadahTombolPilihan);
-            TextMeshProUGUI label = tombolObj.GetComponentInChildren<TextMeshProUGUI>();
-            if (label) label.text = cabang.labelTombol;
-
-            Button tombol = tombolObj.GetComponent<Button>();
-            PilihanCabang cabangLokal = cabang;
-            tombol.onClick.AddListener(() => PilihCabang(cabangLokal));
+        if (adeganAktif.pilihanCabang.Count > tombolDipakai.Count) {
+            Debug.LogError($"[CutsceneUI] Adegan '{adeganAktif.id}' punya {adeganAktif.pilihanCabang.Count} pilihan, tapi Panel Pilihan {adeganAktif.panelPilihanDipakai} cuma ada {tombolDipakai.Count} tombol - tambah tombol lagi di panel itu!"); // --- SEMENTARA ---
         }
 
-        panelPilihan.SetActive(true);
+        for (int i = 0; i < tombolDipakai.Count; i++) {
+            Button tombol = tombolDipakai[i];
+            if (tombol == null) continue;
+
+            tombol.onClick.RemoveAllListeners(); // --- bersihin listener lama, biar gak numpuk tiap kali panel ini dibuka ulang ---
+
+            if (i < adeganAktif.pilihanCabang.Count) {
+                var cabang = adeganAktif.pilihanCabang[i];
+                TextMeshProUGUI label = tombol.GetComponentInChildren<TextMeshProUGUI>();
+                if (label) label.text = cabang.labelTombol;
+
+                PilihanCabang cabangLokal = cabang;
+                tombol.onClick.AddListener(() => PilihCabang(cabangLokal));
+                tombol.gameObject.SetActive(true);
+            } else {
+                tombol.gameObject.SetActive(false); // --- jaga-jaga kalau Panel 2 kebetulan punya lebih banyak tombol dari yang dibutuhin adegan ini ---
+            }
+        }
+
+        panelDipakai.SetActive(true);
     }
 
     void PilihCabang(PilihanCabang cabang)
     {
         if (!string.IsNullOrEmpty(cabang.setFlag)) flagCerita.Add(cabang.setFlag);
 
-        if (panelPilihan) panelPilihan.SetActive(false);
+        // --- TAMBAHAN: tutup panel yang SESUAI (adeganAktif masih adegan pilihan ini, belum
+        // pindah ke adegan lanjutan) ---
+        if (adeganAktif != null) {
+            GameObject panelDipakai = (adeganAktif.panelPilihanDipakai == PilihanPanelMana.Panel1) ? panelPilihan1 : panelPilihan2;
+            if (panelDipakai) panelDipakai.SetActive(false);
+        }
 
         if (cabang.adeganLanjutan != null) {
             MulaiSatuAdegan(cabang.adeganLanjutan);

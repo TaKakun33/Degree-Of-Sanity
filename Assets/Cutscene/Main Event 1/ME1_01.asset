@@ -20,6 +20,7 @@ MonoBehaviour:
   lewatiTransisiAwal: 0
   geterSepanjangAdegan: 0
   fadeKePutihDiAkhir: 0
+  musikKhusus: {fileID: 8300000, guid: 031133ee1ff9846a8af6f8dfb424add3, type: 3}
   baris:
   - jenis: 0
     namaTokoh: 
@@ -88,5 +89,6 @@ MonoBehaviour:
     gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
+  panelPilihanDipakai: 0
   adeganBerikutnya: {fileID: 11400000, guid: 26745f991665beabb855574c90bfbb42, type: 2}
   monologAkhirHari: 

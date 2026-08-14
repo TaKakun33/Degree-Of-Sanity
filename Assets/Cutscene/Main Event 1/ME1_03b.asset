@@ -92,7 +92,7 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
-    tambahUtang: 2000000
+    tambahUtang: 1000000
     aktifkanHutang: 1
     jamBaruSetelahAdegan: -1
     sanityMinimalSetelahEfek: -1
@@ -101,5 +101,6 @@ MonoBehaviour:
     gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
+  panelPilihanDipakai: 0
   adeganBerikutnya: {fileID: 0}
   monologAkhirHari: 

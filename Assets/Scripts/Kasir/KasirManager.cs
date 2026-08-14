@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
@@ -91,8 +92,20 @@ public class KasirManager : MonoBehaviour
     [Tooltip("Berapa jam in-game yang dilewati sepulang shift (proposal: skip waktu)")]
     public float jamDilewatiShift = 8f;
 
+    [Header("Transisi Layar")]
+    public Image layarTransisi;
+    public float durasiFade = 0.5f;
+
     [Header("Scene")]
     public string namaSceneUtama = "SampleScene";
+    
+    [Header("Audio Efek Konfirmasi Kasir")]
+    [Tooltip("Komponen AudioSource untuk suara tombol konfirmasi kembalian")]
+    public AudioSource audioSourceKasir;
+    [Tooltip("Sound effect saat tombol konfirmasi kembalian ditekan")]
+    public AudioClip klipSuaraKonfirmasi;
+    [Range(0f, 1f)]
+    public float volumeKonfirmasi = 0.8f;
 
     // --- State internal shift ---
     private int pelangganSaatIni = 0;
@@ -114,6 +127,7 @@ public class KasirManager : MonoBehaviour
 
     void Start()
     {
+        if (layarTransisi != null) StartCoroutine(FadeMasuk());
         // --- TAMBAHAN: kalau Track Conveyor diisi, otomatis hitung X Batas Kiri & X Mulai Conveyor
         // dari lebar object itu sendiri (dikonversi ke local space wadahConveyor, biar sinkron sama
         // anchoredPosition barang yang di-spawn nanti) - gak perlu ketik angka manual lagi. ---
@@ -152,6 +166,70 @@ public class KasirManager : MonoBehaviour
         MulaiShift();
     }
 
+    private IEnumerator FadeMasuk()
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(1f, 0f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+            layarTransisi.raycastTarget = false;
+        }
+    }
+
+    // --- TAMBAHAN: Fungsi Coroutine khusus untuk efek fade-in barang ---
+    private IEnumerator FadeMasukItem(GameObject objekItem)
+    {
+        // Coba ambil komponen CanvasGroup. Jika tidak ada, pasang secara otomatis melalui script.
+        CanvasGroup cg = objekItem.GetComponent<CanvasGroup>();
+        if (cg == null) {
+            cg = objekItem.AddComponent<CanvasGroup>();
+        }
+
+        cg.alpha = 0f; // Mulai dari 100% transparan
+        float durasiFadeItem = 0.5f; // Durasi fade masuk (0.5 detik)
+        float t = 0f;
+
+        // Looping untuk menaikkan alpha secara perlahan
+        while (t < durasiFadeItem && objekItem != null) {
+            t += Time.deltaTime;
+            cg.alpha = Mathf.Lerp(0f, 1f, t / durasiFadeItem);
+            yield return null; // Tunggu ke frame berikutnya
+        }
+
+        // Pastikan alpha menjadi 1 (pekat sempurna) di akhir proses, 
+        // asalkan objeknya belum dihancurkan / masuk kantong
+        if (objekItem != null) {
+            cg.alpha = 1f;
+        }
+    }
+
+private IEnumerator FadeKeluar(string namaScene)
+    {
+        // --- TAMBAHAN: Panggil MinigameAudioManager untuk fade-out musik BGM ---
+        if (MinigameAudioManager.Instance != null) MinigameAudioManager.Instance.HentikanMusik();
+
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(0f, 1f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+        }
+        SceneManager.LoadScene(namaScene, LoadSceneMode.Single);
+    }
+
     public void MulaiShift()
     {
         pelangganSaatIni = 0;
@@ -182,7 +260,7 @@ public class KasirManager : MonoBehaviour
         StartCoroutine(SpawnItemBelanjaan(jumlahItem));
     }
 
-    IEnumerator SpawnItemBelanjaan(int jumlah)
+IEnumerator SpawnItemBelanjaan(int jumlah)
     {
         for (int i = 0; i < jumlah; i++) {
             ItemBelanjaan dataItem = katalogItem[Random.Range(0, katalogItem.Length)];
@@ -194,6 +272,9 @@ public class KasirManager : MonoBehaviour
 
             BarangBelanjaan barang = objekBaru.GetComponent<BarangBelanjaan>();
             barang.Setup(dataItem.namaItem, dataItem.harga, kecepatanConveyor, xBatasKiriConveyor, xMulaiConveyor, dataItem.sprite, dataItem.ukuranCustom);
+
+            // --- TAMBAHAN: Panggil coroutine untuk membuat efek fade-in barang ---
+            StartCoroutine(FadeMasukItem(objekBaru));
 
             itemPelangganAktif.Add(barang);
             yield return new WaitForSeconds(0.4f); // spawn satu-satu, gak numpuk di titik yang sama
@@ -294,6 +375,12 @@ public class KasirManager : MonoBehaviour
     public void KonfirmasiKembalian()
     {
         if (!sedangTahapPembayaran) return;
+
+        // --- TAMBAHAN: Mainkan sound effect konfirmasi di sini ---
+        if (audioSourceKasir != null && klipSuaraKonfirmasi != null) {
+            audioSourceKasir.PlayOneShot(klipSuaraKonfirmasi, volumeKonfirmasi);
+        }
+
         SelesaikanTransaksi(waktuHabis: false);
     }
 
@@ -347,11 +434,12 @@ public class KasirManager : MonoBehaviour
 
     void SelesaikanShift()
     {
-        // --- Gaji shift BOLEH MINUS kalau penalti kesalahan lebih besar dari komisi yang didapat -
-        // ini akan MOTONG uang yang sudah ada di MainScene (bukan cuma "gaji jadi Rp 0" doang) ---
-        int gajiBersih = gajiTerkumpul - penaltiTotal;
+        // Untuk KasirManager (kalau OjolManager hapus baris perhitungan gajiBersih ini)
+        int gajiBersih = gajiTerkumpul - penaltiTotal; 
         HasilKerjaPartTime.SimpanHasil(gajiBersih, laparBerkurangPerShift, sanityBerkurangPerShift, jamDilewatiShift);
-        SceneManager.LoadScene(namaSceneUtama, LoadSceneMode.Single);
+
+        // Panggil Fade Keluar (ganti SceneManager.LoadScene)
+        StartCoroutine(FadeKeluar(namaSceneUtama));
     }
 
     void UpdateTeksGaji()

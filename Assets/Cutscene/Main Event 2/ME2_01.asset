@@ -15,6 +15,12 @@ MonoBehaviour:
   id: ME2_01
   ruangId: KAMAR_ANDREW
   karakterAnnaHadir: 0
+  balikArahAndrew: 0
+  balikArahAnna: 0
+  lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
+  musikKhusus: {fileID: 8300000, guid: 031133ee1ff9846a8af6f8dfb424add3, type: 3}
   baris:
   - jenis: 0
     namaTokoh: 
@@ -24,6 +30,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -35,6 +43,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -46,6 +56,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -57,6 +69,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -68,6 +82,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -79,6 +95,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 25
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -90,6 +108,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 25
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -101,6 +121,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 25
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -112,6 +134,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 25
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -122,12 +146,15 @@ MonoBehaviour:
     uangDelta: 0
     progresSkripsiDelta: 0
     tambahRoti: 0
+    tambahUtang: 0
     aktifkanHutang: 0
     jamBaruSetelahAdegan: -1
     sanityMinimalSetelahEfek: -1
     paksaBukaThresholdKe: -1
     aktifkanBonusTekadKuat: 0
+    gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
+  panelPilihanDipakai: 0
   adeganBerikutnya: {fileID: 11400000, guid: 2990b5167ce22490f9b9daa36f6da985, type: 2}
   monologAkhirHari: 

@@ -17,6 +17,14 @@ public class DaerahPindai : MonoBehaviour
     [Tooltip("Berapa detik sprite 'mode scan' ditampilkan sebelum balik lagi ke 'mode siap'")]
     public float durasiTampilModeScan = 0.5f;
 
+    [Header("Audio Efek Scan")]
+    [Tooltip("Drag komponen AudioSource yang ada di GameObject ini")]
+    public AudioSource audioSourceScan;
+    [Tooltip("Drag file suara/sound effect beep scanner ke sini")]
+    public AudioClip klipSuaraScan;
+    [Range(0f, 1f)]
+    public float volumeScan = 0.8f;
+
     private RectTransform rectTransformSendiri;
     private Coroutine coroutineModeScanAktif;
 
@@ -40,6 +48,11 @@ public class DaerahPindai : MonoBehaviour
 
         barang.sudahDipindai = true;
         if (KasirManager.Instance != null) KasirManager.Instance.ItemDipindai(barang);
+
+        // --- TAMBAHAN: Mainkan sound effect scan beep di sini ---
+        if (audioSourceScan != null && klipSuaraScan != null) {
+            audioSourceScan.PlayOneShot(klipSuaraScan, volumeScan);
+        }
 
         // --- TAMBAHAN: kedipkan sprite scanner ke "mode scan" sebentar sebagai feedback visual ---
         TampilkanModeScanSementara();

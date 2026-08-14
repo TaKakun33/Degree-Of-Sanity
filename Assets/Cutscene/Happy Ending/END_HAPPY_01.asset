@@ -15,7 +15,12 @@ MonoBehaviour:
   id: END_HAPPY_01
   ruangId: LORONG
   karakterAnnaHadir: 1
+  balikArahAndrew: 0
+  balikArahAnna: 0
   lewatiTransisiAwal: 0
+  geterSepanjangAdegan: 0
+  fadeKePutihDiAkhir: 0
+  musikKhusus: {fileID: 8300000, guid: cc46a8b003bd0f2deb9aadfa6d6ff3e5, type: 3}
   baris:
   - jenis: 0
     namaTokoh: 
@@ -24,6 +29,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -35,6 +42,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -46,6 +55,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -57,6 +68,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -68,6 +81,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -79,6 +94,8 @@ MonoBehaviour:
     munculKalauSanityDiBawah: 0
     munculKalauFlagAktif: 
     munculKalauFlagTidakAktif: 
+    munculKalauAdaMakananDiTas: 0
+    munculKalauTidakAdaMakananDiTas: 0
     objekTampilkan: {fileID: 0}
     objekSembunyikan: {fileID: 0}
     gambarPropUntukDitampilkan: {fileID: 0}
@@ -98,5 +115,6 @@ MonoBehaviour:
     gantiHariSetelahAdegan: 0
   adaPilihan: 0
   pilihanCabang: []
+  panelPilihanDipakai: 0
   adeganBerikutnya: {fileID: 11400000, guid: 0d29f3eb7573e5ef7992371e30a97847, type: 2}
   monologAkhirHari: 

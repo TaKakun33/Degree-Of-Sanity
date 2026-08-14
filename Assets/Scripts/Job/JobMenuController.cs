@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement; 
+using UnityEngine.UI;
+using System.Collections;
 
 public class JobMenuController : MonoBehaviour
 {
@@ -17,6 +19,11 @@ public class JobMenuController : MonoBehaviour
     public PintuRuangan pintuExit;
     [Tooltip("Drag object Zona_StopKerja LANGSUNG ke sini - player bakal jalan lurus ke posisi object ini, sama kayak klik Bed/Kompor")]
     public Transform zonaStopKerja;
+
+    [Header("Transisi Pindah Scene")]
+    [Tooltip("Drag Image full-screen warna hitam ke sini, alpha awalnya 0")]
+    public Image layarTransisi;
+    public float durasiFade = 0.5f;
 
     // --- Nyimpen scene mana yang dituju, dipakai nanti pas player beneran nyampe di luar (lihat ZonaStopKerja.cs) ---
     private string sceneTujuanBerikutnya;
@@ -90,15 +97,50 @@ public class JobMenuController : MonoBehaviour
 
         // --- TAMBAHAN: jatah harian ditandai DI SINI (bukan di awal), setelah player beneran
         // nyampe & pasti berangkat kerja - biar PenghalangKeluar gak ngeblok perjalanan ini sendiri ---
-        if (GameManager.Instance != null) GameManager.Instance.TandaiKerjaPartTimeSudahDilakukan();
+        if (GameManager.Instance != null) {
+            GameManager.Instance.TandaiKerjaPartTimeSudahDilakukan();
+            
+            // --- FIX: Titipkan eksekusi Coroutine ke GameManager karena Panel_MenuKerja saat ini sedang mati (inactive) ---
+            GameManager.Instance.StartCoroutine(ProsesPindahScene());
+        }
+    }
 
-        // --- PENTING: scene kerja dimuat SINGLE, GameManager di sini bakal HANCUR.
-        // Autosave dulu ke slot 0, supaya balik nanti GameManager reload state SAAT INI. ---
+    private IEnumerator ProsesPindahScene()
+    {
+        // 1. Lakukan Fade out ke layar hitam
+        if (layarTransisi != null)
+        {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true; // Bmbali JobMenulok klik pemain saat fade berlangsung
+
+            float t = 0f;
+            while (t < durasiFade)
+            {
+                t += Time.deltaTime;
+                float alpha = Mathf.Lerp(0f, 1f, t / durasiFade);
+                Color c = layarTransisi.color;
+                c.a = alpha;
+                layarTransisi.color = c;
+                yield return null; // Tunggu frame berikutnya
+            }
+
+            // Pastikan alpha benar-benar mentok di 1 (hitam pekat)
+            Color akhir = layarTransisi.color;
+            akhir.a = 1f;
+            layarTransisi.color = akhir;
+        }
+        else
+        {
+            Debug.LogWarning("[JobMenuController] Layar Transisi belum diisi! Lompat langsung ke scene.");
+        }
+
+        // 2. PENTING: Autosave saat layar sudah gelap
         if (SaveManager.Instance != null) {
             SaveManager.Instance.SimpanGame(0);
             SaveManager.slotUntukDiload = 0;
         }
 
+        // 3. Pindah ke Scene Kerja
         SceneManager.LoadScene(sceneTujuanBerikutnya);
         sceneTujuanBerikutnya = null;
     }

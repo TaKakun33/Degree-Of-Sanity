@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections;
 
 // Nama sengaja dibuat "GradingGameManager" (bukan "GameManager") supaya tidak
 // bentrok dengan GameManager utama yang sudah ada di project (sistem hari/uang/sanity).
@@ -33,6 +35,20 @@ public class GradingGameManager : MonoBehaviour
     [SerializeField] private float jamDilewatiShift = 3f;
     [SerializeField] private string namaSceneUtama = "MainScene";
 
+    [Header("Transisi Layar")]
+    public Image layarTransisi;
+    public float durasiFade = 0.5f;
+
+    // --- TAMBAHAN: Variabel Audio untuk Tombol Next ---
+    [Header("Audio Efek Tombol Next")]
+    [Tooltip("Komponen AudioSource untuk suara tombol Next")]
+    public AudioSource audioSourceTombol;
+    [Tooltip("Sound effect saat tombol Next ditekan")]
+    public AudioClip klipSuaraNext;
+    [Range(0f, 1f)]
+    public float volumeNext = 0.8f;
+    
+
     private List<List<QuestionData>> allSheets = new List<List<QuestionData>>();
     private int currentSheetIndex = 0;
     private int totalCorrectGradings = 0;
@@ -45,6 +61,7 @@ public class GradingGameManager : MonoBehaviour
 
     private void Start()
     {
+        if (layarTransisi != null) StartCoroutine(FadeMasuk());
         GenerateAllSheets();
         LoadCurrentSheet();
     }
@@ -87,6 +104,12 @@ public class GradingGameManager : MonoBehaviour
     public void GoToNextSheet()
     {
         if (currentSheetIndex >= allSheets.Count) return; // --- TAMBAHAN: sudah selesai, abaikan klik lanjutan ---
+
+        // --- TAMBAHAN: Mainkan sound effect tombol Next di sini ---
+        if (audioSourceTombol != null && klipSuaraNext != null) {
+            audioSourceTombol.PlayOneShot(klipSuaraNext, volumeNext);
+        }
+
         TallyCurrentSheetScore();
         currentSheetIndex++;
         LoadCurrentSheet();
@@ -100,6 +123,43 @@ public class GradingGameManager : MonoBehaviour
             totalQuestionsGraded++;
             if (q.DidPlayerGradeCorrectly()) totalCorrectGradings++;
         }
+    }
+
+    private IEnumerator FadeMasuk()
+    {
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(1f, 0f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+            layarTransisi.raycastTarget = false;
+        }
+    }
+
+    private IEnumerator FadeKeluar(string namaScene)
+    {
+        // --- TAMBAHAN: Panggil MinigameAudioManager untuk fade-out musik BGM ---
+        if (MinigameAudioManager.Instance != null) MinigameAudioManager.Instance.HentikanMusik();
+
+        if (layarTransisi != null) {
+            layarTransisi.gameObject.SetActive(true);
+            layarTransisi.raycastTarget = true;
+            float t = 0f;
+            while (t < durasiFade) {
+                t += Time.deltaTime;
+                Color c = layarTransisi.color;
+                c.a = Mathf.Lerp(0f, 1f, t / durasiFade);
+                layarTransisi.color = c;
+                yield return null;
+            }
+        }
+        SceneManager.LoadScene(namaScene, LoadSceneMode.Single);
     }
 
     // Dipanggil tombol "Pulang Lebih Awal" (opsional) kalau ada, sudahi sesi tanpa nilai kertas yang belum selesai
@@ -130,6 +190,6 @@ public class GradingGameManager : MonoBehaviour
     // Dipanggil tombol di ScorePanel (misal "Pulang"/"Selesai") setelah pemain baca skornya
     public void KembaliKeMainScene()
     {
-        SceneManager.LoadScene(namaSceneUtama, LoadSceneMode.Single);
+        StartCoroutine(FadeKeluar(namaSceneUtama));
     }
 }

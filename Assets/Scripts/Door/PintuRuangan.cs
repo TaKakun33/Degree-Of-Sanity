@@ -1,9 +1,5 @@
 using UnityEngine;
 
-// --- Pintu Ruangan versi 2-OBJEK: 1 GameObject buat "Pintu Terbuka", 1 lagi buat "Pintu
-// Tertutup" - tinggal SetActive() gantian, gak perlu ganti sprite manual/khawatir collider
-// gak pas lagi. Posisi/bentuk pintu terbuka & tertutup bisa BEDA & diatur independen (misal
-// pintu kebuka geser ke samping) - drag masing-masing ke posisi yang kamu mau di Scene view. ---
 public class PintuRuangan : MonoBehaviour
 {
     [Header("Dua Objek Pintu")]
@@ -15,17 +11,25 @@ public class PintuRuangan : MonoBehaviour
     [Header("Status Awal")]
     public bool mulaiTerbuka = false;
 
-    // --- TAMBAHAN: syarat opsional buat pintu ini. Diisi lewat kode (bukan Inspector) oleh script
-    // lain, misal ExitDoorController, buat mem-blok KLIK MANUAL (Toggle()) kalau syarat gak
-    // terpenuhi - CUMA ngaruh ke Toggle(), gak ngaruh ke BukaOtomatis()/TutupOtomatis() yang
-    // dipanggil sistem lain secara terprogram (itu dianggap udah "sah", gak perlu dicek ulang). ---
+    [Header("Audio Efek Pintu")]
+    [Tooltip("Komponen AudioSource untuk suara pintu (bisa ditaruh di GameObject ini)")]
+    public AudioSource audioSourcePintu;
+    [Tooltip("Sound effect saat pintu terbuka")]
+    public AudioClip klipPintuTerbuka;
+    [Tooltip("Sound effect saat pintu tertutup")]
+    public AudioClip klipPintuTertutup;
+    [Range(0f, 1f)]
+    public float volumePintu = 0.8f;
+
     public System.Func<bool> syaratBolehBuka;
 
     private bool sedangTerbuka;
+    private bool statusSebelumnya; // --- TAMBAHAN: Untuk mendeteksi perubahan status buka/tutup ---
 
     void Start()
     {
         sedangTerbuka = mulaiTerbuka;
+        statusSebelumnya = sedangTerbuka; // Inisialisasi awal
 
         if (objekPintuTerbuka == null) Debug.LogError($"[PintuRuangan:{name}] Objek Pintu Terbuka belum diisi!");
         if (objekPintuTertutup == null) Debug.LogError($"[PintuRuangan:{name}] Objek Pintu Tertutup belum diisi!");
@@ -33,22 +37,19 @@ public class PintuRuangan : MonoBehaviour
         TerapkanStatus();
     }
 
-    // --- Dipanggil dari PintuKlikRelay.cs, yang nempel di objekPintuTerbuka MAUPUN objekPintuTertutup ---
     public void Toggle()
     {
-        // --- TAMBAHAN: kalau lagi mau BUKA (bukan tutup) dan ada syarat yang gak terpenuhi, batalkan ---
         if (!sedangTerbuka && syaratBolehBuka != null && !syaratBolehBuka())
         {
-            Debug.Log($"[PintuRuangan:{name}] Toggle() dibatalkan - syarat buka belum terpenuhi."); // --- SEMENTARA ---
+            Debug.Log($"[PintuRuangan:{name}] Toggle() dibatalkan - syarat buka belum terpenuhi.");
             return;
         }
 
         sedangTerbuka = !sedangTerbuka;
-        Debug.Log($"[PintuRuangan:{name}] Toggle() - status sekarang: {(sedangTerbuka ? "TERBUKA" : "TERTUTUP")}"); // --- SEMENTARA ---
+        Debug.Log($"[PintuRuangan:{name}] Toggle() - status sekarang: {(sedangTerbuka ? "TERBUKA" : "TERTUTUP")}");
         TerapkanStatus();
     }
 
-    // --- Opsional: dipanggil ZonaDeteksiPintu.cs pas pemain lewat dekat ---
     public void BukaOtomatis()
     {
         if (sedangTerbuka) return;
@@ -56,11 +57,10 @@ public class PintuRuangan : MonoBehaviour
         TerapkanStatus();
     }
 
-    // --- TAMBAHAN: dipanggil ZonaDeteksiPintu.cs pas pemain MENJAUH dari area pintu ---
     public void TutupOtomatis()
     {
         if (!sedangTerbuka) return;
-        Debug.Log($"[PintuRuangan:{name}] TutupOtomatis() - pemain menjauh."); // --- SEMENTARA ---
+        Debug.Log($"[PintuRuangan:{name}] TutupOtomatis() - pemain menjauh.");
         sedangTerbuka = false;
         TerapkanStatus();
     }
@@ -69,6 +69,23 @@ public class PintuRuangan : MonoBehaviour
     {
         if (objekPintuTerbuka != null) objekPintuTerbuka.SetActive(sedangTerbuka);
         if (objekPintuTertutup != null) objekPintuTertutup.SetActive(!sedangTerbuka);
+
+        // --- TAMBAHAN: Mainkan suara berdasarkan perubahan status pintu ---
+        if (sedangTerbuka != statusSebelumnya)
+        {
+            if (audioSourcePintu != null)
+            {
+                if (sedangTerbuka && klipPintuTerbuka != null)
+                {
+                    audioSourcePintu.PlayOneShot(klipPintuTerbuka, volumePintu);
+                }
+                else if (!sedangTerbuka && klipPintuTertutup != null)
+                {
+                    audioSourcePintu.PlayOneShot(klipPintuTertutup, volumePintu);
+                }
+            }
+            statusSebelumnya = sedangTerbuka;
+        }
     }
 
     public bool SedangTerbuka => sedangTerbuka;

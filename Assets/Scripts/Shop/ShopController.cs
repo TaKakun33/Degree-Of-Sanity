@@ -5,13 +5,13 @@ public class ShopController : MonoBehaviour
 {
     [Header("Harga Barang (Rp)")]
     public int hargaKopi = 15000;
-    public int hargaMie = 20000;
-    public int hargaBoneka = 50000;
-    public int hargaBahan1 = 5000;
-    public int hargaBahan2 = 10000;
-    public int hargaBahan3 = 15000;
-    public int hargaKeyboard = 150000;
-    public int hargaBuku = 100000;
+    public int hargaMie = 22000;
+    public int hargaBoneka = 60000;
+    public int hargaBahan1 = 8000;
+    public int hargaBahan2 = 15000;
+    public int hargaBahan3 = 20000;
+    public int hargaKeyboard = 175000;
+    public int hargaBuku = 140000;
 
     [Header("Isi Keranjang (Cart)")]
     private int cartKopi = 0, cartMie = 0, cartBoneka = 0;
@@ -85,7 +85,10 @@ public class ShopController : MonoBehaviour
         if (cartBuku) rincian += "- Buku Referensi\n";
 
         if (rincian == "") rincian = "Keranjang kosong...";
-        if (textRincianKeranjang != null) textRincianKeranjang.text = rincian;
+        if (textRincianKeranjang != null) {
+            textRincianKeranjang.text = rincian;
+            textRincianKeranjang.color = Color.white; // --- TAMBAHAN: warna FFFFFF ---
+        }
     }
 
     public void CheckoutBelanjaan()
@@ -123,5 +126,7 @@ public class ShopController : MonoBehaviour
         gameObject.SetActive(false);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(false);
+
+        if (GameManager.Instance != null) GameManager.Instance.UpdateInteractableTombolPanel(); // --- TAMBAHAN ---
     }
 }

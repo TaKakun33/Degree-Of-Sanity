@@ -1,6 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// --- TAMBAHAN: pilih Panel Pilihan mana yang dipakai adegan ini - 2 panel yang BENERAN
+// terpisah total di CutsceneUI (bukan referensi objek scene di asset ini, biar aman gak
+// gampang null kalau scene lagi gak kebuka pas ngedit) ---
+public enum PilihanPanelMana { Panel1, Panel2 }
+
 // --- Jenis baris dalam satu CutsceneScene ---
 public enum JenisBarisCutscene { Narasi, Dialog, Bisikan }
 
@@ -95,6 +100,10 @@ public class CutsceneSceneSO : ScriptableObject
     [Tooltip("TAMBAHAN: centang buat fade ke PUTIH (bukan hitam) tepat SEBELUM lanjut ke adegan berikutnya - dipakai buat momen 'blackout'/pingsan (naskah Bad Ending 2: '[Putih]'). SARAN: adegan BERIKUTNYA sebaiknya centang 'Lewati Transisi Awal' juga, biar gak dobel fade item hitam+putih.")]
     public bool fadeKePutihDiAkhir = false;
 
+    [Header("TAMBAHAN: Musik Adegan (opsional)")]
+    [Tooltip("KOSONGKAN buat adegan LANJUTAN dalam Main Event/Ending yang SAMA (biar musik gak restart tiap ganti baris). ISI HANYA di adegan yang BENERAN memulai pergantian musik - biasanya adegan PERTAMA suatu Main Event atau adegan PERTAMA suatu Ending. Musik yang lagi kedengeran (Musik Utama, dll) bakal meredup dulu baru klip ini muncul. Untuk Ending: drag klip 'Good Ending' atau 'Bad Ending' di sini sesuai jenisnya - beda klip di adegan pertama Happy Ending vs Bad Ending 1-4 itulah yang bikin sound-nya beda.")]
+    public AudioClip musikKhusus;
+
     [Header("Baris-baris (urut dari atas ke bawah)")]
     public List<BarisCutscene> baris;
 
@@ -104,6 +113,8 @@ public class CutsceneSceneSO : ScriptableObject
     [Header("Pilihan (JembatanCerita) - opsional")]
     public bool adaPilihan;
     public List<PilihanCabang> pilihanCabang;
+    [Tooltip("TAMBAHAN: pilih Panel Pilihan mana (dari 2 yang ada di CutsceneUI) yang dipakai buat adegan ini - misal Panel1 buat ME3 (2 opsi), Panel2 buat ME2 (3 opsi)")]
+    public PilihanPanelMana panelPilihanDipakai = PilihanPanelMana.Panel1;
 
     [Header("Rantai Adegan")]
     [Tooltip("Adegan berikutnya OTOMATIS setelah ini selesai. Kosongkan (None) kalau ini akhir chain ATAU adaPilihan dicentang (pilihan yang nentuin lanjutannya, bukan field ini)")]

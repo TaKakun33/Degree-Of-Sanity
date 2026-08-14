@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
     private bool isMenuOpen = false; 
     private SpriteRenderer spriteRenderer;
+    private Animator animator; // --- TAMBAHAN ---
     private Rigidbody2D rb;
 
     // --- Beda dari isMenuOpen - ini cuma blokir KLIK BARU, MovePlayer() TETAP jalan.
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         targetPosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>(); // --- TAMBAHAN ---
         rb = GetComponent<Rigidbody2D>();
         isMenuOpen = false;
         isMoving = false;
@@ -54,12 +56,25 @@ public class PlayerController : MonoBehaviour
         }
 
         if (isMoving) MovePlayer();
+
+        // --- TAMBAHAN: sinkronin parameter Animator "IsWalking" sama status gerak sekarang ---
+        if (animator != null) animator.SetBool("IsWalking", isMoving);
     }
 
     public void SetMenuStatus(bool status)
     {
         isMenuOpen = status;
-        if (isMenuOpen) isMoving = false; 
+        if (isMenuOpen)
+        {
+            isMoving = false;
+
+            // --- TAMBAHAN: paksa animator balik ke idle (Andrew_Diam) SEKARANG JUGA.
+            // Update() bakal langsung "return" begitu isMenuOpen true, jadi baris
+            // animator.SetBool("IsWalking", isMoving) di bawah situ gak akan pernah kesentuh
+            // lagi selama menu masih kebuka - kalau gak dipaksa di sini, animasi bisa nyangkut
+            // di walk kalau player kebetulan lagi jalan pas panel kerja muncul. ---
+            if (animator != null) animator.SetBool("IsWalking", false);
+        }
     }
 
     // --- Dipakai script lain (CutsceneUI, dll) buat ngecek udah nyampe tujuan belum ---
@@ -185,6 +200,10 @@ public class PlayerController : MonoBehaviour
     // Fungsi deteksi objek dengan tag
     bool CekApakahBarangInteraktif(GameObject obj)
     {
+        // --- TAMBAHAN: gak ada objek yang dianggap "interaktif" sama sekali selama cutscene
+        // aktif - Kasur/Kompor/dll gak bisa diklik walau kliknya "tembus" sampai ke situ ---
+        if (GameManager.Instance != null && GameManager.Instance.sedangDalamCutscene) return false;
+
         return obj.CompareTag("Door") || obj.CompareTag("Bed") || 
                obj.CompareTag("Desk") || obj.CompareTag("ExitDoor") || 
                obj.CompareTag("Kompor") || obj.CompareTag("Mandi") ||

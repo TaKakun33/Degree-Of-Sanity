@@ -35,6 +35,10 @@ public class InventoryUIController : MonoBehaviour
     private JenisItem itemTerpilih = JenisItem.Kosong;
     private int hargaJualTerpilih = 0;
 
+    [Header("TAMBAHAN: Efek Item")]
+    [Tooltip("Berapa toleransi typo tambahan (hari itu doang) dari minum Kopi")]
+    public int bonusTypoDariKopi = 2;
+
     void OnEnable()
     {
         TutupDetail(); 
@@ -122,12 +126,17 @@ public class InventoryUIController : MonoBehaviour
         panelDetail.SetActive(true); 
         if (textNamaItem != null) textNamaItem.text = nama;
         if (textDeskripsiItem != null) textDeskripsiItem.text = deskripsi;
-        if (textHargaJual != null) textHargaJual.text = hargaJual.ToString();
+        if (textHargaJual != null) {
+            textHargaJual.text = "Rp " + hargaJual.ToString("N0"); // --- format "Rp X.XXX", samain pola OjolManager ---
+            textHargaJual.alignment = TextAlignmentOptions.MidlineLeft; // --- TAMBAHAN: rata kiri (tetap center vertikal) ---
+        }
 
-        btnGunakan.gameObject.SetActive(bisaDigunakan);
+        btnGunakan.gameObject.SetActive(true); // --- TAMBAHAN: SELALU kelihatan sekarang, gak lagi hilang total ---
+        btnGunakan.interactable = bisaDigunakan; // --- TAMBAHAN: tapi dinonaktifkan (abu-abu, gak bisa diklik) kalau item ini gak bisa dipakai langsung ---
         btnGunakan.onClick.RemoveAllListeners();
         btnGunakan.onClick.AddListener(EksekusiGunakan);
 
+        btnJual.interactable = hargaJual > 0; // --- TAMBAHAN: tetap kelihatan, tapi gak bisa diklik kalau emang gak bisa dijual (misal Roti dari Anna, hargaJual=0) ---
         btnJual.onClick.RemoveAllListeners();
         btnJual.onClick.AddListener(EksekusiJual);
     }
@@ -139,6 +148,7 @@ public class InventoryUIController : MonoBehaviour
             case JenisItem.Kopi:
                 InventoryManager.Instance.jumlahKopi--;
                 GameManager.Instance.batasTidur += 1f;
+                GameManager.Instance.TambahBonusTypoDariKopi(bonusTypoDariKopi); // --- TAMBAHAN: sesuai proposal - tambahan toleransi typo hari itu ---
                 break;
             case JenisItem.Mie:
                 InventoryManager.Instance.jumlahMieAyam--;
@@ -146,6 +156,10 @@ public class InventoryUIController : MonoBehaviour
                 break;
             case JenisItem.Boneka:
                 InventoryManager.Instance.jumlahBoneka--;
+                // --- TAMBAHAN: sesuai proposal - "diberikan ke Adik", ningkatin EFEKTIVITAS
+                // pemulihan Sanity SETERUSNYA (bukan langsung nambah Sanity di sini) - lihat
+                // CeritaManager.CobaMulaiKlikAnna() buat penerapan pengalinya ---
+                if (GameManager.Instance != null) GameManager.Instance.TandaiSudahKasihBonekaKeAnna();
                 break;
             case JenisItem.MakananJadi:
                 InventoryManager.Instance.jumlahMakananJadi--;
@@ -214,5 +228,7 @@ public class InventoryUIController : MonoBehaviour
         gameObject.SetActive(false);
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null) player.SetMenuStatus(false);
+
+        if (GameManager.Instance != null) GameManager.Instance.UpdateInteractableTombolPanel(); // --- TAMBAHAN ---
     }
 }
