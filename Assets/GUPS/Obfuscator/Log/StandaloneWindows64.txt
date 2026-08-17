@@ -24,168 +24,20 @@
 [Info][GUPS.OBF][OnPreBuild] Process component Analyse Unity Animation Methods
 [Info][GUPS.OBF][OnPreBuild] Process component Analyse Unity Event Component
 [Info][GUPS.OBF][OnAnalyse_Assets] Process component Analyse Unity Animation Methods
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Runtime/Debug/ProbeSamplingDebugMesh.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesFixture.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/UnityMaterialBall.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/BackgroundMesh.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.2d.psdimporter/Editor/Assets/pivot.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesFloorSpotlight.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesSpotlightModel.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in model file at path 'Packages/com.unity.render-pipelines.core/Editor/Resources/DebugProbe.fbx' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in animation file at path 'Assets/Sprite/Animation/Andrew_Diam.anim' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in animation file at path 'Assets/Sprite/Animation/Andrew_Jalan.anim' (0):
-
-[Debug][GUPS.OBF][OnAnalyse_Assets] Found methods in animation file at path 'Packages/com.unity.timeline/Editor/StyleSheets/res/HumanoidDefault.anim' (0):
-
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Runtime/Debug/ProbeSamplingDebugMesh.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesFixture.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/UnityMaterialBall.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/BackgroundMesh.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.2d.psdimporter/Editor/Assets/pivot.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesFloorSpotlight.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesSpotlightModel.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.render-pipelines.core/Editor/Resources/DebugProbe.fbx'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Assets/Sprite/Animation/Andrew_Diam.anim'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Assets/Sprite/Animation/Andrew_Jalan.anim'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Packages/com.unity.timeline/Editor/StyleSheets/res/HumanoidDefault.anim'.
+[Debug][GUPS.OBF][OnAnalyse_Assets] Using cached analysis results for asset 'Assets/Sprite/Animation/Player.controller'.
 [Info][GUPS.OBF][OnProcess_Assets] Process component Analyse Unity Animation Methods
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Iterate components in loaded build scene 'Assets/Scenes/MenuScene.unity'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 9 Root GameObjects in Scene Assets/Scenes/MenuScene.unity
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 113 Components in Scene Assets/Scenes/MenuScene.unity
-[Info][GUPS.OBF][OnAnalyse_Component_Scenes] Process component Analyse Unity Event Component
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BGMManager' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BGMManager' of type 'BGMManager'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.Camera'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.AudioListener'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.Rendering.Universal.UniversalAdditionalCameraData'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'background' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'background' of type 'UnityEngine.SpriteRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'MenuManager' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'MenuManager' of type 'MainMenuController'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'MenuManager' (1):
-  - LanjutkanGame
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'SaveManager' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'SaveManager' of type 'SaveManager'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.Canvas'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.UI.CanvasScaler'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.UI.GraphicRaycaster'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UISfxAutoHook'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Utama' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Utama' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Utama' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Logo' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Logo' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Logo' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_NewGame' (1):
-  - MulaiGameBaru
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_LoadGame' (1):
-  - BukaMenuLoadGame
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_Quit' (1):
-  - KeluarGame
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Load' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Load' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Load' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'TITLE' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'TITLE' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'TITLE' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.UI.ScrollRect'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.UI.Mask'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Content' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Content' of type 'UnityEngine.UI.VerticalLayoutGroup'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Content' of type 'UnityEngine.UI.ContentSizeFitter'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.UI.Scrollbar'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Sliding Area' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Handle' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Handle' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Handle' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_Back' (1):
-  - KembaliKeMenuUtama
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_Delete' (1):
-  - ToggleModeHapusSave
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.UI.Image'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.UI.Button'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_ResetSemua' (1):
-  - ResetSemuaSave
-
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'TombolSfx'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'EventSystem' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'EventSystem' of type 'UnityEngine.EventSystems.EventSystem'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'EventSystem' of type 'UnityEngine.InputSystem.UI.InputSystemUIInputModule'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'UISfxManager' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'UISfxManager' of type 'UISfxManager'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Sound' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Sound' of type 'UnityEngine.AudioSource'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BG' of type 'UnityEngine.Transform'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BG' of type 'UnityEngine.AudioSource'.
-[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Iterate components in not loaded build scene Assets/Scenes/MainScene.unity.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Iterate components in loaded build scene 'Assets/Scenes/MainScene.unity'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 37 Root GameObjects in Scene Assets/Scenes/MainScene.unity
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 1301 Components in Scene Assets/Scenes/MainScene.unity
 [Info][GUPS.OBF][OnAnalyse_Component_Scenes] Process component Analyse Unity Event Component
@@ -1616,6 +1468,144 @@
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'AudioManager' of type 'UnityEngine.Transform'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'AudioManager' of type 'AudioManager'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'AudioManager' of type 'UnityEngine.AudioSource'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Iterate components in not loaded build scene Assets/Scenes/MenuScene.unity.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 9 Root GameObjects in Scene Assets/Scenes/MenuScene.unity
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 113 Components in Scene Assets/Scenes/MenuScene.unity
+[Info][GUPS.OBF][OnAnalyse_Component_Scenes] Process component Analyse Unity Event Component
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BGMManager' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BGMManager' of type 'BGMManager'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.Camera'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.AudioListener'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Main Camera' of type 'UnityEngine.Rendering.Universal.UniversalAdditionalCameraData'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'background' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'background' of type 'UnityEngine.SpriteRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'MenuManager' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'MenuManager' of type 'MainMenuController'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'MenuManager' (1):
+  - LanjutkanGame
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'SaveManager' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'SaveManager' of type 'SaveManager'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.Canvas'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.UI.CanvasScaler'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UnityEngine.UI.GraphicRaycaster'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Canvas' of type 'UISfxAutoHook'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Utama' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Utama' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Utama' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Logo' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Logo' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Logo' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_NewGame' (1):
+  - MulaiGameBaru
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_NewGame' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Continue' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_LoadGame' (1):
+  - BukaMenuLoadGame
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_LoadGame' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_Quit' (1):
+  - KeluarGame
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Quit' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Load' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Load' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Panel_Load' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'TITLE' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'TITLE' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'TITLE' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scroll View' of type 'UnityEngine.UI.ScrollRect'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Viewport' of type 'UnityEngine.UI.Mask'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Content' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Content' of type 'UnityEngine.UI.VerticalLayoutGroup'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Content' of type 'UnityEngine.UI.ContentSizeFitter'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Scrollbar Vertical' of type 'UnityEngine.UI.Scrollbar'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Sliding Area' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Handle' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Handle' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Handle' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_Back' (1):
+  - KembaliKeMenuUtama
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Back' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_Delete' (1):
+  - ToggleModeHapusSave
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_Delete' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.UI.Image'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found unity event methods in component 'Btn_ResetSemua' (1):
+  - ResetSemuaSave
+
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Btn_ResetSemua' of type 'TombolSfx'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.RectTransform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'UnityEngine.CanvasRenderer'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Text (TMP)' of type 'TMPro.TextMeshProUGUI'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'EventSystem' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'EventSystem' of type 'UnityEngine.EventSystems.EventSystem'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'EventSystem' of type 'UnityEngine.InputSystem.UI.InputSystemUIInputModule'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'UISfxManager' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'UISfxManager' of type 'UISfxManager'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Sound' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'Sound' of type 'UnityEngine.AudioSource'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BG' of type 'UnityEngine.Transform'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Find unity event methods in component 'BG' of type 'UnityEngine.AudioSource'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Iterate components in not loaded build scene Assets/Scenes/SkripsiScene.unity.
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 4 Root GameObjects in Scene Assets/Scenes/SkripsiScene.unity
 [Debug][GUPS.OBF][OnAnalyse_Component_Scenes] Found 66 Components in Scene Assets/Scenes/SkripsiScene.unity
@@ -3882,6 +3872,9 @@
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '<' of type 'UnityEngine.RectTransform'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '<' of type 'UnityEngine.CanvasRenderer'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '<' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Found unity event methods in component '<' (1):
+  - OnDecrement
+
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '<' of type 'UnityEngine.UI.Text'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component 'Int' of type 'UnityEngine.RectTransform'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component 'Int' of type 'UnityEngine.CanvasRenderer'.
@@ -3896,6 +3889,9 @@
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '>>>' of type 'UnityEngine.RectTransform'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '>>>' of type 'UnityEngine.CanvasRenderer'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '>>>' of type 'UnityEngine.UI.Button'.
+[Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Found unity event methods in component '>>>' (1):
+  - OnIncrement
+
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Find unity event methods in component '>>>' of type 'UnityEngine.UI.Text'.
 [Debug][GUPS.OBF][OnAnalyse_Component_Prefabs] Found '13' Components in the prefab at path 'Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Widgets/DebugUIToggle.prefab'.
 [Info][GUPS.OBF][OnAnalyse_Component_Prefabs] Process component Analyse Unity Event Component
@@ -4996,6 +4992,7 @@
 [Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Void CameraController::.ctor()] Because of compatibility component: .Net Framework - Compatibility : Is Special.
 [Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Void PlayerController::Start()] Because of compatibility component: Unity - Compatibility : Is MonoBehaviour Method.
 [Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Void PlayerController::Update()] Because of compatibility component: Unity - Compatibility : Is MonoBehaviour Method.
+[Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Void PlayerController::FixedUpdate()] Because of compatibility component: Unity - Compatibility : Is MonoBehaviour Method.
 [Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Void PlayerController::.ctor()] Because of compatibility component: .Net Framework - Compatibility : Is Special.
 [Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Void TitikSpawnPlayer/<ReposisiSetelahSemuaStartSelesai>d__4::.ctor(System.Int32)] Because of compatibility component: .Net Framework - Compatibility : Is Special.
 [Info][GUPS.OBF][OnAnalyse_Assemblies] Skip Method [[Assembly-CSharp] System.Boolean TitikSpawnPlayer/<ReposisiSetelahSemuaStartSelesai>d__4::MoveNext()] Because of compatibility component: .Net Framework - Compatibility : Is Special.

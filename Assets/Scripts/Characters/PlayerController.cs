@@ -55,10 +55,17 @@ public class PlayerController : MonoBehaviour
             HandleClick();
         }
 
-        if (isMoving) MovePlayer();
-
-        // --- TAMBAHAN: sinkronin parameter Animator "IsWalking" sama status gerak sekarang ---
+        // Hapus pemanggilan MovePlayer() dari sini
         if (animator != null) animator.SetBool("IsWalking", isMoving);
+    }
+
+    // --- TAMBAHKAN FixedUpdate() UNTUK PERGERAKAN FISIKA ---
+    void FixedUpdate()
+    {
+        if (isMoving) 
+        {
+            MovePlayer();
+        }
     }
 
     public void SetMenuStatus(bool status)
@@ -246,22 +253,23 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        Vector2 posisiSebelum = rb != null ? rb.position : (Vector2)transform.position;
-        Vector2 posisiBaru = Vector2.MoveTowards(posisiSebelum, targetPosition, speed * Time.deltaTime);
+        if (rb == null) return;
 
-        // Arah hadap dihitung dari pergerakan AKTUAL tiap frame, bukan snapshot sekali doang
-        if (posisiBaru.x != posisiSebelum.x) {
+        // Hitung jarak per frame menggunakan fixedDeltaTime agar konsisten antar laptop
+        Vector2 posisiSebelum = rb.position;
+        Vector2 posisiBaru = Vector2.MoveTowards(posisiSebelum, targetPosition, speed * Time.fixedDeltaTime);
+
+        // Update arah hadap sprite
+        if (posisiBaru.x != posisiSebelum.x) 
+        {
             spriteRenderer.flipX = posisiBaru.x < posisiSebelum.x;
         }
 
-        // Pakai rb.MovePosition() (physics-aware) - tetap ke-block collider solid, gak gemeteran
-        if (rb != null) {
-            rb.MovePosition(posisiBaru);
-        } else {
-            transform.position = posisiBaru;
-        }
+        // Gunakan MovePosition untuk Rigidbody2D
+        rb.MovePosition(posisiBaru);
         
-        if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
+        // Cek apakah sudah sampai tujuan
+        if (Vector2.Distance(rb.position, targetPosition) < 0.1f)
         {
             // JIKA SAMPAI DI DEPAN PINTU/TANGGA
             if (targetDoor != null) 
@@ -269,20 +277,13 @@ public class PlayerController : MonoBehaviour
                 targetDoor.UseDoor(gameObject); 
                 targetDoor = null; 
                 
-                // Cek jika habis keluar pintu, apakah masih harus jalan ke kasur/kompor/dll?
                 if (sedangTransit)
                 {
                     sedangTransit = false; 
 
-                    // --- FIX: pakai Y dari KonfigurasiLantai (yang UDAH PASTI benar buat
-                    // lantaiSaatIni yang baru), BUKAN transform.position.y - soalnya rb.position
-                    // yang baru di-set UseDoor() belum tentu udah "nular" ke transform.position
-                    // di frame yang SAMA (sync-nya belakangan), jadi transform.position.y di sini
-                    // bisa kebaca MASIH Y LAMA (sebelum teleport), bikin karakter diseret balik
-                    // ke Y yang salah abis "kelihatan" landing bener sebentar. ---
                     float yLantaiSekarang = (KonfigurasiLantai.Instance != null)
                         ? KonfigurasiLantai.Instance.DapatkanPosisiY(lantaiSaatIni)
-                        : transform.position.y; // fallback kalau KonfigurasiLantai belum ke-setup
+                        : rb.position.y;
 
                     if (targetInteraksiAkhir != null)
                     {
@@ -296,7 +297,7 @@ public class PlayerController : MonoBehaviour
                     
                     targetInteraksiAkhir = null; 
                     FlipSprite(); 
-                    return; // Lanjut jalan ke lantai baru!
+                    return; 
                 }
             }
             // EKSEKUSI JIKA SAMPAI DI BARANG BUKAN PINTU
@@ -306,11 +307,10 @@ public class PlayerController : MonoBehaviour
             else if (targetKompor != null) { targetKompor.BukaMenuMasak(); targetKompor = null; }
             else if (targetMandi != null) { targetMandi.Mandi(); targetMandi = null; }
             else if (targetPemicu != null) { targetPemicu.Sampai(); targetPemicu = null; }
-            else if (targetAnna != null) { targetAnna.Interaksi(); targetAnna = null; } // --- TAMBAHAN ---
+            else if (targetAnna != null) { targetAnna.Interaksi(); targetAnna = null; }
 
-            // Karakter sampai di tujuan akhir, berhenti jalan.
             isMoving = false;
-            kontrolDikunci = false; // otomatis buka kunci begitu sampai tujuan
+            kontrolDikunci = false; 
         }
     }
 }
